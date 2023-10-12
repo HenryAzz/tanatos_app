@@ -20,10 +20,13 @@ import {useNavigation} from '@react-navigation/native';
 import BuyNowb from '../../components/BuyNow';
 import ApiRequest from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
+import {BaseButton} from '../../components/BaseButton';
+import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
 
 const SpecificStoreGalery = ({route}) => {
   const store_id = route.params.item.store_id;
   const item = route.params.item;
+  const item1 = route.params.item1;
   console.log(store_id, 'itme item');
   const navigation = useNavigation();
   const cardData = [
@@ -87,7 +90,7 @@ const SpecificStoreGalery = ({route}) => {
         // last_id:
       });
       const resp = res.data.data;
-      console.log(resp, 'resp flower');
+      // console.log(resp, 'resp flower');
       setStoreData(resp);
       setShowLoadingModal(false);
     } catch (err) {
@@ -100,6 +103,28 @@ const SpecificStoreGalery = ({route}) => {
     handleGetStoreData();
   }, []);
 
+  const [select, setSelect] = useState(false);
+  // const [selectedItem, setSelectedItem] = useState([]);
+  // console.log(selectedItem, 'selected itm');
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [dataTosend, setDataToSend] = useState([]);
+  const handleSelect = list => {
+    const isExists = dataTosend.some(storedItem => storedItem.id == list.id);
+    if (isExists) {
+      const newItems = dataTosend.filter(item => item.id !== list.id);
+      setDataToSend(newItems);
+      const newIds = selectedIds.filter(item => item !== list.id);
+      setSelectedIds(newIds);
+    } else {
+      setDataToSend([...dataTosend, list]);
+      setSelectedIds([...selectedIds, list.id]);
+    }
+  };
+  console.log(dataTosend);
+
+  // useEffect(() => {
+  // console.log(dataTosend.length);
+  // }, [dataTosend]);
   return (
     <Layout>
       <AppHeader title={'Westside Florist'} defaultStyle={{marginBottom: 30}} />
@@ -144,15 +169,44 @@ const SpecificStoreGalery = ({route}) => {
         renderItem={({item}) => {
           //   console.log(item.image, 'jj');
           return (
-            <CardListFlowerGalery
-              item={item}
-              onPress={() => navigation.navigate('EReceipt', {item: item})}
-              // onPress={() => setModalVisible(true)}
-            />
+            <View
+              style={[
+                styles.cardContainer,
+                {
+                  borderColor: selectedIds.includes(item.id)
+                    ? '#663399'
+                    : 'white',
+                  borderWidth: 1,
+                },
+              ]}>
+              <View style={{height: 120, width: 155}}>
+                <ImageSwiper images={item.images} />
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  handleSelect(item);
+                }}
+                style={styles.infoContainer}>
+                <Text style={styles.title}>{item.name}</Text>
+                <Text style={styles.price}>{item.price}</Text>
+              </TouchableOpacity>
+            </View>
+            // <CardListFlowerGalery
+            //   item={item}
+            //   onPress={() => navigation.navigate('EReceipt', {item: item})}
+            //   // onPress={() => setModalVisible(true)}
+            // />
           );
         }}
       />
       {/* </ScrollView> */}
+      <BaseButton
+        title={'Continue'}
+        defaultStyle={{marginVertical: 20}}
+        onPress={() =>
+          navigation.navigate('EReceipt', {item: item, dataTosend: dataTosend})
+        }
+      />
       <BuyNowb
         isModalVisible={isModalVisible}
         setModalVisible={setModalVisible}
@@ -168,4 +222,46 @@ const SpecificStoreGalery = ({route}) => {
 
 export default SpecificStoreGalery;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  cardContainer: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    elevation: 5,
+    shadowColor: 'black',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    marginBottom: 15,
+    width: '47%',
+    marginHorizontal: 5,
+  },
+  title: {
+    fontSize: 18,
+    color: colors.black,
+    marginBottom: 2,
+  },
+  price: {
+    fontSize: 16,
+    color: colors.primaryColor,
+    fontFamily: fonts.bold,
+  },
+  imageGalleryContainer: {
+    // Adjust the height as needed
+  },
+  swiper: {height: 200, flex: 1},
+  slide: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  pagination: {
+    marginBottom: -55,
+  },
+  infoContainer: {
+    padding: 10,
+  },
+});

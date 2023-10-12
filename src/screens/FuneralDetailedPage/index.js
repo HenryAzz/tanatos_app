@@ -20,51 +20,7 @@ import Share from 'react-native-share';
 const FuneralDetailedPage = () => {
   const route = useRoute();
   const item = route?.params?.item;
-  [
-    {
-      chruch_lat: '21.1431669',
-      chruch_lng: '105.8554513',
-      chruch_location: 'Uy Nỗ, Đông Anh, Hanoi, Vietnam',
-      church_date: '2023-10-31',
-      church_time: '00:00:00',
-      created_at: '5th Oct',
-      description: 'Cnchf',
-      distance: '',
-      funeral_date: '2023-10-05',
-      funeral_lat: '17.4154947',
-      funeral_lng: '78.4179563',
-      funeral_location:
-        'TTD Tirumala Tirupati Devasthanam, Road Number 92, MLA Colony, Jubilee Hills, Hyderabad, Telangana, India',
-      funeral_time: '00:00:00',
-      id: '16',
-      image: '"9406_f56cea92-2c69-45ff-b2f6-d16b1427578f.jpg"',
-      lat: '',
-      lng: '',
-      name: 'Fjfuf6',
-      table_name: 'funerals',
-      thumb:
-        'https://locatestudent.com/tanatos/upload/"9406_f56cea92-2c69-45ff-b2f6-d16b1427578f.jpg"',
-      time: '00:00:00',
-      updated_timestamp: '2023-10-05 16:13:14',
-      url: 'https://locatestudent.com/tanatos/upload/',
-      user: {
-        address: '',
-        created_at: '2023-10-05 14:41:54',
-        dob: '2000-01-01',
-        email: 'shan@gmail.com',
-        gender: 'male',
-        id: '47',
-        lat: '0',
-        lng: '0',
-        name: 'Shan',
-        password:
-          '4fe1ef7b99ebc2ad6d4e2d08c65c0b23eaf65e11780f6b37dd267d254f16680e',
-        phone: '+923456789012',
-        user_type: 'funeral',
-      },
-      user_id: '47',
-    },
-  ];
+  console.log(item, 'item');
 
   const pathFromBackend = item.image;
 
@@ -253,7 +209,7 @@ const FuneralDetailedPage = () => {
           <BaseButton
             title={'Send Flowers'}
             defaultStyle={{marginVertical: 10}}
-            onPress={() => navigation.navigate('FlowerGalery')}
+            onPress={() => navigation.navigate('FlowerGalery', {item: item})}
           />
           <BaseButton title={'Share'} onPress={ShareMe} />
         </View>

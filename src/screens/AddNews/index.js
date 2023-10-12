@@ -266,6 +266,7 @@ const AddNews = props => {
         setLoading(false);
         setdisabled(false);
       }
+      setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);

@@ -83,7 +83,7 @@ const CheckoutScreen = () => {
           style={[style.font14Re, {alignSelf: 'flex-end', marginVertical: 4}]}>
           we send to the funeral home
         </Text>
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -108,8 +108,8 @@ const CheckoutScreen = () => {
             ]}>
             Change
           </Text>
-        </View>
-        <View
+        </View> */}
+        {/* <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -126,12 +126,12 @@ const CheckoutScreen = () => {
           <Text style={[style.font14Re, {marginLeft: 20}]}>
             **** **** **** 3947
           </Text>
-        </View>
+        </View> */}
         <View>
-          <Text style={[style.font18Re, {fontFamily: fonts.bold}]}>
+          {/* <Text style={[style.font18Re, {fontFamily: fonts.bold}]}>
             Payment Method
-          </Text>
-          <View
+          </Text> */}
+          {/* <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -150,7 +150,7 @@ const CheckoutScreen = () => {
               size={22}
               color={colors.primaryColor}
             />
-          </View>
+          </View> */}
           <TextCard title={'Order:'} price={'112$'} />
           <TextCard title={'Delivery:'} price={'15$'} />
           <TextCard title={'Summay:'} price={'127$'} />

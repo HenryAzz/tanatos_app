@@ -14,28 +14,13 @@ import TextCard from './TextCard';
 const EReceipt = ({route}) => {
   const navigation = useNavigation();
   const item = route?.params?.item;
-  console.log(item.title, 'item');
-
-  // const [quantity, setQuantity] = useState(1); // Initial quantity
-  // const basePrice = 5;
-  // const priceIncrement = 5;
-
-  // const increment = () => {
-  //   setQuantity(quantity + 1);
-  //   const totalPrice = basePrice + Math.floor(quantity) * priceIncrement;
-  //   console.log(totalPrice, 'incre');
-  // };
-
-  // const decrement = () => {
-  //   if (quantity > 1) {
-  //     setQuantity(quantity - 1);
-  //     const totalPrice = basePrice + Math.floor(quantity) * priceIncrement;
-  //     console.log(totalPrice, 'decre');
-  //   }
-  // };
+  const dataTosend = route?.params?.dataTosend;
+  console.log(item, 'item');
+  console.log('=============item=============');
+  console.log(dataTosend[0], 'dataTosend');
 
   const [quantity, setQuantity] = useState(1);
-  const price = item.price;
+  const price = dataTosend.price;
   const [basicPrice, setBasicPrice] = useState(price);
   const handleIncrement = () => {
     setQuantity(quantity + 1);
@@ -70,7 +55,7 @@ const EReceipt = ({route}) => {
             alignItems: 'center',
           }}>
           <View style={{height: 120, width: 155}}>
-            <ImageSwiper images={item.images} />
+            <ImageSwiper images={dataTosend[0].images} />
           </View>
           <View
             style={{

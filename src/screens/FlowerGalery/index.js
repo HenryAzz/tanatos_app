@@ -16,12 +16,15 @@ import {colors, fonts} from '../../constraints';
 import Icon from 'react-native-vector-icons/Ionicons';
 import CardList from '../Favorite/CardList';
 import CardListFlowerGalery from './CardListFlowerGalery';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import BuyNowb from '../../components/BuyNow';
 import ApiRequest from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 
 const FlowerGalery = () => {
+  const route = useRoute();
+  const item1 = route?.params?.item;
+  // console.log(item1, 'item receiver');
   const navigation = useNavigation();
   const cardData = [
     {
@@ -144,7 +147,10 @@ const FlowerGalery = () => {
             <CardListFlowerGalery
               item={item}
               onPress={() =>
-                navigation.navigate('SpecificStoreGalery', {item: item})
+                navigation.navigate('SpecificStoreGalery', {
+                  item: item,
+                  item1: item1,
+                })
               }
               // onPress={() => setModalVisible(true)}
             />

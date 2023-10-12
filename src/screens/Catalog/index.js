@@ -56,21 +56,22 @@ const Catalog = () => {
 
   const [loading, setLoading] = useState(false);
   const [catalogData, setCatalogData] = useState();
+  console.log(catalogData, 'catalogData');
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const handleGetCatData = async () => {
     try {
       setLoading(true);
       setShowLoadingModal(true);
       const user_id = await AsyncStorage.getItem('user_id');
-      console.log(user_id);
+      // console.log(user_id);
       const res = await ApiRequest({
         type: 'get_data',
         table_name: 'stores_gallery',
-        id: user_id,
+        user_id: user_id,
         // last_id:""
       });
       const resp = res.data.data;
-      console.log(resp, 'resp');
+      console.log(resp, 'resp///');
       setCatalogData(resp);
       setShowLoadingModal(false);
     } catch (err) {
@@ -88,12 +89,14 @@ const Catalog = () => {
       <AppHeader title={'Catalog'} />
       <View style={{flex: 1}}>
         <FlatList
-          data={dataCompleted}
+          data={catalogData}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           keyExtractor={item => item.id}
           numColumns={2}
-          renderItem={({item}) => <OrderCardCC item={item} />}
+          renderItem={({item}) => (
+            <OrderCardCC item={item} images={item.images} />
+          )}
         />
       </View>
       <ModalLoadingTrans

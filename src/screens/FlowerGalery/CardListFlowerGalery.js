@@ -122,6 +122,7 @@ import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
 const windowWidth = Dimensions.get('window').width;
 
 const CardListFlowerGallery = ({item, onPress, id}) => {
+  console.log(item.store.phone, 'item/////.....///');
   return (
     <View style={styles.cardContainer}>
       <View style={{height: 120, width: 155}}>
@@ -129,8 +130,10 @@ const CardListFlowerGallery = ({item, onPress, id}) => {
       </View>
       <TouchableOpacity onPress={onPress} style={styles.infoContainer}>
         <Text style={styles.title}>{item.name}</Text>
+        <Text style={styles.title}>{item.category}</Text>
+        <Text style={styles.title}>{item.store.phone}</Text>
         {/* <Text style={styles.title}>{item.id}</Text> */}
-        <Text style={styles.price}>{item.price}</Text>
+        {/* <Text style={styles.price}>{item.price}</Text> */}
       </TouchableOpacity>
     </View>
   );
@@ -169,7 +172,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   title: {
-    fontSize: 18,
+    fontSize: 14,
     color: colors.black,
     marginBottom: 2,
   },
@@ -177,6 +180,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.primaryColor,
     fontFamily: fonts.bold,
+  },
+  imageGalleryContainer: {
+    // Adjust the height as needed
+  },
+  swiper: {height: 200, flex: 1},
+  slide: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  pagination: {
+    marginBottom: -55,
+  },
+  infoContainer: {
+    padding: 10,
   },
 });
 

@@ -99,7 +99,7 @@ const CreateStore = () => {
         location: area,
         lat: markerData.latitude,
         lng: markerData.longitude,
-        name: selectedItem.name,
+        name: selectedItem?.name,
       });
       const resp = res.data;
       if (res.data.result) {
@@ -122,16 +122,24 @@ const CreateStore = () => {
       setLoading(false);
     }
   };
+  // const validateForm = useMemo(() => {
+  //   const isShopName = formData.shopName?.length > 0;
+  //   const isShopLocation = area?.length > 0;
+  //   const isCategory = selectedItem?.length > 0;
 
-  const validateForm = useMemo(() => {
-    const isShopName = formData.shopName;
-    const isShopLocation = formData.shopLocation;
-    const isCategory = formData.category;
+  //   return isShopName && isShopLocation && isCategory;
+  // }, [formData || area || selectedItem?.name]);
 
-    // const isPasswordValidConfirm = formData.confirmPassword.length > 5;
+  const [validF, setValidF] = useState(true);
+  useMemo(() => {
+    const isFormFilled =
+      formData.shopName.trim() &&
+      formData.shopName?.length > 0 &&
+      selectedItem &&
+      area?.length > 0;
 
-    return isShopName && isShopLocation;
-  }, [formData]);
+    setValidF(!isFormFilled);
+  }, [formData, selectedItem, area]);
   return (
     <Layout>
       {/* <FocusAwareStatusBar
@@ -222,7 +230,7 @@ const CreateStore = () => {
             loading ? <ActivityIndicator color={colors.white} /> : 'Continue'
           }
           defaultStyle={{marginVertical: 20}}
-          disabled={!validateForm || loading}
+          disabled={validF}
           onPress={handleAddStore}
         />
       </ScrollView>

@@ -207,8 +207,8 @@ const ShareAddress = () => {
           />
           <Circle
             center={{
-              latitude: initialRegion.latitude,
-              longitude: initialRegion.longitude,
+              latitude: initialRegion?.latitude,
+              longitude: initialRegion?.longitude,
             }}
             radius={1000}
             fillColor="rgba(0, 128, 255, 0.2)"

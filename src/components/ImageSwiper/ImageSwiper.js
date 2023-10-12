@@ -38,6 +38,7 @@ const ImageSwiper = ({images, imageStyle}) => {
           <Image
             source={{uri: `https://locatestudent.com/tanatos/upload/${image}`}}
             style={{
+              border: 10,
               borderRadius: 10,
               // borderBottomRightRadius: 10,
               width: '100%',

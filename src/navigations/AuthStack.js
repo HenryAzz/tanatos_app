@@ -32,7 +32,6 @@ const AuthStack = () => {
           headerShown: false,
           animation: 'slide_from_right',
         }}>
-        <Stack.Screen name="CreateStore" component={CreateStore} />
         <Stack.Screen name="Onbording" component={Onbording} />
         <Stack.Screen name="Wellcome" component={Wellcome} />
         <Stack.Screen name="Signup" component={Signup} />
@@ -44,6 +43,7 @@ const AuthStack = () => {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="OTPChangeReset" component={OTPChangeReset} />
         <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
+        <Stack.Screen name="CreateStore" component={CreateStore} />
         {/* <Stack.Screen name="AddFlowers" component={AddFlowers} /> */}
       </Stack.Navigator>
     </>
