@@ -18,11 +18,12 @@ const lightgreen = '#41CE8E';
 const ButtonColor = '#111C30';
 const backgroundColor = '#f6f7f9';
 const textGray = '#A2A2A2';
+const red = '#DA3955';
 
 export default {
   primaryColor,
   textGray,
-
+  red,
   backgroundColor,
   ButtonColor,
   create,

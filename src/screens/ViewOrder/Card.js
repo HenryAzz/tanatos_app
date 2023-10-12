@@ -39,7 +39,7 @@ const Card = ({price, size, image, title, onPress}) => {
         <View
           style={{
             flexDirection: 'row',
-            alignItems: 'center',
+            // alignItems: 'center',
           }}>
           <Image
             style={{
@@ -52,7 +52,8 @@ const Card = ({price, size, image, title, onPress}) => {
           />
           <View
             style={{
-              justifyContent: 'space-around',
+              // alignItems: 'flex-start',
+              // justifyContent: 'space-around',
               // height: 100,
               paddingHorizontal: 10,
               // width: '62%',
@@ -61,7 +62,7 @@ const Card = ({price, size, image, title, onPress}) => {
               borderBottomRightRadius: 10,
               // elevation: 4,
             }}>
-            <View>
+            <View style={{alignItems: 'flex-start'}}>
               <Text style={[style.font22Re, {fontFamily: fonts.bold}]}>
                 {price}
               </Text>
@@ -69,7 +70,7 @@ const Card = ({price, size, image, title, onPress}) => {
                 {title}
               </Text>
 
-              <View
+              {/* <View
                 style={{
                   flexDirection: 'row',
                   alignContent: 'center',
@@ -102,7 +103,7 @@ const Card = ({price, size, image, title, onPress}) => {
                   }}>
                   <Text style={[style.font22Re, {color: colors.white}]}>+</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
 
             {/* {onPress ? (

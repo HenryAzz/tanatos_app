@@ -40,6 +40,12 @@ import AddNews from '../screens/AddNews';
 import AddNewsIcon from '../assets/images/svg/AddNewsIcon';
 import HomeStore from '../screens/HomeStore';
 import BallanceScreen from '../screens/Ballance';
+import HomeFuneral from '../screens/Home/HomeFuneral';
+import FuneralUpdate from '../screens/FuneralUpdate';
+import Map from '../screens/Map';
+import AddFlowers from '../screens/AddFlowers';
+import Catalog from '../screens/Catalog';
+import SpecificStoreGalery from '../screens/FlowerGalery/SpecificStoreGalery';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -50,6 +56,7 @@ const MainStack = () => {
         headerShown: false,
         animation: 'slide_from_right',
       }}>
+      {/* <Stack.Screen name="AppStack" component={HomeFuneral} /> */}
       <Stack.Screen name="AppStack" component={AppStack} />
 
       <Stack.Screen
@@ -75,6 +82,14 @@ const MainStack = () => {
       <Stack.Screen name="PaymentConfirmOtp" component={PaymentConfirmOtp} />
       <Stack.Screen name="ViewOrder" component={ViewOrder} />
       <Stack.Screen name="AddNewss" component={AddNews} />
+      <Stack.Screen name="HomeFuneral" component={HomeFuneral} />
+      <Stack.Screen name="FuneralUpdate" component={FuneralUpdate} />
+      <Stack.Screen name="Map" component={Map} />
+      <Stack.Screen name="AddFlowers" component={AddFlowers} />
+      <Stack.Screen
+        name="SpecificStoreGalery"
+        component={SpecificStoreGalery}
+      />
     </Stack.Navigator>
   );
 };
@@ -109,7 +124,8 @@ const AppStack = () => {
       initialRouteName="Home">
       <Tab.Screen
         name="Home"
-        component={account_Type === 'Store' ? HomeStore : Home}
+        component={account_Type === 'store' ? HomeStore : Home}
+        // component={HomeFuneral}
         options={{
           tabBarIcon: ({focused}) =>
             focused ? <HomeIcon focused={focused} /> : <HomeIcon />,
@@ -121,12 +137,12 @@ const AppStack = () => {
                 color: focused ? colors.primaryColor : colors.gray,
                 fontFamily: focused ? fonts.medium : fonts.regular,
               }}>
-              Home
+              {account_Type === 'funeral' ? 'Add Obituaries' : 'Home'}
             </Text>
           ),
         }}
       />
-      {account_Type === 'Customer' || account_Type === 'Store' ? (
+      {account_Type === 'customer' || account_Type === 'store' ? (
         <Tab.Screen
           name="MyOrder"
           component={MyOrder}
@@ -148,7 +164,7 @@ const AppStack = () => {
           }}
         />
       ) : null}
-      {account_Type === 'Customer' && (
+      {account_Type === 'customer' && (
         <Tab.Screen
           name="Favorite"
           component={Favorite}
@@ -170,10 +186,11 @@ const AppStack = () => {
           }}
         />
       )}
-      {account_Type === 'Funeral' && (
+      {account_Type === 'funeral' && (
         <Tab.Screen
           name="AddFuneral"
-          component={AddFuneralScreen}
+          // component={AddFuneralScreen}
+          component={HomeFuneral}
           options={{
             tabBarIcon: ({focused}) =>
               focused ? <AddFuneral focused={focused} /> : <AddFuneral />,
@@ -192,10 +209,11 @@ const AppStack = () => {
           }}
         />
       )}
-      {account_Type === 'Store' && (
+      {account_Type === 'store' && (
         <Tab.Screen
           name="AddNews"
-          component={AddNews}
+          // component={AddNews}
+          component={Catalog}
           options={{
             tabBarIcon: ({focused}) =>
               focused ? <AddNewsIcon focused={focused} /> : <AddNewsIcon />,
@@ -207,7 +225,7 @@ const AppStack = () => {
                   color: focused ? colors.primaryColor : color,
                   fontFamily: focused ? fonts.medium : fonts.regular,
                 }}>
-                Add News
+                Catalog
               </Text>
             ),
           }}

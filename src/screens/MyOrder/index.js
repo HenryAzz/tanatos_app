@@ -67,7 +67,7 @@ const MyOrder = () => {
             ),
           }}
         />
-        {account_Type === 'Store' && (
+        {account_Type === 'store' && (
           <Top.Screen
             name="New Orders"
             component={NewOrder}

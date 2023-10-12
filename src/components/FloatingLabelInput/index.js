@@ -228,9 +228,9 @@ const AppTextInput = ({
   customStyle,
   customInputStyle,
   secureTextEntry,
-  isSecureText,
+  isSecureTextConfirm,
   setIsSecureText,
-  setIsSecureText1,
+  setIsSecureTextConfirm,
   password,
   multiline,
   otherPops,
@@ -260,13 +260,16 @@ const AppTextInput = ({
         }}>
         <TextInput
           placeholder={placeholder}
+          // placeholderTextColor={colors.black}
           onEndEditing={onEndEditing}
           value={value}
           onChangeText={onChangeText}
           style={[
             styles.textInput,
             customInputStyle,
+
             {
+              color: colors.black,
               textAlignVertical: multiline ? 'top' : 'center',
               height: multiline ? 150 : 45,
             },

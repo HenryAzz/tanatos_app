@@ -18,6 +18,8 @@ import AppTextInput from '../../components/FloatingLabelInput';
 import {BaseButton} from '../../components/BaseButton';
 import AuthHeader from '../../components/AuthHeader';
 import ApiRequest from '../../Services/ApiRequest';
+import {ToastMessage} from '../../utils/Toast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -62,23 +64,25 @@ const Login = () => {
 
       // console.log(resp);
       console.log(res.data);
-      if (resp === true) {
-        // const id = res?.data?.user_id;
-        // const company_id = res?.data?.company_id;
-        // const user_type = res?.data?.user_type;
-        // await AsyncStorage.setItem('user_id', id);
+      if (resp) {
+        const id = res?.data?.user_id;
+        const account_Type = res?.data?.user_type;
+        await AsyncStorage.setItem('user_id', id);
+        await AsyncStorage.setItem('account_Type', account_Type);
 
         // setAccountType(user_type);
-        navigation.reset({index: 0, routes: [{name: 'AppStack'}]});
+        // alert('okkkklogin done');
+        ToastMessage(res.data?.message);
         setDisable(false);
         setIsLoading(false);
-        // setFormData({email: '', password: ''});
-        // } else {
-        // ToastMessage(res.data?.message);
-        // setIsLoading(false);
+        navigation.navigate('MainStack');
+        setFormData({email: '', password: ''});
       } else {
+        ToastMessage(res.data?.message);
         setIsLoading(false);
-        setDisable(false);
+        // } else {
+        //   setIsLoading(false);
+        //   setDisable(false);
       }
     } catch (error) {
       setIsLoading(false);
@@ -100,6 +104,7 @@ const Login = () => {
           <View style={{marginTop: 0}}>
             <AppTextInput
               titleText={'Email'}
+              keyboardType="email-address"
               placeholder={'Email'}
               value={formData.email}
               onChangeText={text => handleInputChange('email', text)}
@@ -117,13 +122,13 @@ const Login = () => {
 
             <TouchableOpacity
               onPress={() => {
-                // navigation.navigate('ForgetPassword');
+                navigation.navigate('ForgotPassword');
               }}>
               <Text
                 style={[
                   style.font14Re,
                   {
-                    color: colors.gray3,
+                    color: colors.gray,
                     fontFamily: fonts.bold,
                     textAlign: 'right',
                     // top: -6,

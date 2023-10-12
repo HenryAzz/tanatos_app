@@ -16,7 +16,7 @@ deviceHeight;
 const HomeCard = ({
   name,
   image,
-
+  url,
   profile,
 
   time,
@@ -25,6 +25,7 @@ const HomeCard = ({
 
   navigation,
 }) => {
+  const cleanedPath = image.replace(/^"(.*)"$/, '$1');
   const [account_Type, setAccountType] = useState();
   const getAccountType = async () => {
     const account_Type = await AsyncStorage.getItem('account_Type');
@@ -51,7 +52,7 @@ const HomeCard = ({
       // }
       >
         <Image
-          source={image}
+          source={{uri: url + cleanedPath}}
           style={{
             height: 120,
             width: 230,
@@ -91,7 +92,7 @@ const HomeCard = ({
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
-          {account_Type === 'Customer' && (
+          {/* {account_Type === 'customer' && (
             <View
               style={{
                 flexDirection: 'row',
@@ -116,8 +117,8 @@ const HomeCard = ({
                 Shop Roses
               </Text>
             </View>
-          )}
-          {account_Type !== 'Customer'}
+          )} */}
+          {account_Type !== 'customer'}
           <Text></Text>
           <Text
             style={{

@@ -9,6 +9,7 @@ import TrackingCard from './TrackingCard';
 import a from '../../assets/images/order/a.png';
 import b from '../../assets/images/order/b.png';
 import c from '../../assets/images/order/c.png';
+import cc from '../../assets/images/order/cc.png';
 import yes from '../../assets/images/order/yes.png';
 import yes1 from '../../assets/images/order/yesone.png';
 const OrderTrack = ({route}) => {
@@ -40,7 +41,7 @@ const OrderTrack = ({route}) => {
         <TrackingCard title={'Preparing'} source={a} source1={yes} />
 
         <TrackingCard title={'delivering'} source={b} source1={yes} />
-        <TrackingCard title={'Completed'} source={c} source1={yes1} />
+        <TrackingCard title={'Completed'} source={cc} source1={yes} />
       </View>
       <View
         style={{

@@ -1,4 +1,11 @@
-import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React from 'react';
 import Layout from '../../components/Layout';
 import style from '../../assets/css/style';
@@ -6,6 +13,8 @@ import {colors, fonts} from '../../constraints';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import FuneralCard from '../Home/FuneralCard';
 import {ScrollView} from 'react-native';
+import Edit from '../../assets/Edit1.png';
+import {devWidth} from '../../constraints/Dimentions';
 
 const AddFuneralScreen = () => {
   return (
@@ -28,13 +37,24 @@ const AddFuneralScreen = () => {
             alignSelf: 'center',
           }}>
           <View style={{width: '66%', left: 10}}>
-            <Text
-              style={[
-                style.font24Re,
-                {fontFamily: fonts.bold, color: colors.white},
-              ]}>
-              TANATOS
-            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                // width: devWidth,
+              }}>
+              <Text
+                style={[
+                  style.font24Re,
+                  {fontFamily: fonts.bold, color: colors.white},
+                ]}>
+                TANATOS
+              </Text>
+              <TouchableOpacity style={{position: 'absolute'}}>
+                <Image source={Edit} style={{height: 20, width: 20}} />
+              </TouchableOpacity>
+            </View>
             <Text
               style={[
                 style.font12Re,
@@ -43,7 +63,7 @@ const AddFuneralScreen = () => {
                   color: colors.white,
                 },
               ]}>
-              ESQUELAS ONLINE
+              {/* ESQUELAS ONLINE */}
             </Text>
             <Text
               style={[

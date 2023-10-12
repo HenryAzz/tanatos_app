@@ -15,7 +15,7 @@ deviceHeight;
 const FuneralCard = ({
   name,
   image,
-
+  url,
   profile,
 
   time,
@@ -24,6 +24,7 @@ const FuneralCard = ({
 
   navigation,
 }) => {
+  const cleanedPath = image.replace(/^"(.*)"$/, '$1');
   return (
     <View
       // onPress={() => navigation.navigate('Details', {name})}
@@ -44,7 +45,7 @@ const FuneralCard = ({
       // }
       >
         <Image
-          source={image}
+          source={{uri: url + cleanedPath}}
           style={{
             height: 100,
             width: 150,

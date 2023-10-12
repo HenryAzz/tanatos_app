@@ -50,7 +50,8 @@ const Headers = {
 const ApiRequest = async data => {
   // This will remove authorization and store id
   const result = await axios.post(
-    'https://locatestudent.com/calculator_app/api.php',
+    'https://locatestudent.com/tanatos/api.php',
+    // 'https://locatestudent.com/calculator_app/api.php',
     // 'https://7tracking.com/circle_charge/api.php',
     data,
     {

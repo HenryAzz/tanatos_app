@@ -70,7 +70,7 @@ const Account = () => {
     },
     {
       id: 9,
-      navigate: 'Logout',
+      navigate: 'login',
       title: 'Logout',
       image: require('../../assets/images/AccountImg/Out.png'),
     },
@@ -121,12 +121,21 @@ const Account = () => {
   // }, [isLoading]);
 
   const filteredData = data.filter(item => {
-    if (account_Type === 'Store') {
+    if (account_Type === 'store') {
       return item.navigate !== 'PaymentMethod' && item.navigate !== 'FAQs';
     } else {
       return item.navigate !== 'Balance';
     }
   });
+  const handleNavigate = async item => {
+    if (item.title === 'Logout') {
+      navigation.replace('AuthStack');
+    } else
+      navigation.navigate('AppStackWithoutBottom', {
+        screen: item.navigate,
+      });
+    item.title === 'Logout' ? await AsyncStorage.removeItem('user_id') : null;
+  };
   return (
     <Layout>
       <FocusAwareStatusBar
@@ -145,11 +154,7 @@ const Account = () => {
               title={item.title}
               source={item.image}
               type={account_Type}
-              onPress={() =>
-                navigation.navigate('AppStackWithoutBottom', {
-                  screen: item.navigate,
-                })
-              }
+              onPress={() => handleNavigate(item)}
             />
           )}
         />

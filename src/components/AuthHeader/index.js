@@ -14,7 +14,9 @@ const AuthHeader = ({title, subTitle, defaultStyle}) => {
           style={{height: 50, width: 50, left: -12}}
         />
       </TouchableOpacity>
-      <Text style={[style.font24Re, {fontFamily: fonts.bold}]}>{title}</Text>
+      <Text style={[style.font24Re, {fontFamily: fonts.bold, marginTop: 10}]}>
+        {title}
+      </Text>
       <Text style={[style.font14Re, {color: '#A2A2A2'}]}>{subTitle}</Text>
     </View>
   );

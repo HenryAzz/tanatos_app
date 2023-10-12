@@ -19,7 +19,7 @@ const dataRoses = [
 
 const ListOfSearches = () => {
   const [selectedItem, setSelectedItem] = useState(dataRoses[0].id);
-  console.log(selectedItem, 'select');
+  // console.log(selectedItem, 'select');
   const renderItem = ({item}) => {
     const isActive = selectedItem === item.id;
 

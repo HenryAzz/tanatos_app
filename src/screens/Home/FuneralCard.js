@@ -29,7 +29,7 @@ const FuneralCard = ({status}) => {
         <Image
           source={require('../../assets/Resrose.png')}
           style={{
-            height: 130,
+            height: 100,
             // resizeMode: 'center',
             width: 100,
             borderTopLeftRadius: 10,
@@ -52,24 +52,6 @@ const FuneralCard = ({status}) => {
             Send your support and a message of encouragement to the family and
             friends
           </Text>
-          {status === 'home' ? (
-            <TouchableOpacity
-              style={{
-                borderColor: colors.primaryColor,
-                borderWidth: 1,
-                width: 80,
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 6,
-                borderRadius: 20,
-                marginTop: 10,
-                alignSelf: 'flex-end',
-              }}>
-              <Text style={[style.font16Re, {color: colors.primaryColor}]}>
-                Check
-              </Text>
-            </TouchableOpacity>
-          ) : null}
         </View>
       </View>
     </View>

@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Layout from '../../components/Layout';
 
 import {useNavigation} from '@react-navigation/native';
@@ -12,6 +12,9 @@ const ViewOrder = ({route}) => {
   const navigation = useNavigation();
   const item = route?.params?.item;
   // console.log(route.params.item, 'item');
+  useEffect(() => {
+    setTimeout(() => navigation.navigate('Home'), 3000);
+  }, []);
   return (
     <Layout>
       <AppHeader title={'E-Receipt'} defaultStyle={{marginBottom: 30}} />

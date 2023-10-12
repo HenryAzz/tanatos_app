@@ -47,10 +47,10 @@ const Wellcome = () => {
         We are preparing something great for you!
       </Text>
       <BaseButton
-        title={'Continue as Customer'}
+        title={'Continue as customer'}
         onPress={async () => {
-          await AsyncStorage.setItem('account_Type', 'Customer');
-          navigation.navigate('Signup', {account_Type: 'Customer'});
+          await AsyncStorage.setItem('account_Type', 'customer');
+          navigation.navigate('Signup', {account_Type: 'customer'});
         }}
         defaultStyle={{
           backgroundColor: colors.white,
@@ -62,8 +62,8 @@ const Wellcome = () => {
       <BaseButton
         title={'Continue as Store'}
         onPress={async () => {
-          await AsyncStorage.setItem('account_Type', 'Store');
-          navigation.navigate('Signup', {account_Type: 'Store'});
+          await AsyncStorage.setItem('account_Type', 'store');
+          navigation.navigate('Signup', {account_Type: 'store'});
         }}
         defaultStyle={{
           backgroundColor: colors.white,
@@ -75,8 +75,8 @@ const Wellcome = () => {
       <BaseButton
         title={'Continue as Funeral Home'}
         onPress={async () => {
-          await AsyncStorage.setItem('account_Type', 'Funeral');
-          navigation.navigate('Signup', {account_Type: 'Funeral'});
+          await AsyncStorage.setItem('account_Type', 'funeral');
+          navigation.navigate('Signup', {account_Type: 'funeral'});
         }}
         defaultStyle={{
           backgroundColor: colors.white,

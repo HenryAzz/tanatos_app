@@ -45,7 +45,7 @@ const MyOrderCard = ({price, address, image, title, onPress, status}) => {
         />
         <View
           style={{
-            justifyContent: 'space-around',
+            justifyContent: 'space-evenly',
             height: 100,
             paddingHorizontal: 10,
             width: '62%',
@@ -63,10 +63,24 @@ const MyOrderCard = ({price, address, image, title, onPress, status}) => {
             <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
               {title}
             </Text>
+
             <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
               {price}
             </Text>
           </View>
+
+          <Text
+            style={[
+              style.font8Re,
+              {
+                color: colors.textGray,
+
+                fontFamily: fonts.medium,
+                color: '#8C8994',
+              },
+            ]}>
+            132, My Street, Kingston, New York 12401
+          </Text>
           <Text
             style={[
               style.font10Re,

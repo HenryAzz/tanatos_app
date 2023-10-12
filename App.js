@@ -4,6 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import RNBootSplash from 'react-native-bootsplash';
 import RootNavigation from './src/navigations';
 
+import {RootSiblingParent} from 'react-native-root-siblings';
 const App = () => {
   useEffect(() => {
     RNBootSplash.hide({fade: true}); // fade with 220ms default duration
@@ -11,9 +12,11 @@ const App = () => {
   }, []);
 
   return (
-    <NavigationContainer>
-      <RootNavigation />
-    </NavigationContainer>
+    <RootSiblingParent>
+      <NavigationContainer>
+        <RootNavigation />
+      </NavigationContainer>
+    </RootSiblingParent>
   );
 };
 

@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import Layout from '../../components/Layout';
 import AppHeader from '../../components/AppHeader/AppHeader';
@@ -10,16 +10,43 @@ import Cardpic1 from '../../assets/images/svg/Card1.svg';
 import Icon from 'react-native-vector-icons/Ionicons';
 import TextCard from './TextCard';
 import {useNavigation} from '@react-navigation/native';
+import {devWidth} from '../../constraints/Dimentions';
 const CheckoutScreen = () => {
   const navigation = useNavigation();
   return (
     <Layout>
       <AppHeader title={'Checkout'} />
+
+      {/* <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}> */}
       <View style={{alignSelf: 'flex-start', width: '100%'}}>
         <Text
           style={[style.font18Re, {fontFamily: fonts.bold, marginBottom: 10}]}>
           Shipping Address
         </Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: colors.white,
+            elevation: 4,
+            shadowColor: colors.elev,
+            borderWidth: 1,
+            borderColor: colors.line,
+            justifyContent: 'space-between',
+            padding: 10,
+            borderRadius: 10,
+            marginVertical: 14,
+            // marginBottom: 30,
+          }}>
+          <Text style={[style.font16Re]}>Home delivery</Text>
+          <Icon
+            name="chevron-down-outline"
+            size={22}
+            color={colors.primaryColor}
+          />
+        </View>
         <View
           style={{
             backgroundColor: colors.white,
@@ -112,15 +139,15 @@ const CheckoutScreen = () => {
               borderWidth: 1,
               borderColor: colors.line,
               justifyContent: 'space-between',
-              padding: 14,
+              padding: 10,
               borderRadius: 10,
               marginVertical: 14,
               marginBottom: 30,
             }}>
-            <Text style={[style.font18Re]}>My Wallet</Text>
+            <Text style={[style.font16Re]}>My Wallet</Text>
             <Icon
               name="chevron-forward-outline"
-              size={24}
+              size={22}
               color={colors.primaryColor}
             />
           </View>
@@ -129,6 +156,7 @@ const CheckoutScreen = () => {
           <TextCard title={'Summay:'} price={'127$'} />
         </View>
       </View>
+      {/* </ScrollView> */}
       <BaseButton
         title={'Continue to Payment'}
         onPress={() => navigation.navigate('ShippingAddress')}

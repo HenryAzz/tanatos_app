@@ -8,6 +8,7 @@ const OrderCardCC = ({item}) => {
     <View
       style={{
         width: 158,
+        // height: 100,
         backgroundColor: colors.white,
         elevation: 5,
         shadowColor: colors.elev,
@@ -30,26 +31,29 @@ const OrderCardCC = ({item}) => {
 
           alignItems: 'center',
           paddingBottom: 10,
+          paddingLeft: 10,
           //   paddingVertical: 10,
-          justifyContent: 'space-around',
+          justifyContent: 'space-between',
         }}>
         <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
           {item.price}
         </Text>
-        <TouchableOpacity
-          style={{
-            borderWidth: 1,
-            borderColor: colors.primaryColor,
-            width: 90,
-            height: 30,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 6,
-          }}>
-          <Text style={[style.font14Re, {color: colors.primaryColor}]}>
-            {item.status}
-          </Text>
-        </TouchableOpacity>
+        {item.status ? (
+          <TouchableOpacity
+            style={{
+              borderWidth: 1,
+              borderColor: colors.primaryColor,
+              width: 90,
+              height: 30,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 6,
+            }}>
+            <Text style={[style.font14Re, {color: colors.primaryColor}]}>
+              {item.status}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     </View>
   );

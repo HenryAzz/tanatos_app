@@ -27,7 +27,7 @@ const AppHeader = ({title, subTitle, defaultStyle}) => {
         />
       </TouchableOpacity>
       <Text style={[style.font20Re, {fontFamily: fonts.medium}]}>{title}</Text>
-      <Text> </Text>
+      {title === 'Add Obituaries' ? <Text>Skip</Text> : <Text> </Text>}
     </View>
   );
 };

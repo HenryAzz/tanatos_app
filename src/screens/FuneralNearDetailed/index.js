@@ -1,12 +1,19 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Layout from '../../components/Layout';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import {FlatList} from 'react-native';
 import BottomCard from '../Home/BottomCard';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ApiRequest from '../../Services/ApiRequest';
+import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 
 const FuneralNearDetailed = () => {
+  const route = useRoute();
+  const initialRegion = route?.params?.initialRegion;
+
+  console.log('initialRegion', initialRegion);
   const navigation = useNavigation();
   const data = [
     {
@@ -85,6 +92,46 @@ const FuneralNearDetailed = () => {
       subtitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
     },
   ];
+
+  const [account_Type, setAccountType] = useState();
+  const getAccountType = async () => {
+    const account_Type = await AsyncStorage.getItem('account_Type');
+    setAccountType(account_Type);
+    console.log('a', account_Type);
+  };
+  useEffect(() => {
+    getAccountType();
+  }, []);
+  const [loading, setLoading] = useState(false);
+  const [funeralData, setFuneralData] = useState();
+
+  const handleGetFuneralData = async () => {
+    try {
+      setShowLoadingModal(true);
+      setLoading(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'funerals',
+        lat: initialRegion?.latitude,
+        lng: initialRegion?.longitude,
+        // lat: '',
+        // lng: '',
+      });
+      const resp = res.data.data;
+      // console.log(resp, 'resp////////////////////////');
+      setFuneralData(resp);
+      setShowLoadingModal(false);
+    } catch (err) {
+      setShowLoadingModal(false);
+    } finally {
+      setShowLoadingModal(false);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    handleGetFuneralData();
+  }, []);
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
   return (
     <Layout>
       <AppHeader
@@ -95,14 +142,21 @@ const FuneralNearDetailed = () => {
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        data={data}
+        data={funeralData}
         renderItem={({item}) => (
           <BottomCard
-            title={item.title}
-            subtitle={item.subtitle}
-            onPress={() => navigation.navigate('FuneralDetailedPage')}
+            title={item.name}
+            subtitle={item.description}
+            account_Type={account_Type}
+            onPress1={() =>
+              navigation.navigate('FuneralDetailedPage', {item: item})
+            }
           />
         )}
+      />
+      <ModalLoadingTrans
+        showLoadingModal={showLoadingModal}
+        setShowLoadingModal={setShowLoadingModal}
       />
     </Layout>
   );

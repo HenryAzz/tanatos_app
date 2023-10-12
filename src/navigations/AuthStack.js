@@ -10,6 +10,11 @@ import AddNews from '../screens/AddNews';
 import Login from '../screens/Login';
 import FocusAwareStatusBar from '../components/FocusAwareStatusBar/FocusAwareStatusBar';
 import {colors} from '../constraints';
+import ForgotPassword from '../screens/ForgotPassword';
+import OTPChangeReset from '../screens/ForgotPassword/OTPChangeReset';
+import UpdatePassword from '../screens/ForgotPassword/UpdatePassword';
+import CreateStore from '../screens/CreateStore';
+import AddFlowers from '../screens/AddFlowers';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +32,7 @@ const AuthStack = () => {
           headerShown: false,
           animation: 'slide_from_right',
         }}>
+        <Stack.Screen name="CreateStore" component={CreateStore} />
         <Stack.Screen name="Onbording" component={Onbording} />
         <Stack.Screen name="Wellcome" component={Wellcome} />
         <Stack.Screen name="Signup" component={Signup} />
@@ -35,6 +41,10 @@ const AuthStack = () => {
         <Stack.Screen name="OtpVerified" component={OtpVerified} />
         <Stack.Screen name="ShareAddress" component={ShareAddress} />
         <Stack.Screen name="AddNews" component={AddNews} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="OTPChangeReset" component={OTPChangeReset} />
+        <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
+        {/* <Stack.Screen name="AddFlowers" component={AddFlowers} /> */}
       </Stack.Navigator>
     </>
   );

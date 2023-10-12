@@ -13,9 +13,14 @@ import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
 import {BakcButton} from '../../assets/images/svg';
 import {BaseButton} from '../../components/BaseButton';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import MapView, {Circle, Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
+import {ToastMessage} from '../../utils/Toast';
+import moment from 'moment';
+import ApiRequest from '../../Services/ApiRequest';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ActivityIndicator} from 'react-native';
 // Function to get permission for location
 const requestLocationPermission = async () => {
   try {
@@ -41,19 +46,39 @@ const requestLocationPermission = async () => {
   }
 };
 const ShareAddress = () => {
+  const route = useRoute();
+  const {account_Type, phone, formData, city, country, state, area} =
+    route?.params;
   const navigation = useNavigation();
-  const [initialRegion, setInitialRegion] = useState({
-    latitude: 0, // Set default latitude
-    longitude: 0, // Set default longitude
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
+
+  console.log(
+    state,
+    'country',
+    country,
+    'city',
+    city,
+    'area',
+    area,
+    ';;;;;;;;;;;',
+  );
   const [mapViewLayout, setMapViewLayout] = useState(null);
 
-  console.log(initialRegion, 'initialRegion');
+  // console.log(formData.starting_date, 'starting_date');
   useEffect(() => {
     getLocation();
   }, []);
+
+  // const dateString = ;
+  const formatDate = dateString => {
+    console.log(dateString, 'date');
+    const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
+    // const formattedDate = new Intl.DateTimeFormat('en-US', options).format(
+    //   new Date(dateString),
+    // );
+    const formattedDate = moment(dateString).format('YYYY-MM-DD');
+    return formattedDate;
+  };
+  // console.log(formatDate(formData.starting_date), 'options');
 
   const getLocation = async () => {
     const result = await requestLocationPermission();
@@ -62,8 +87,8 @@ const ShareAddress = () => {
         position => {
           const {latitude, longitude} = position.coords;
           setInitialRegion({
-            latitude,
-            longitude,
+            latitude: latitude,
+            longitude: longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           });
@@ -75,12 +100,69 @@ const ShareAddress = () => {
       );
     }
   };
+  const [initialRegion, setInitialRegion] = useState(null);
+  console.log(formData, 'formdata');
+  const [isLoading, setIsLoading] = useState();
+  const handleSignup = async () => {
+    // console.log(initialRegion.latitude, 'initialRegion.latitude');
+    // console.log(initialRegion.longitude, 'initialRegion.latitude');
 
+    try {
+      setIsLoading(true);
+      const res = await ApiRequest({
+        type: 'register',
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        address: area,
+        city: account_Type === 'store' ? '' : city,
+        state: account_Type === 'store' ? '' : state,
+        country: account_Type === 'store' ? '' : country,
+        // zipcode: account_Type === 'store' ? '' : '123',
+        phone: phone,
+        lat: initialRegion.latitude,
+        lng: initialRegion.longitude,
+        dob: formatDate(formData.starting_date),
+        gender: formData.gender,
+        user_type: account_Type,
+      });
+      const resp = res?.data.result;
+      console.log(res?.data, 'register/////////////////');
+
+      const userIdString = JSON.stringify(res?.data?.user_id);
+
+      // let user_Id = JSON.stringify(id);
+      if (resp) {
+        console.log('register donesss////', res.data);
+        await AsyncStorage.setItem('user_id', userIdString);
+        // await AsyncStorage.setItem('account_Type', account_Type);
+
+        ToastMessage(res?.data?.message);
+        // navigation.navigate('MainStack', {account_Type: account_Type});
+        if (account_Type === 'store' || account_Type === 'funeral') {
+          navigation.navigate('CreateStore', {
+            phone: phone,
+            account_Type: account_Type,
+          });
+          setIsLoading(false);
+        } else {
+          navigation.navigate('MainStack', {screen: 'AppStack'});
+          setIsLoading(false);
+        }
+      } else {
+        //  show message
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+    }
+  };
   return (
     <Layout>
       <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={{alignSelf: 'flex-start', marginBottom: 40}}>
+        style={{alignSelf: 'flex-start', marginBottom: 10}}>
         <Image
           source={require('../../assets/BackButtonp.png')}
           style={{height: 60, width: 60, left: -12}}
@@ -108,7 +190,7 @@ const ShareAddress = () => {
 
       {initialRegion ? (
         <MapView
-          style={{height: 200, width: 300, marginVertical: 30}}
+          style={{height: 400, width: 300, marginVertical: 30}}
           initialRegion={{
             latitude: initialRegion.latitude,
             longitude: initialRegion.longitude,
@@ -147,11 +229,14 @@ const ShareAddress = () => {
         </Text>
       )}
       <BaseButton
-        title={'Continue'}
+        title={
+          isLoading ? <ActivityIndicator color={colors.white} /> : 'Continue'
+        }
         defaultStyle={{}}
-        onPress={() => navigation.navigate('MainStack', {screen: 'AppStack'})}
+        disabled={isLoading || !initialRegion}
+        onPress={handleSignup}
       />
-      <BaseButton
+      {/* <BaseButton
         title={'Skip'}
         defaultStyle={{
           backgroundColor: colors.backgroundColor,
@@ -162,7 +247,7 @@ const ShareAddress = () => {
         textStyle={{
           color: colors.primaryColor,
         }}
-      />
+      /> */}
     </Layout>
   );
 };

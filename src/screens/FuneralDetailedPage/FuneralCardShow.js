@@ -1,12 +1,22 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
 
-const FuneralCardShow = ({title, subTitle, img1, img2}) => {
+const FuneralCardShow = ({
+  title,
+  subTitle,
+  img1,
+  img2,
+  date,
+  time,
+  onPress,
+}) => {
   return (
     <View
       style={{
+        // height: 60,
+        paddingVertical: 10,
         backgroundColor: '#F5F5F5',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -17,7 +27,7 @@ const FuneralCardShow = ({title, subTitle, img1, img2}) => {
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <View
             style={{
-              height: 25,
+              height: 30,
               width: 25,
               backgroundColor: colors.white,
               borderRadius: 20,
@@ -36,7 +46,7 @@ const FuneralCardShow = ({title, subTitle, img1, img2}) => {
             />
           </View>
 
-          <View style={{marginHorizontal: 10, marginTop: 10}}>
+          <View style={{marginHorizontal: 10, marginTop: 10, width: '50%'}}>
             <Text
               style={[
                 style.font12Re,
@@ -44,9 +54,10 @@ const FuneralCardShow = ({title, subTitle, img1, img2}) => {
                   color: colors.primaryColor,
                   fontFamily: fonts.bold,
                   marginTop: 10,
+                  // width: '100%',
                 },
               ]}
-              numberOfLines={1}>
+              numberOfLines={2}>
               {title}
             </Text>
             <Text
@@ -54,7 +65,7 @@ const FuneralCardShow = ({title, subTitle, img1, img2}) => {
                 style.font10Re,
                 {
                   color: '#A2A2A2',
-                  paddingVertical: 10,
+                  paddingVertical: 5,
                   fontFamily: fonts.medium,
                 },
               ]}>
@@ -68,21 +79,46 @@ const FuneralCardShow = ({title, subTitle, img1, img2}) => {
               style.font14Re,
               {color: '#A2A2A2', fontFamily: fonts.bold},
             ]}>
-            23/05/2023
+            {date}
           </Text>
           <Text
             style={[
               style.font14Re,
               {color: '#A2A2A2', fontFamily: fonts.bold},
             ]}>
-            03:00 PM
+            {time}
           </Text>
+          <TouchableOpacity
+            onPress={onPress}
+            style={{
+              height: 24,
+              marginTop: 5,
+              backgroundColor: colors.primaryColor,
+              width: 70,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              borderRadius: 12,
+              // paddingVertical: 10,
+            }}>
+            <Image
+              source={require('../../assets/Mapshow.png')}
+              style={{height: 12, width: 12}}
+            />
+            <Text
+              style={[
+                style.font12Re,
+                {color: colors.white, fontFamily: fonts.bold},
+              ]}>
+              Map
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
       <Image
         source={img2}
         style={{
-          height: 120,
+          height: 130,
           width: 120,
           borderTopRightRadius: 10,
           borderBottomRightRadius: 10,

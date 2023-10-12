@@ -1,9 +1,18 @@
-import {StyleSheet, FlatList, Text, View} from 'react-native';
-import React from 'react';
+import {
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  Modal,
+  Text,
+  View,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import Layout from '../../components/Layout';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import HomeCard from '../Home/HomeCard';
 import FuneralCard from './FuneralCard';
+import ApiRequest from '../../Services/ApiRequest';
+import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 
 const FuneralDetailed = () => {
   const FuneralData = [
@@ -120,6 +129,32 @@ const FuneralDetailed = () => {
       time: '9 Hours ago',
     },
   ];
+  const [funeralData, setFuneralData] = useState();
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleGetFuneralData = async () => {
+    try {
+      setLoading(true);
+      setShowLoadingModal(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'funerals',
+      });
+      const resp = res.data.data;
+      // console.log(resp, 'resp////////////////////////');
+      setFuneralData(resp);
+      setShowLoadingModal(false);
+    } catch (err) {
+    } finally {
+      setShowLoadingModal(false);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    handleGetFuneralData();
+  }, []);
+
   return (
     <Layout>
       <AppHeader title={'Funeral Homes'} defaultStyle={{marginBottom: 30}} />
@@ -129,19 +164,23 @@ const FuneralDetailed = () => {
         numColumns={2}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        data={FuneralData}
+        data={funeralData}
         renderItem={({item}) => (
           // <View style={{backgroundColor: 'red'}}>
           <FuneralCard
-            name={item.title}
-            subTitle={item.subTitle}
+            name={item.name}
+            subTitle={item.description}
             image={item.image}
-            profile={item.profile}
+            url={item.url}
             time={item.time}
             // navigation={props.navigation}
           />
           // </View>
         )}
+      />
+      <ModalLoadingTrans
+        showLoadingModal={showLoadingModal}
+        setShowLoadingModal={setShowLoadingModal}
       />
     </Layout>
   );
