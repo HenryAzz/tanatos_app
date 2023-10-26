@@ -1,21 +1,52 @@
-import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import 'intl-pluralrules';
 
-import RNBootSplash from 'react-native-bootsplash';
 import RootNavigation from './src/navigations';
+import i18n from './src/Lenguage/i18n';
+import {I18nextProvider} from 'react-i18next';
+import RNBootSplash from 'react-native-bootsplash';
+import messaging from '@react-native-firebase/messaging';
 
 import {RootSiblingParent} from 'react-native-root-siblings';
+import {
+  notificationListioner,
+  requestUserPermission,
+} from './src/Services/Notification';
+import {useTranslation} from 'react-i18next';
 const App = () => {
-  useEffect(() => {
-    RNBootSplash.hide({fade: true}); // fade with 220ms default duration
-    // RNBootSplash.hide(); // Set the duration to 50 milliseconds (0.05 seconds)
-  }, []);
+  // const {t, i18n} = useTranslation();
 
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('message ....', JSON.stringify(remoteMessage));
+      alert(
+        'A new Notification message arrived!',
+        JSON.stringify(remoteMessage),
+      );
+    });
+
+    return unsubscribe;
+  }, []);
+  useEffect(() => {
+    requestUserPermission();
+    notificationListioner();
+
+    // getLocation()
+  }, []);
+  const [loading, setLoading] = useState();
+  useEffect(() => {
+    setTimeout(() => {
+      RNBootSplash.hide({fade: true});
+    }, 1000);
+  }, []);
   return (
     <RootSiblingParent>
-      <NavigationContainer>
-        <RootNavigation />
-      </NavigationContainer>
+      <I18nextProvider i18n={i18n}>
+        <NavigationContainer>
+          <RootNavigation />
+        </NavigationContainer>
+      </I18nextProvider>
     </RootSiblingParent>
   );
 };

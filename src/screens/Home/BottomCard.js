@@ -11,9 +11,11 @@ const BottomCard = ({
   onPress1,
   onPressDel,
   account_Type,
+  gotoDetailePage,
 }) => {
   return (
-    <View
+    <TouchableOpacity
+      onPress={account_Type === 'customer' ? onPress1 : gotoDetailePage}
       style={{
         alignSelf: 'center',
         backgroundColor: colors.white,
@@ -68,7 +70,7 @@ const BottomCard = ({
       </Text>
 
       <TouchableOpacity
-        onPress={onPress1}
+        onPress={account_Type === 'customer' ? onPress1 : gotoDetailePage}
         style={{
           borderWidth: 1,
           borderColor: colors.primaryColor,
@@ -84,7 +86,7 @@ const BottomCard = ({
           {account_Type === 'customer' ? 'see obituary' : 'Learn More'}
         </Text>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 

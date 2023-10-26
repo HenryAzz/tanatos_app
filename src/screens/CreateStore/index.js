@@ -19,9 +19,10 @@ import {colors, constants, fonts} from '../../constraints';
 import style from '../../assets/css/style';
 import ApiRequest from '../../Services/ApiRequest';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import Toast from 'react-native-root-toast';
 import {ToastMessage} from '../../utils/Toast';
+import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 
 const CreateStore = () => {
   const route = useRoute();
@@ -37,6 +38,7 @@ const CreateStore = () => {
 
   const [visible, setVisible] = useState(false);
   const [area, setArea] = useState('');
+  const [name, setNAme] = useState('');
   const [city, setCity] = useState('City');
   const [state, setState] = useState('');
   const [markerData, setMarkerData] = useState({latitude: '', longitude: ''});
@@ -60,11 +62,12 @@ const CreateStore = () => {
 
   const [catData, setCatData] = useState();
   const [selectedItem, setSelectedItem] = useState(null);
-
+  const isFocused = useIsFocused();
   // console.log(catData, 'cat');
   // console.log(selectedItem, 'selectedItemcat');
 
   const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
   const [isModalVisibleCat, setModalVisibleCat] = useState(false);
   const handleGetCatData = async () => {
     try {
@@ -89,29 +92,30 @@ const CreateStore = () => {
     const user_id = await AsyncStorage.getItem('user_id');
     // console.log(user_id, 'user_id');
     try {
-      setLoading(true);
+      setLoading1(true);
       const res = await ApiRequest({
         type: 'add_data',
         table_name: 'stores',
         user_id: user_id,
-        cat_id: selectedItem.id,
+        // cat_id: selectedItem.id,
         phone: phone,
         location: area,
         lat: markerData.latitude,
         lng: markerData.longitude,
-        name: selectedItem?.name,
+        // category: selectedItem?.name,
+        name: formData.shopName,
       });
       const resp = res.data;
       if (res.data.result) {
-        console.log(resp, 'create sore');
+        // console.log(resp, 'create sore');
         ToastMessage(res?.data?.message);
-        await AsyncStorage.setItem('store_id', toString(resp?.id));
-        navigation.navigate('AddNews', {
-          id: resp?.id,
-          account_Type: account_Type,
-        });
-        // navigation.navigate('AddNews');
-        setLoading(false);
+        await AsyncStorage.setItem('store_id', JSON.stringify(resp.id));
+        // navigation.navigate('Home', {
+        //   id: resp?.id,
+        //   account_Type: account_Type,
+        // });
+        navigation.navigate('UploadPhoto', {id: resp?.id});
+        setLoading1(false);
       } else {
         ToastMessage(res?.data?.message);
         console.log('errrr');
@@ -119,27 +123,98 @@ const CreateStore = () => {
     } catch (err) {
       console.log(err, 'errrr');
     } finally {
-      setLoading(false);
+      setLoading1(false);
     }
   };
-  // const validateForm = useMemo(() => {
-  //   const isShopName = formData.shopName?.length > 0;
-  //   const isShopLocation = area?.length > 0;
-  //   const isCategory = selectedItem?.length > 0;
+  const handleUpdateStore = async () => {
+    const user_id = await AsyncStorage.getItem('user_id');
+    // console.log(user_id, 'user_id');
+    try {
+      setLoading1(true);
+      const res = await ApiRequest({
+        type: 'update_data',
+        table_name: 'stores',
+        id: user_id,
 
-  //   return isShopName && isShopLocation && isCategory;
-  // }, [formData || area || selectedItem?.name]);
+        location: area,
+
+        name: formData.shopName,
+      });
+      const resp = res.data;
+      if (res.data.result) {
+        // console.log(resp, 'create sore');
+        ToastMessage(res?.data?.message);
+        console.log(resp?.id, 'resp?.id');
+        await AsyncStorage.setItem('store_id', JSON.stringify(resp.id));
+        // navigation.navigate('HomeStore', {
+        //   id: resp?.id,
+        //   account_Type: account_Type,
+        // });
+        // navigation.navigate('AppStackWithoutBottom', {screen: 'UploadPhoto'});
+        navigation.navigate('MainStack', {
+          screen: 'UploadPhoto',
+          params: {
+            id: resp?.id,
+          },
+        });
+        setLoading1(false);
+      } else {
+        ToastMessage(res?.data?.message);
+        console.log('errrr');
+      }
+    } catch (err) {
+      console.log(err, 'errrr');
+    } finally {
+      setLoading1(false);
+    }
+  };
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
 
   const [validF, setValidF] = useState(true);
   useMemo(() => {
     const isFormFilled =
       formData.shopName.trim() &&
       formData.shopName?.length > 0 &&
-      selectedItem &&
       area?.length > 0;
 
     setValidF(!isFormFilled);
-  }, [formData, selectedItem, area]);
+  }, [formData, area]);
+
+  const [checkStore, setCheckStore] = useState();
+  const handleCheckStore = async () => {
+    if (!isFocused) return;
+    try {
+      setShowLoadingModal(true);
+      const user_id = await AsyncStorage.getItem('user_id');
+      console.log(user_id);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'stores',
+        user_id: user_id,
+        own: 1,
+        // last_id:""
+      });
+      const resp = res.data.data;
+      console.log(resp[0].name, 'resp/// get store data');
+      setShowLoadingModal(false);
+      setCheckStore(resp);
+      setFormData({
+        shopName: resp[0].name,
+        shopLocation: resp[0]?.location,
+      });
+
+      setArea(resp[0]?.location);
+    } catch (err) {
+      setShowLoadingModal(false);
+    } finally {
+      setShowLoadingModal(false);
+    }
+  };
+  useEffect(() => {
+    handleCheckStore();
+    // handleGetCatData();
+  }, [isFocused]);
+  // console.log(checkStore[0]?.name, 'checkStore/////////');
   return (
     <Layout>
       {/* <FocusAwareStatusBar
@@ -162,12 +237,18 @@ const CreateStore = () => {
           onChangeText={text => handleInputChange('shopName', text)}
         />
         {/* <AppTextInput
+          titleText={'Shop Location'}
+          placeholder={'Shop Location'}
+          value={formData.shopLocation}
+          onChangeText={text => handleInputChange('shopLocation', text)}
+        /> */}
+        {/* <AppTextInput
           titleText={'Category'}
           placeholder={'Category'}
           value={formData.category}
           onChangeText={text => handleInputChange('category', text)}
         /> */}
-        <Text
+        {/* <Text
           style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
           Category
         </Text>
@@ -183,7 +264,7 @@ const CreateStore = () => {
             paddingLeft: 10,
           }}>
           <Text> {selectedItem ? selectedItem.name : 'Category'}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {/* <PhoneNumberInput
           title={'PHONE'}
           valid={valid}
@@ -201,7 +282,10 @@ const CreateStore = () => {
         /> */}
 
         <Text
-          style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
+          style={[
+            style.font16Re,
+            {fontFamily: fonts.medium, marginTop: 5, marginBottom: 3},
+          ]}>
           Location
         </Text>
         <TouchableOpacity
@@ -217,6 +301,7 @@ const CreateStore = () => {
           }}>
           <Text> {area ? area : 'Enter Store Location'}</Text>
         </TouchableOpacity>
+        {/* <Text>{checkStore[0].location}</Text> */}
 
         {/* <AppTextInput
           titleText={'Address'}
@@ -224,16 +309,38 @@ const CreateStore = () => {
           value={formData.shopLocation}
           onChangeText={text => handleInputChange('shopLocation', text)}
         /> */}
-
-        <BaseButton
-          title={
-            loading ? <ActivityIndicator color={colors.white} /> : 'Continue'
-          }
-          defaultStyle={{marginVertical: 20}}
-          disabled={validF}
-          onPress={handleAddStore}
-        />
+        {checkStore ? (
+          <BaseButton
+            title={
+              loading1 ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                'Update Store'
+              )
+            }
+            defaultStyle={{marginVertical: 20}}
+            disabled={validF || loading1}
+            onPress={handleUpdateStore}
+          />
+        ) : (
+          <BaseButton
+            title={
+              loading1 ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                'Add Store'
+              )
+            }
+            defaultStyle={{marginVertical: 20}}
+            disabled={validF || loading1}
+            onPress={handleAddStore}
+          />
+        )}
       </ScrollView>
+      <ModalLoadingTrans
+        showLoadingModal={showLoadingModal}
+        setShowLoadingModal={setShowLoadingModal}
+      />
       <Modal
         visible={isModalVisible}
         animationType="slide"
@@ -314,7 +421,7 @@ const CreateStore = () => {
           />
         </View>
       </Modal>
-      <Modal
+      {/* <Modal
         visible={isModalVisibleCat}
         animationType="slide"
         transparent={true}
@@ -362,7 +469,7 @@ const CreateStore = () => {
             />
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </Layout>
   );
 };

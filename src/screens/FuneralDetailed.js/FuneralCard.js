@@ -6,13 +6,14 @@ import {
   View,
   Image,
 } from 'react-native';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 
 import {deviceHeight, deviceWidth} from '../../constraints/Dimentions';
 import {colors, fonts} from '../../constraints';
 import style from '../../assets/css/style';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 deviceHeight;
-const FuneralCard = ({
+const HomeCard = ({
   name,
   image,
   url,
@@ -25,18 +26,29 @@ const FuneralCard = ({
   navigation,
 }) => {
   const cleanedPath = image.replace(/^"(.*)"$/, '$1');
+  const [account_Type, setAccountType] = useState();
+  const getAccountType = async () => {
+    const account_Type = await AsyncStorage.getItem('account_Type');
+    setAccountType(account_Type);
+    // console.log('a', account_Type);
+  };
+  useEffect(() => {
+    getAccountType();
+  }, []);
   return (
     <View
       // onPress={() => navigation.navigate('Details', {name})}
       style={[
         styling,
         {
-          //   paddingTop: 14,
-          //   width: '50%',
-
-          //   margin: 4,
-          paddingHorizontal: 10,
-          marginVertical: 10,
+          // backgroundColor: 'red',
+          // flex: 1,
+          // width: '100%',
+          height: 220,
+          // paddingTop: 14,
+          // width: 230,
+          // margin: 4,
+          marginRight: 10,
         },
       ]}>
       <TouchableOpacity
@@ -48,7 +60,7 @@ const FuneralCard = ({
           source={{uri: url + cleanedPath}}
           style={{
             height: 100,
-            width: 150,
+            width: 160,
             borderTopRightRadius: 20,
             borderTopLeftRadius: 20,
             elevation: 10,
@@ -61,38 +73,75 @@ const FuneralCard = ({
         style={{
           backgroundColor: colors.white,
           padding: 10,
-          width: 150,
+          width: 160,
+          height: 100,
           borderBottomRightRadius: 20,
           borderBottomLeftRadius: 20,
           elevation: 10,
           shadowColor: colors.elev,
           //   backgroundColor: 'red',
         }}>
-        <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>{name}</Text>
+        <Text style={[style.font18Re, {fontFamily: fonts.bold}]}>{name}</Text>
         <Text
+          numberOfLines={2}
           style={{
             color: '#A2A2A2',
-            marginVertical: 6,
+            marginVertical: 10,
             fontFamily: fonts.regular,
             fontSize: 11,
           }}>
           {subTitle}
         </Text>
 
-        <Text
+        <View
           style={{
-            color: colors.primaryColor,
-            paddingLeft: 6,
-            fontFamily: fonts.regular,
-            fontSize: 11,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
           }}>
-          {time}
-        </Text>
+          {/* {account_Type === 'customer' && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+              <Image
+                source={profile}
+                style={{
+                  height: 30,
+                  width: 30,
+                  borderRadius: 15,
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.primaryColor,
+                  paddingLeft: 6,
+                  fontFamily: fonts.regular,
+                  fontSize: 11,
+                }}>
+                Shop Roses
+              </Text>
+            </View>
+          )} */}
+          {account_Type !== 'customer'}
+          <Text></Text>
+          <Text
+            style={{
+              color: colors.primaryColor,
+              paddingLeft: 6,
+              fontFamily: fonts.regular,
+              fontSize: 11,
+            }}>
+            {time}
+          </Text>
+        </View>
       </View>
     </View>
   );
 };
 
-export default FuneralCard;
+export default HomeCard;
 
 const styles = StyleSheet.create({});

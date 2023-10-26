@@ -5,8 +5,15 @@ import {BaseButton} from '../../components/BaseButton';
 import PaymentDone from '../../assets/PaymentDone.svg';
 import style from '../../assets/css/style';
 import {fonts} from '../../constraints';
-const BalanceModal = ({isModalVisible, setModalVisible}) => {
+import {useTranslation} from 'react-i18next';
+const BalanceModal = ({
+  isModalVisible,
+  setModalVisible,
+  total_amount,
+  dataTosend,
+}) => {
   const navigation = useNavigation();
+  const {t} = useTranslation();
   return (
     <Modal
       transparent={true}
@@ -38,35 +45,42 @@ const BalanceModal = ({isModalVisible, setModalVisible}) => {
               style.font24Re,
               {fontFamily: fonts.medium, marginVertical: 20},
             ]}>
-            Order Successful!!!
+            {t('Order Successful!!!')}
           </Text>
           <Text
             style={[
               style.font16Re,
               {fontFamily: fonts.medium, marginBottom: 40},
             ]}>
-            You have successfully made order
+            {t('You have successfully made order')}
           </Text>
-          <BaseButton
+          {/* <BaseButton
             title={'View Order'}
             onPress={() => {
               setModalVisible(false);
-              navigation.navigate('MainStack', {screen: 'ViewOrder'});
+              navigation.navigate('MainStack', {
+                screen: 'ViewOrder',
+                params: {
+                  total_amount: total_amount,
+                  dataTosend: dataTosend,
+                },
+              });
             }}
             defaultStyle={{marginVertical: 0, borderRadius: 30, width: '60%'}}
-          />
+          /> */}
           <BaseButton
-            title={'Home'}
+            title={'Goto Home'}
             onPress={() => {
               setModalVisible(false);
               navigation.navigate('MainStack', {screen: 'AppStack'});
             }}
             defaultStyle={{marginVertical: 20, borderRadius: 30, width: '60%'}}
           />
-          <BaseButton
-            title={'Book to News'}
+          {/* <BaseButton
+            title={'Go Back'}
+            onPress={() => navigation.goBack()}
             defaultStyle={{marginVertical: 0, borderRadius: 30, width: '60%'}}
-          />
+          /> */}
           {/* <View style={styles.flexDirectionRow}>
                   
             <Pressable

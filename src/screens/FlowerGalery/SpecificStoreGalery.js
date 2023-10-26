@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Button,
+  RefreshControl,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Layout from '../../components/Layout';
@@ -22,12 +23,15 @@ import ApiRequest from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import {BaseButton} from '../../components/BaseButton';
 import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
+import {t} from 'i18next';
+import {useTranslation} from 'react-i18next';
+import OrderNotFound from '../MyOrder/OrderNotFound';
 
 const SpecificStoreGalery = ({route}) => {
   const store_id = route.params.item.store_id;
   const item = route.params.item;
-  const item1 = route.params.item1;
-  console.log(store_id, 'itme item');
+  const FuneralItemData = route.params.item1;
+  console.log(FuneralItemData.id, 'FuneralItemData item');
   const navigation = useNavigation();
   const cardData = [
     {
@@ -79,7 +83,7 @@ const SpecificStoreGalery = ({route}) => {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
 
   const handleGetStoreData = async () => {
-    console.log(1);
+    // console.log(1);
     try {
       setShowLoadingModal(true);
       setLoading(true);
@@ -99,6 +103,45 @@ const SpecificStoreGalery = ({route}) => {
       setLoading(false);
     }
   };
+  const handleGetStoreDataMore = async () => {
+    // console.log(1);
+    try {
+      // setShowLoadingModal(true);
+      setBottomLoader(true);
+      // setLoading(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'stores_gallery',
+        store_id: store_id,
+        last_id: storeData[storeData.length - 1]?.id,
+      });
+      const resp = res.data.data;
+      if (resp && resp != undefined && resp.length > 0) {
+        setBottomLoader(false);
+        setStoreData([...storeData, ...resp]);
+      }
+      // console.log(resp, 'resp flower');
+      // setStoreData(resp);
+      // setShowLoadingModal(false);
+    } catch (err) {
+    } finally {
+      setBottomLoader(false);
+      // setShowLoadingModal(false);
+      setLoading(false);
+    }
+  };
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    handleGetStoreData();
+  };
+  const [bottomLoader, setBottomLoader] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const handleScroll = () => {
+    setScrolled(true);
+  };
+
   useEffect(() => {
     handleGetStoreData();
   }, []);
@@ -120,21 +163,38 @@ const SpecificStoreGalery = ({route}) => {
       setSelectedIds([...selectedIds, list.id]);
     }
   };
-  console.log(dataTosend);
 
-  // useEffect(() => {
-  // console.log(dataTosend.length);
-  // }, [dataTosend]);
+  const [SelectedData, setSelectedData] = useState([]);
+  const extractData = data => {
+    const extractedData = data.map(item => ({
+      id: item?.id,
+      name: item?.name,
+      price: item?.price,
+      images: item?.images,
+      quanitity: 1,
+      store_id: dataTosend[0]?.store_id,
+      funeral_id: FuneralItemData?.id,
+    }));
+    setSelectedData(extractedData);
+  };
+  console.log(SelectedData, 'SelectedData');
+  useEffect(() => {
+    extractData(dataTosend);
+  }, [dataTosend]);
+  const {t} = useTranslation();
   return (
     <Layout>
-      <AppHeader title={'Westside Florist'} defaultStyle={{marginBottom: 30}} />
+      <AppHeader
+        title={t('Westside Florist')}
+        defaultStyle={{marginBottom: 30}}
+      />
       <View style={{alignSelf: 'flex-start'}}>
         <Text style={[style.font24Re, {fontFamily: fonts.bold}]}>
-          Flowers Gallery
+          {t('Flowers Gallery')}
         </Text>
         <Text
           style={{color: '#A2A2A2', fontFamily: fonts.regular, fontSize: 15}}>
-          Choose the best bouquet
+          {t('Choose the best bouquet')}
         </Text>
       </View>
       {/* <Button title="click" onPress={() => handleGetStoreData()} /> */}
@@ -156,55 +216,91 @@ const SpecificStoreGalery = ({route}) => {
           marginBottom: 30,
         }}>
         <Icon name="search" size={24} color="#8C8C8C" />
-        <TextInput placeholder="Search" style={{width: '95%'}} />
+        <TextInput placeholder={t('Search')} style={{width: '95%'}} />
       </View>
       {/* <ScrollView> */}
-      <FlatList
-        data={storeData}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={item => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
-        numColumns={2}
-        renderItem={({item}) => {
-          //   console.log(item.image, 'jj');
-          return (
-            <View
-              style={[
-                styles.cardContainer,
-                {
-                  borderColor: selectedIds.includes(item.id)
-                    ? '#663399'
-                    : 'white',
-                  borderWidth: 1,
-                },
-              ]}>
-              <View style={{height: 120, width: 155}}>
-                <ImageSwiper images={item.images} />
+      <View style={{alignSelf: 'flex-start', flex: 1, width: '100%'}}>
+        <FlatList
+          data={storeData}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={item => item.id.toString()}
+          onScroll={handleScroll}
+          onEndReached={scrolled ? handleGetStoreDataMore : null}
+          ListEmptyComponent={
+            <OrderNotFound
+              title={'Not Found data'}
+              subtitle={"You don't have any at this time"}
+            />
+          }
+          ListFooterComponent={
+            bottomLoader && (
+              <ActivityIndicatot size="large" color={colors.gray} />
+            )
+          }
+          ListFooterComponentStyle={{
+            width: '100%',
+            marginTop: 5,
+          }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          contentContainerStyle={styles.listContainer}
+          numColumns={2}
+          renderItem={({item}) => {
+            //   console.log(item.image, 'jj');
+            return (
+              <View
+                style={[
+                  styles.cardContainer,
+                  {
+                    // backgroundColor: 'red',
+                    width: 150,
+                    borderColor: selectedIds.includes(item.id)
+                      ? '#663399'
+                      : 'white',
+                    borderWidth: 1,
+                  },
+                ]}>
+                <View style={{height: 120}}>
+                  <ImageSwiper
+                    images={item.images}
+                    imageStyle={{
+                      borderBottomRightRadius: 0,
+                      borderBottomLeftRadius: 0,
+                    }}
+                  />
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    handleSelect(item);
+                  }}
+                  style={styles.infoContainer}>
+                  <Text style={styles.title}>{item.name}</Text>
+                  <Text style={styles.price}>{item.price}</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={() => {
-                  handleSelect(item);
-                }}
-                style={styles.infoContainer}>
-                <Text style={styles.title}>{item.name}</Text>
-                <Text style={styles.price}>{item.price}</Text>
-              </TouchableOpacity>
-            </View>
-            // <CardListFlowerGalery
-            //   item={item}
-            //   onPress={() => navigation.navigate('EReceipt', {item: item})}
-            //   // onPress={() => setModalVisible(true)}
-            // />
-          );
-        }}
-      />
+              // <Text>sdas</Text>
+              // <CardListFlowerGalery
+              //   item={item}
+              //   onPress={() => navigation.navigate('EReceipt', {item: item})}
+              //   // onPress={() => setModalVisible(true)}
+              // />
+            );
+          }}
+        />
+      </View>
       {/* </ScrollView> */}
       <BaseButton
-        title={'Continue'}
+        title={t('Continue')}
         defaultStyle={{marginVertical: 20}}
+        disabled={SelectedData.length === 0}
         onPress={() =>
-          navigation.navigate('EReceipt', {item: item, dataTosend: dataTosend})
+          navigation.navigate('EReceipt', {
+            item: item,
+            dataTosend: SelectedData,
+            FuneralItemData: FuneralItemData,
+          })
         }
       />
       <BuyNowb
@@ -232,7 +328,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     marginBottom: 15,
-    width: '47%',
+    // width: '47%',
     marginHorizontal: 5,
   },
   title: {

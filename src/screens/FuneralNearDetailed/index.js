@@ -1,4 +1,10 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Layout from '../../components/Layout';
 import AppHeader from '../../components/AppHeader/AppHeader';
@@ -8,6 +14,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ApiRequest from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
+import OrderNotFound from '../MyOrder/OrderNotFound';
 
 const FuneralNearDetailed = () => {
   const route = useRoute();
@@ -128,6 +135,44 @@ const FuneralNearDetailed = () => {
       setLoading(false);
     }
   };
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    handleGetCatData();
+  };
+  const [bottomLoader, setBottomLoader] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const handleScroll = () => {
+    setScrolled(true);
+  };
+
+  const handleGetFuneralDataMore = async () => {
+    try {
+      setBottomLoader(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'funerals',
+        lat: initialRegion?.latitude,
+        lng: initialRegion?.longitude,
+        last_id: funeralData[funeralData.length - 1]?.id,
+        // lat: '',
+        // lng: '',
+      });
+      const resp = res.data.data;
+      setBottomLoader(false);
+      if (resp && resp != undefined && resp.length > 0) {
+        setFuneralData([...funeralData, ...resp]);
+      }
+      // setFuneralData(resp);
+      // setShowLoadingModal(false);
+    } catch (err) {
+      setBottomLoader(false);
+      // setShowLoadingModal(false);
+    } finally {
+      setBottomLoader(false);
+    }
+  };
   useEffect(() => {
     handleGetFuneralData();
   }, []);
@@ -142,6 +187,24 @@ const FuneralNearDetailed = () => {
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
+        onScroll={handleScroll}
+        onEndReached={scrolled ? handleGetFuneralDataMore : null}
+        ListEmptyComponent={
+          <OrderNotFound
+            title={'Not Found data'}
+            subtitle={"You don't have any at this time"}
+          />
+        }
+        ListFooterComponent={
+          bottomLoader && <ActivityIndicator size="large" color={colors.gray} />
+        }
+        ListFooterComponentStyle={{
+          width: '100%',
+          marginTop: 5,
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         data={funeralData}
         renderItem={({item}) => (
           <BottomCard

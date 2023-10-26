@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "64200764536",
+    "project_id": "tanatos-3e6db",
+    "storage_bucket": "tanatos-3e6db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64200764536:android:bb6144bf80e8dcfc71918d",
+        "android_client_info": {
+          "package_name": "com.tanatos.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARpmemSo_2znc5RNaiDlgb0BkliwOrt-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

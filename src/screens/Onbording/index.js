@@ -10,13 +10,14 @@ import SVG3 from '../../assets/onbord3.png';
 import {colors, fonts} from '../../constraints';
 import {BaseButton} from '../../components/BaseButton';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
+
+import {useTranslation} from 'react-i18next';
 const Onboarding = () => {
   const dots = [];
   const [progress, setProgress] = useState(1);
   const navigation = useNavigation();
   const swiperRef = useRef(null);
   const [imageIndex, setImageIndex] = useState(0);
-
   const handleSlideChange = index => {
     setProgress(index + 1);
     setImageIndex(index);
@@ -28,6 +29,8 @@ const Onboarding = () => {
       swiperRef.current.scrollBy(1);
     }
   };
+  const {t, i18n} = useTranslation();
+
   return (
     <View style={{flex: 1, backgroundColor: colors.white}}>
       <FocusAwareStatusBar
@@ -68,10 +71,8 @@ const Onboarding = () => {
               <Image source={SVG1} style={styles.img} />
             </View>
             <View style={[styles.textContainer, {marginTop: 100}]}>
-              <Text style={styles.title}>Flowers</Text>
-              <Text style={styles.subTitleStyles}>
-                Envío de flores a tanatorios
-              </Text>
+              <Text style={styles.title}>{t('onbord1')}</Text>
+              <Text style={styles.subTitleStyles}>{t('onbord2')}</Text>
             </View>
           </View>
           <View style={[styles.wrapper, {alignItems: 'center'}]}>
@@ -79,9 +80,9 @@ const Onboarding = () => {
               <Image source={SVG2} style={styles.img} />
             </View>
             <View style={[styles.textContainer, {marginTop: 100}]}>
-              <Text style={styles.title}>Flowers</Text>
+              <Text style={styles.title}>{t('onbord1')}</Text>
               <Text style={[styles.subTitleStyles, {width: 230}]}>
-                Esquelas 24 horas
+                {t('onbord3')}
               </Text>
             </View>
           </View>
@@ -90,10 +91,8 @@ const Onboarding = () => {
               <Image source={SVG3} style={styles.img} />
             </View>
             <View style={[styles.textContainer, {marginTop: 100}]}>
-              <Text style={styles.title}>Flowers</Text>
-              <Text style={styles.subTitleStyles}>
-                Pick a flower on Earth and you move the farthest star.
-              </Text>
+              <Text style={styles.title}>{t('onbord1')}</Text>
+              <Text style={styles.subTitleStyles}>{t('onbord4')}</Text>
             </View>
           </View>
         </Swiper>
@@ -109,6 +108,7 @@ const Onboarding = () => {
           title={imageIndex === 1 ? 'Continue' : "Let's Started"}
           defaultStyle={{marginVertical: 30, width: '80%', borderRadius: 40}}
           onPress={handleButtonPress}
+          // onPress={() => toggleLanguage()}
         />
       </View>
     </View>

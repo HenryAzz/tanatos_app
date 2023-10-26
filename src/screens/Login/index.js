@@ -3,6 +3,7 @@ import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -20,7 +21,8 @@ import AuthHeader from '../../components/AuthHeader';
 import ApiRequest from '../../Services/ApiRequest';
 import {ToastMessage} from '../../utils/Toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import DeviceInfo from 'react-native-device-info';
+import {useTranslation} from 'react-i18next';
 const Login = () => {
   const navigation = useNavigation();
   const [formData, setFormData] = useState({
@@ -51,6 +53,29 @@ const Login = () => {
     setDisable(!isData);
   }, [formData]);
 
+  // type:add_data
+  // table_name:devices
+  // user_id:
+  // deviceRid:
+  // deviceModel:
+  // devicePlatform:
+  const handleFcm = async id => {
+    const token = await AsyncStorage.getItem('token');
+
+    let model = DeviceInfo.getModel();
+    const _data = {
+      type: 'add_devices',
+      table_name: 'devices',
+      user_id: id,
+      devicePlatform: Platform.OS,
+      deviceRid: token,
+      deviceModel: model,
+    };
+    console.log(_data, 'data');
+    const res = await ApiRequest(_data);
+    console.log(res.data, 'respon device');
+  };
+
   const handleLogin = async () => {
     try {
       setIsLoading(true);
@@ -61,19 +86,23 @@ const Login = () => {
         password: formData.password,
       });
       const resp = res?.data?.result;
+      const store_id = JSON.stringify(res?.data?.store_id);
 
-      // console.log(resp);
-      console.log(res.data);
+      console.log(res.data, 'data login get');
       if (resp) {
+        handleFcm(res?.data?.user_id);
         const id = res?.data?.user_id;
         const account_Type = res?.data?.user_type;
         await AsyncStorage.setItem('user_id', id);
         await AsyncStorage.setItem('account_Type', account_Type);
+        if (store_id) {
+          await AsyncStorage.setItem('store_id', store_id);
+        }
 
-        // setAccountType(user_type);
-        // alert('okkkklogin done');
         ToastMessage(res.data?.message);
         setDisable(false);
+        // const storeID = await AsyncStorage.getItem('store_id');
+        // console.log(storeID);
         setIsLoading(false);
         navigation.navigate('MainStack');
         setFormData({email: '', password: ''});
@@ -91,27 +120,26 @@ const Login = () => {
     }
   };
 
+  const {t, i18n} = useTranslation();
+
   return (
     <>
       <View style={{backgroundColor: colors.white, paddingHorizontal: 14}}>
-        <AuthHeader
-          title={"Let's Login"}
-          subTitle={'Enter Your detail below to Login'}
-        />
+        <AuthHeader title={t('login1')} subTitle={t('login2')} />
       </View>
       <Layout>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{marginTop: 0}}>
             <AppTextInput
-              titleText={'Email'}
+              titleText={t('Email')}
               keyboardType="email-address"
-              placeholder={'Email'}
+              placeholder={t('Email')}
               value={formData.email}
               onChangeText={text => handleInputChange('email', text)}
             />
             <AppTextInput
-              titleText={'Password'}
-              placeholder={'Password'}
+              titleText={t('Password')}
+              placeholder={t('Password')}
               value={formData.password}
               onChangeText={text => handleInputChange('password', text)}
               secureTextEntry={isSecureText}
@@ -122,6 +150,7 @@ const Login = () => {
 
             <TouchableOpacity
               onPress={() => {
+                // navigation.navigate('Phone');
                 navigation.navigate('ForgotPassword');
               }}>
               <Text
@@ -134,7 +163,7 @@ const Login = () => {
                     // top: -6,
                   },
                 ]}>
-                Forgot Password?
+                {t('login3')}
               </Text>
             </TouchableOpacity>
             <View style={{marginVertical: 10, marginTop: 30}}>
@@ -143,7 +172,7 @@ const Login = () => {
                   isLoading ? (
                     <ActivityIndicator color={colors.white} />
                   ) : (
-                    'Login'
+                    t('Login')
                   )
                 }
                 onPress={handleLogin}
@@ -167,11 +196,12 @@ const Login = () => {
                     fontFamily: fonts.medium,
                   },
                 ]}>
-                Don't have an account ?
+                {t("Don't have an account ?")}
               </Text>
               <TouchableOpacity
                 style={{marginTop: 3}}
                 onPress={() => {
+                  // toggleLanguage();
                   navigation.navigate('Wellcome');
                 }}>
                 <Text
@@ -184,7 +214,7 @@ const Login = () => {
                       paddingLeft: 5,
                     },
                   ]}>
-                  Signup
+                  {t('Signup')}
                 </Text>
               </TouchableOpacity>
             </View>

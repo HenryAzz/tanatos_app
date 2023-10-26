@@ -109,6 +109,7 @@ import {
   ScrollView,
   TextInput,
   Modal,
+  RefreshControl,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -125,12 +126,14 @@ import {colors, constants, fonts} from '../../constraints';
 import {ToastMessage} from '../../utils/Toast';
 import ApiRequest from '../../Services/ApiRequest';
 import AppTextInput from '../../components/FloatingLabelInput';
+import {useMemo} from 'react';
+import OrderNotFound from '../MyOrder/OrderNotFound';
 const AddFlowers = props => {
   const navigation = useNavigation();
   const route = useRoute();
-  const {id, account_Type} = route.params;
+  // const {id, account_Type} = route.params;
 
-  console.log(id, 'acc', account_Type);
+  // console.log(id, 'acc', account_Type);
   const [images, setImages] = useState([]);
   const [imagesToSend, setImagesToSend] = useState([]);
   const [disabled, setdisabled] = useState(true);
@@ -239,7 +242,7 @@ const AddFlowers = props => {
   const [isModalVisibleCat, setModalVisibleCat] = useState(false);
   const handleGetCatData = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const res = await ApiRequest({
         type: 'get_data',
         table_name: 'categories',
@@ -249,7 +252,30 @@ const AddFlowers = props => {
       // console.log(resp, 'resp');
     } catch (err) {
     } finally {
-      setLoading(false);
+      // setLoading(false);
+    }
+  };
+  const handleGetCatDataMore = async () => {
+    try {
+      // setLoading(true);
+      setBottomLoader(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'categories',
+        last_id: catData[catData.length - 1]?.id,
+      });
+      const resp = res.data.data;
+      setBottomLoader(false);
+      if (resp && resp != undefined && resp.length > 0) {
+        setCatData([...catData, ...resp]);
+      }
+      // setCatData(resp);
+
+      // console.log(resp, 'resp');
+    } catch (err) {
+    } finally {
+      setBottomLoader(false);
+      // setLoading(false);
     }
   };
   useEffect(() => {
@@ -258,13 +284,14 @@ const AddFlowers = props => {
 
   const handleAddFlower = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
+    const store_id = await AsyncStorage.getItem('store_id');
 
     setdisabled(true);
     setLoading(true);
     const dataToPost = {
       type: 'add_data',
       table_name: 'stores_gallery',
-      store_id: id,
+      store_id: store_id,
       name: formData.name,
       description: formData.description,
       price: formData.price,
@@ -315,6 +342,34 @@ const AddFlowers = props => {
     }
   };
 
+  const [valid, setValid] = useState(true);
+
+  useMemo(() => {
+    const isFormFilled =
+      imagesToSend?.length > 0 &&
+      // selectedItem.name &&
+      formData.price &&
+      formData.description &&
+      selectedItem &&
+      formData.name;
+    setValid(!isFormFilled);
+  }, [imagesToSend, formData, selectedItem]);
+
+  // last_id: catalogData[catalogData.length - 1]?.id,
+  //   if (resp && resp != undefined && resp.length > 0) {
+  //     setCatalogData([...catalogData, ...resp]);
+  // }
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    handleGetCatData();
+  };
+  const [bottomLoader, setBottomLoader] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const handleScroll = () => {
+    setScrolled(true);
+  };
+
   return (
     <Layout>
       <ScrollView style={{width: '100%'}}>
@@ -346,16 +401,38 @@ const AddFlowers = props => {
               borderStyle: 'dashed',
             }}>
             <BaseButton
-              title={'Upload a Photo'}
+              title={'Upload Photo'}
               onPress={openGallery}
               defaultStyle={{width: '60%'}}
             />
           </View>
           <FlatList
             data={images}
-            horizontal
+            // horizontal
+            numColumns={2}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => index}
+            onScroll={handleScroll}
+            onEndReached={scrolled ? handleGetCatDataMore : null}
+            onEndReachedThreshold={0.2}
+            // ListEmptyComponent={
+            //   <OrderNotFound
+            //     title={'Not Found data'}
+            //     subtitle={"You don't have any at this time"}
+            //   />
+            // }
+            // ListFooterComponent={
+            //   bottomLoader && (
+            //     <ActivityIndicator size="large" color={colors.gray} />
+            //   )
+            // }
+            ListFooterComponentStyle={{
+              width: '100%',
+              marginTop: 5,
+            }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
             renderItem={({item, index}) => {
               const lastIndex = images.length;
               return (
@@ -476,7 +553,7 @@ const AddFlowers = props => {
           }}>
           <BaseButton
             title={'Add Flower'}
-            // disabled={disabled}
+            disabled={valid || loading}
             loading={loading}
             onPress={handleAddFlower}
           />
@@ -490,16 +567,17 @@ const AddFlowers = props => {
             title={'Next'}
             // disabled={disabled}
             // loading={loading}
-            onPress={() => {
-              navigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: 'MainStack',
-                  },
-                ],
-              });
-            }}
+            // onPress={() => {
+            //   navigation.reset({
+            //     index: 0,
+            //     routes: [
+            //       {
+            //         name: 'MainStack',
+            //       },
+            //     ],
+            //   });
+            // }}
+            onPress={() => navigation.navigate('AppStack', {screen: 'Home'})}
           />
         </View>
       </ScrollView>

@@ -1,11 +1,12 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {Image, RefreshControl, StyleSheet, Text, View} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import Layout from '../../components/Layout/index';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
 import OHistoryCard from './OHistoryCard';
 import {FlatList} from 'react-native';
+import ApiRequest from '../../Services/ApiRequest';
 const OrderHistory = () => {
   const data = [
     {
@@ -65,6 +66,38 @@ const OrderHistory = () => {
       success: 'Success',
     },
   ];
+
+  const [orderData, setOrderData] = useState();
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [account_Type, setAccountType] = useState();
+
+  // const [isModalVisibleCat, setModalVisibleCat] = useState(false);
+  const handleOrderData = async () => {
+    try {
+      setRefreshing(true);
+      setLoading(true);
+      const dataForReq = {
+        type: 'get_data',
+        table_name: 'orders',
+      };
+      const res = await ApiRequest(dataForReq);
+      const resp = res.data.data;
+      setRefreshing(false);
+      setOrderData(resp);
+      // console.log(resp, 'resp new order');
+    } catch (err) {
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    handleOrderData();
+  }, []);
+
   return (
     <Layout>
       <AppHeader title={'History'} />
@@ -91,16 +124,32 @@ const OrderHistory = () => {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         keyExtractor={item => item.id}
-        data={data}
-        renderItem={({item}) => (
-          <OHistoryCard
-            image={item.image}
-            title={item.title}
-            orderId={item.orderId}
-            date={item.date}
-            success={item.success}
+        data={orderData}
+        renderItem={({item}) => {
+          const images = JSON.parse(item.items);
+          console.log(item);
+          return (
+            <OHistoryCard
+              title={item.funeral.name}
+              images={images}
+              date={item.funeral.church_date}
+              location={item.funeral.funeral_location}
+              message={item.funeral.short_message}
+              orderId={item.orderId}
+              // date={item.date}
+              success={item.status}
+            />
+          );
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => handleOrderData()}
+            tintColor="#007AFF" // Color of the refresh indicator
+            title="Pull to refresh"
+            titleColor="#007AFF"
           />
-        )}
+        }
       />
     </Layout>
   );

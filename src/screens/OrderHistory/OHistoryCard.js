@@ -2,8 +2,19 @@ import {StyleSheet, Image, top, Text, View} from 'react-native';
 import React from 'react';
 import {colors, fonts} from '../../constraints';
 import style from '../../assets/css/style';
+import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
 
-const OHistoryCard = ({success, date, orderId, image, title}) => {
+const OHistoryCard = ({
+  success,
+  images,
+  location,
+  orderId,
+  image,
+  date,
+  title,
+  message,
+}) => {
+  console.log(date, 'receive');
   return (
     <View
       style={{
@@ -24,16 +35,22 @@ const OHistoryCard = ({success, date, orderId, image, title}) => {
           // backgroundColor: 'red',
         }}>
         {/* <Text>sdsdsds</Text> */}
-        <Image
-          style={{
-            height: 100,
-            width: 100,
-            borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10,
-            elevation: 4,
-          }}
-          source={image}
-        />
+        {images ? (
+          <View style={{height: 100, width: 100}}>
+            <ImageSwiper images={images} />
+          </View>
+        ) : (
+          <Image
+            style={{
+              height: 100,
+              width: 100,
+              borderTopLeftRadius: 10,
+              borderBottomLeftRadius: 10,
+              elevation: 4,
+            }}
+            source={require('../../assets/images/OrderHistory/white.png')}
+          />
+        )}
         <View
           style={{
             justifyContent: 'space-between',
@@ -71,7 +88,7 @@ const OHistoryCard = ({success, date, orderId, image, title}) => {
               style.font12Re,
               {
                 color: colors.textGray,
-                top: -10,
+                // top: -10,
                 fontFamily: fonts.medium,
                 color: '#8C8994',
               },
@@ -80,10 +97,34 @@ const OHistoryCard = ({success, date, orderId, image, title}) => {
           </Text>
           <Text
             style={[
+              style.font12Re,
+              {
+                color: colors.textGray,
+                // top: -10,
+                fontFamily: fonts.medium,
+                color: '#8C8994',
+              },
+            ]}>
+            {location}
+          </Text>
+          <Text
+            style={[
+              style.font12Re,
+              {
+                color: colors.textGray,
+                // top: -10,
+                fontFamily: fonts.medium,
+                color: '#8C8994',
+              },
+            ]}>
+            {message}
+          </Text>
+          <Text
+            style={[
               style.font14Re,
               {
                 alignSelf: 'flex-end',
-                color: success === 'Success' ? '#14A307' : '#EC0000',
+                color: success !== 'cancelled' ? '#14A307' : '#EC0000',
                 fontFamily: fonts.medium,
                 right: 5,
               },
@@ -92,6 +133,9 @@ const OHistoryCard = ({success, date, orderId, image, title}) => {
           </Text>
         </View>
       </View>
+      {/* <View style={{height: 140, width: 140}}>
+        <ImageSwiper images={images} />
+      </View> */}
     </View>
   );
 };

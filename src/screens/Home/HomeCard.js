@@ -30,7 +30,7 @@ const HomeCard = ({
   const getAccountType = async () => {
     const account_Type = await AsyncStorage.getItem('account_Type');
     setAccountType(account_Type);
-    console.log('a', account_Type);
+    // console.log('a', account_Type);
   };
   useEffect(() => {
     getAccountType();
@@ -41,9 +41,13 @@ const HomeCard = ({
       style={[
         styling,
         {
-          paddingTop: 14,
-          width: 250,
-          margin: 4,
+          // backgroundColor: 'red',
+          flex: 1,
+          height: 240,
+          // paddingTop: 14,
+          // width: 230,
+          // margin: 4,
+          margin: 6,
         },
       ]}>
       <TouchableOpacity
@@ -55,7 +59,7 @@ const HomeCard = ({
           source={{uri: url + cleanedPath}}
           style={{
             height: 120,
-            width: 230,
+            width: 180,
             borderTopRightRadius: 20,
             borderTopLeftRadius: 20,
             elevation: 10,
@@ -68,7 +72,7 @@ const HomeCard = ({
         style={{
           backgroundColor: colors.white,
           padding: 10,
-          width: 230,
+          width: 180,
           borderBottomRightRadius: 20,
           borderBottomLeftRadius: 20,
           elevation: 10,
@@ -77,6 +81,7 @@ const HomeCard = ({
         }}>
         <Text style={[style.font18Re, {fontFamily: fonts.bold}]}>{name}</Text>
         <Text
+          numberOfLines={2}
           style={{
             color: '#A2A2A2',
             marginVertical: 10,

@@ -9,8 +9,10 @@ import {colors} from '../../constraints';
 import style from '../../assets/css/style';
 import {Switch} from 'react-native';
 import SwitchComponent from './SwitchComponent';
+import {useNavigation} from '@react-navigation/native';
 
 const DataProtection = () => {
+  const navigation = useNavigation();
   const [formData, setFormData] = useState({
     darkMode: false,
     notification: false,
@@ -63,9 +65,13 @@ const DataProtection = () => {
       />
       <BaseButton
         title={'Change Pin'}
-        defaultStyle={{borderRadius: 30, marginVertical: 35}}
+        defaultStyle={{borderRadius: 30, marginVertical: 20}}
       />
-      <BaseButton title={'Change Password'} defaultStyle={{borderRadius: 30}} />
+      <BaseButton
+        title={'Change Password'}
+        defaultStyle={{borderRadius: 20}}
+        onPress={() => navigation.navigate('ChangePassword')}
+      />
     </Layout>
   );
 };

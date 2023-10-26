@@ -13,9 +13,12 @@ import {colors, fonts} from '../../constraints';
 import {useNavigation} from '@react-navigation/native';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useTranslation} from 'react-i18next';
+import {Button} from 'react-native-share';
 
 const Wellcome = () => {
   const navigation = useNavigation();
+  const {t, i18n} = useTranslation();
 
   return (
     <ImageBackground
@@ -32,22 +35,23 @@ const Wellcome = () => {
         backgroundColor="transparent"
         translucent={true}
       />
+
       <Text
         style={[
           style.font30Re,
           {color: colors.white, fontFamily: fonts.semiBold, marginBottom: 25},
         ]}>
-        Welcome!
+        {t('welcome1')}
       </Text>
       <Text
         style={[
           style.font20Re,
           {color: colors.white, textAlign: 'center', marginBottom: 20},
         ]}>
-        We are preparing something great for you!
+        {t('welcome2')}
       </Text>
       <BaseButton
-        title={'Continue as customer'}
+        title={t('welcome3')}
         onPress={async () => {
           await AsyncStorage.setItem('account_Type', 'customer');
           navigation.navigate('Signup', {account_Type: 'customer'});
@@ -60,7 +64,7 @@ const Wellcome = () => {
         textStyle={{color: colors.primaryColor, fontFamily: fonts.bold}}
       />
       <BaseButton
-        title={'Continue as Store'}
+        title={t('welcome4')}
         onPress={async () => {
           await AsyncStorage.setItem('account_Type', 'store');
           navigation.navigate('Signup', {account_Type: 'store'});
@@ -73,7 +77,7 @@ const Wellcome = () => {
         textStyle={{color: colors.primaryColor, fontFamily: fonts.bold}}
       />
       <BaseButton
-        title={'Continue as Funeral Home'}
+        title={t('welcome5')}
         onPress={async () => {
           await AsyncStorage.setItem('account_Type', 'funeral');
           navigation.navigate('Signup', {account_Type: 'funeral'});
@@ -88,13 +92,13 @@ const Wellcome = () => {
       <TouchableOpacity onPress={() => navigation.navigate('login')}>
         <Text
           style={[style.font14Re, {color: colors.white, marginVertical: 20}]}>
-          Already have an account?{' '}
+          {t('welcome6')}{' '}
           <Text
             style={[
               style.font14Re,
               {color: colors.white, fontFamily: fonts.bold},
             ]}>
-            Login
+            {t('Login')}
           </Text>
         </Text>
       </TouchableOpacity>

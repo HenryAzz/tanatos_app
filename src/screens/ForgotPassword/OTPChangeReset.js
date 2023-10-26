@@ -18,6 +18,7 @@ import OTPComponent from '../../components/OtpComponent';
 import {colors} from '../../constraints';
 import {BaseButton} from '../../components/BaseButton';
 import {ToastMessage} from '../../utils/Toast';
+import {useTranslation} from 'react-i18next';
 const OTPChangeReset = () => {
   const navigation = useNavigation();
   const [value, setValue] = useState('');
@@ -42,6 +43,16 @@ const OTPChangeReset = () => {
       ToastMessage('Invalid OTP');
     }
   };
+
+  const {t, i18n} = useTranslation();
+
+  const toggleLanguage = async () => {
+    if (i18n.language === 'en') {
+      i18n.changeLanguage('es'); // Switch to Spanish
+    } else {
+      i18n.changeLanguage('en'); // Switch to English
+    }
+  };
   return (
     <Layout>
       <FocusAwareStatusBar
@@ -50,10 +61,7 @@ const OTPChangeReset = () => {
         backgroundColor={colors.backgroundColor}
         // translucent={true}
       />
-      <AuthHeader
-        title={'Verify Your Account!'}
-        subTitle={'We send a code on your phone number +44******964'}
-      />
+      <AuthHeader title={t('resetpass3')} subTitle={t('resetpass4')} />
       <OTPComponent value={value} setValue={setValue} />
       <Text style={[{marginVertical: 40}]}>Resend in 00.30</Text>
       <BaseButton
@@ -61,6 +69,7 @@ const OTPChangeReset = () => {
         defaultStyle={{}}
         disabled={!validateForm}
         onPress={handleVerify}
+        // onPress={() => toggleLanguage()}
       />
     </Layout>
   );

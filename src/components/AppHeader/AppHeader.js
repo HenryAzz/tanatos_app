@@ -4,7 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
 
-const AppHeader = ({title, subTitle, defaultStyle}) => {
+const AppHeader = ({title, subTitle, onPress, status, defaultStyle}) => {
   const navigation = useNavigation();
   return (
     <View
@@ -26,8 +26,15 @@ const AppHeader = ({title, subTitle, defaultStyle}) => {
           style={{height: 44, width: 44}}
         />
       </TouchableOpacity>
+
       <Text style={[style.font20Re, {fontFamily: fonts.medium}]}>{title}</Text>
-      {title === 'Add Obituaries' ? <Text>Skip</Text> : <Text> </Text>}
+      {title === 'Add Obituaries' && status === 'before' ? (
+        <TouchableOpacity onPress={onPress}>
+          <Text>Skip</Text>
+        </TouchableOpacity>
+      ) : (
+        <Text> </Text>
+      )}
     </View>
   );
 };

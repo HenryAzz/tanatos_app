@@ -11,6 +11,8 @@ import AuthHeader from '../../components/AuthHeader';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import OTPComponent from '../../components/OtpComponent';
 import {ToastMessage} from '../../utils/Toast';
+import TimerComp from '../../components/TimerComp/TimerComp';
+import ApiRequest from '../../Services/ApiRequest';
 const OtpVerified = () => {
   const navigation = useNavigation();
   const [value, setValue] = useState('');
@@ -20,17 +22,12 @@ const OtpVerified = () => {
   console.log(phone);
 
   const formatPhoneNumber = phoneNumber => {
-    // Check if the phoneNumber starts with a plus sign
     if (phoneNumber.startsWith('+')) {
-      // Extract the country code (e.g., +92)
       const countryCode = phoneNumber.substring(0, 3);
-      // Extract the last 4 digits of the phone number
       const last4Digits = phoneNumber.slice(-4);
-      // Create the formatted phone number
       const formattedNumber = `${countryCode}xxxxxxx${last4Digits}`;
       return formattedNumber;
     } else {
-      // Handle cases where the phoneNumber doesn't start with a plus sign
       return phoneNumber;
     }
   };
@@ -67,6 +64,24 @@ const OtpVerified = () => {
     }
   };
 
+  const handleOTP = async () => {
+    try {
+      const res = await ApiRequest({
+        type: 'send_otp',
+        phone: phone,
+        // hash: '',
+      });
+      const resp = res?.data;
+      console.log('resp', resp);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleResendOtp = () => {
+    // Logic for resending OTP goes here
+  };
+  const [remainingTime, setRemainingTime] = useState(0);
+  // console.log(remainingTime, 'remainingTime');
   return (
     <Layout>
       <FocusAwareStatusBar
@@ -80,12 +95,17 @@ const OtpVerified = () => {
         subTitle={`We send a code on your phone number ${formattedNumber1}`}
       />
       <OTPComponent value={value} setValue={setValue} />
-      <Text style={[{marginVertical: 40}]}>Resend in 00.30</Text>
+      {/* <Text style={[{marginVertical: 40}]}>Resend in 00.30</Text> */}
+      <TimerComp
+        onResendOtp={handleOTP}
+        setRemainingTime={setRemainingTime}
+        remainingTime={remainingTime}
+      />
       <BaseButton
         title={'Continue'}
         defaultStyle={{}}
         onPress={handleVerify}
-        disabled={!validateForm}
+        disabled={!validateForm || remainingTime > 0}
       />
     </Layout>
   );

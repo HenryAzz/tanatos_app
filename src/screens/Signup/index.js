@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Pressable,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState, useMemo, useRef, useEffect} from 'react';
 import Layout from '../../components/Layout';
@@ -28,6 +29,7 @@ import ApiRequest from '../../Services/ApiRequest';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {ToastMessage} from '../../utils/Toast';
 import moment from 'moment';
+import {useTranslation} from 'react-i18next';
 const Signup = ({route}) => {
   const account_Type = route.params.account_Type;
   // console.log(account_Type);
@@ -78,9 +80,7 @@ const Signup = ({route}) => {
       formData.password.trim().length > 5 &&
       formData.password.trim() &&
       formData.password === formData.confirmPassword &&
-      formData.starting_date &&
-      formData.gender;
-
+      formData.starting_date;
     setDisable(!isData);
   }, [account_Type, formData]);
 
@@ -123,7 +123,7 @@ const Signup = ({route}) => {
   };
 
   ////handle check email
-  const [isEmailValid, setIsEmailValid] = useState(true); //use for validation
+  const [isEmailValid, setIsEmailValid] = useState(true);
   const checkEmailCheck = async () => {
     try {
       const res = await ApiRequest({
@@ -159,21 +159,30 @@ const Signup = ({route}) => {
     }
   }, [formData.email]);
   //////////////////////////
+  const [loading, setLoading] = useState(false);
   const handleSignup = () => {
+    setLoading(true);
     // console.log(formData, '123');
     if (formData) {
       // navigation.navigate(account_Type === 'store' ? 'AddNews' : 'Phone', {
       // navigation.navigate(account_Type === 'store' ? 'CreateStore' : 'Phone', {
-      navigation.navigate('Phone', {
+      // navigation.navigate('Phone', {
+
+      navigation.navigate('ShareAddress', {
         formData: formData,
         account_Type: account_Type,
+        phone: '',
         city: city,
         state: state,
         country: country,
         area: area,
       });
+      setLoading(false);
     }
+    // setFormData('');
   };
+
+  const {t, i18n} = useTranslation();
 
   return (
     <Layout>
@@ -182,10 +191,7 @@ const Signup = ({route}) => {
         barStyle={'dark-content'}
         backgroundColor={colors.backgroundColor}
       /> */}
-      <AuthHeader
-        title={"Let's Create Account"}
-        subTitle={'Enter Your details below to create a new account.'}
-      />
+      <AuthHeader title={t('singup1')} subTitle={t('singup2')} />
       <ScrollView
         style={{width: '100%'}}
         showsHorizontalScrollIndicator={false}
@@ -193,23 +199,23 @@ const Signup = ({route}) => {
         {/* {account_Type === 'funeral' || account_Type === 'customer' ? ( */}
         {/* <> */}
         <AppTextInput
-          titleText={'Name'}
-          placeholder={'Name'}
+          titleText={t('Name')}
+          placeholder={t('Name')}
           value={formData.name}
           onChangeText={text => handleInputChange('name', text)}
         />
 
         <View style={{justifyContent: 'center', flex: 1}}>
           <AppTextInput
-            titleText={'Email'}
+            titleText={t('Email')}
             keyboardType="email-address"
-            placeholder={'Email'}
+            placeholder={t('Email')}
             onEndEditing={checkEmail}
             value={formData.email}
             onChangeText={text => handleInputChange('email', text)}
           />
 
-          <Pressable style={{position: 'absolute', right: 10, top: 35}}>
+          <Pressable style={{position: 'absolute', right: 10, top: 30}}>
             {iconToShow ? iconToShow : null}
           </Pressable>
           {!validateEmail(formData.email) && formData.email.length >= 2 && (
@@ -220,8 +226,8 @@ const Signup = ({route}) => {
           )}
         </View>
         <AppTextInput
-          titleText={'Password'}
-          placeholder={'Password'}
+          titleText={t('Password')}
+          placeholder={t('Password')}
           secureTextEntry={isSecureText}
           setIsSecureText={setIsSecureText}
           password
@@ -229,44 +235,38 @@ const Signup = ({route}) => {
           onChangeText={text => handleInputChange('password', text)}
         />
         <AppTextInput
-          titleText={'Confirm Password'}
-          placeholder={'Confirm Password'}
+          titleText={t('Confirm Password')}
+          placeholder={t('Confirm Password')}
           secureTextEntry={isSecureTextConfirm}
           setIsSecureText={setIsSecureTextConfirm}
           password
           value={formData.confirmPassword}
           onChangeText={text => handleInputChange('confirmPassword', text)}
         />
-        {account_Type === 'customer' || account_Type === 'funeral' ? (
-          <>
-            <Text
-              style={[
-                style.font16Re,
-                {fontFamily: fonts.medium, marginTop: 5},
-              ]}>
-              Address
-            </Text>
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              style={{
-                borderWidth: 1,
-                borderColor: '#E0E0E0',
-                backgroundColor: '#F5F5F5',
-                height: 50,
-                borderRadius: 10,
-                justifyContent: 'center',
-                paddingLeft: 10,
-              }}>
-              <Text> {area ? area : 'Search'}</Text>
-            </TouchableOpacity>
-          </>
-        ) : null}
-        {/* </> */}
-        {/* ) : null} */}
-        {/* {account_Type === 'customer' ? ( */}
-        {/* <> */}
+
+        <Text
+          style={[
+            style.font16Re,
+            {fontFamily: fonts.medium, marginTop: 0, marginBottom: 4},
+          ]}>
+          {t('singup3')}
+        </Text>
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={{
+            borderWidth: 1,
+            borderColor: '#E0E0E0',
+            backgroundColor: '#F5F5F5',
+            height: 50,
+            borderRadius: 10,
+            justifyContent: 'center',
+            paddingLeft: 10,
+          }}>
+          <Text> {area ? area : t('singup4')}</Text>
+        </TouchableOpacity>
+
         <DatePicker
-          title={'Date of Birth'}
+          title={t('singup5')}
           date={formData.starting_date}
           show={formData.starting_dateModal}
           // disable={route.params?.user === 'owner' ? false : true}
@@ -286,7 +286,7 @@ const Signup = ({route}) => {
           }}
           maxDate={new Date()}
         />
-        <Text
+        {/* <Text
           style={[
             style.font16Re,
             {fontFamily: fonts.medium, marginVertical: 4},
@@ -316,7 +316,7 @@ const Signup = ({route}) => {
             ]}>
             {formData.gender ? formData.gender : 'Select Gender'}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {/* </> */}
         {/* ) : null} */}
         {/* {account_Type === 'funeral' ? (
@@ -362,9 +362,11 @@ const Signup = ({route}) => {
         ) : null} */}
 
         <BaseButton
-          title={'Continue'}
+          title={
+            loading ? <ActivityIndicator color={colors.white} /> : 'Continue'
+          }
           defaultStyle={{marginVertical: 20}}
-          // disabled={disable}
+          disabled={disable || loading || !isEmailValid}
           onPress={handleSignup}
         />
         <View
@@ -383,12 +385,13 @@ const Signup = ({route}) => {
                 fontFamily: fonts.medium,
               },
             ]}>
-            Alredy have an account ?
+            {t('welcome6')}
           </Text>
           <TouchableOpacity
             style={{marginTop: 3}}
             onPress={() => {
-              // navigation.navigate('Wellcome');
+              // toggleLanguage();
+              navigation.navigate('login');
             }}>
             <Text
               style={[
@@ -400,12 +403,12 @@ const Signup = ({route}) => {
                   paddingLeft: 5,
                 },
               ]}>
-              Signin
+              {t('Signin')}
             </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <RBSheet
+      {/* <RBSheet
         ref={ref}
         closeOnDragDown={true}
         closeOnPressMask={true}
@@ -413,7 +416,7 @@ const Signup = ({route}) => {
         openDuration={250}
         customStyles={{
           wrapper: {
-            // backgroundColor: 'transparent',
+            backgroundColor: 'transparent',
           },
           draggableIcon: {
             backgroundColor: '#000',
@@ -445,7 +448,7 @@ const Signup = ({route}) => {
             }}>
             <Text style={style.font16Re}>Male</Text>
             {formData.gender === 'Male' ? <Tick /> : null}
-            {/* <Tick /> */}
+            <Tick />
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -486,7 +489,7 @@ const Signup = ({route}) => {
             {formData.gender === 'Other' ? <Tick /> : null}
           </TouchableOpacity>
         </View>
-      </RBSheet>
+      </RBSheet> */}
       <Modal
         visible={isModalVisible}
         animationType="slide"
@@ -546,7 +549,7 @@ const Signup = ({route}) => {
             }}
             fetchDetails={true}
             onPress={(data, details = null) => {
-              console.log(data, details, '12345');
+              // console.log(data, details, '12345');
               //
               setCountry(data.terms[data.terms.length - 1].value);
               setCity(data?.terms[data.terms.length - 2]?.value);

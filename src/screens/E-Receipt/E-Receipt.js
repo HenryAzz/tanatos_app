@@ -1,135 +1,139 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
-import Layout from '../../components/Layout';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import MyOrderCard from '../MyOrder/MyOrderCard';
-import ECard from './ECard';
-import {BaseButton} from '../../components/BaseButton';
-import {colors, constants, fonts} from '../../constraints';
 import {useNavigation} from '@react-navigation/native';
-import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
-import style from '../../assets/css/style';
+import React, {useEffect, useState} from 'react';
+import {FlatList, ScrollView, StyleSheet, View} from 'react-native';
+import AppHeader from '../../components/AppHeader/AppHeader';
+import {BaseButton} from '../../components/BaseButton';
+import Layout from '../../components/Layout';
+import ProductOrderCard from './ProductOrderCard';
 import TextCard from './TextCard';
+import {colors} from '../../constraints';
+import {useTranslation} from 'react-i18next';
 
 const EReceipt = ({route}) => {
   const navigation = useNavigation();
+
   const item = route?.params?.item;
   const dataTosend = route?.params?.dataTosend;
-  console.log(item, 'item');
-  console.log('=============item=============');
-  console.log(dataTosend[0], 'dataTosend');
-
+  const FuneralItemData = route?.params?.FuneralItemData;
+  // console.log(dataTosend, 'tosend');
   const [quantity, setQuantity] = useState(1);
-  const price = dataTosend.price;
-  const [basicPrice, setBasicPrice] = useState(price);
-  const handleIncrement = () => {
-    setQuantity(quantity + 1);
-    setBasicPrice(parseInt(basicPrice) + parseInt(price)); // Price doubles with each increment
-  };
+  const [selectedData, setSelectedData] = useState(dataTosend);
+  const [selectedData1, setSelectedData1] = useState(dataTosend);
+  // const [selectedData1, setSelectedData1] = useState(dataTosend);
+  console.log(selectedData, 'selected data');
+  // const [selectedData, setSelectedData] = useState(dataTosend);
 
-  const handleDecrement = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-      setBasicPrice(parseInt(basicPrice) - parseInt(price));
+  const price = parseInt(dataTosend[0].price);
+  const [basicPrice, setBasicPrice] = useState();
+
+  const handleIncrementLogic = item => {
+    const existingIndex = selectedData.findIndex(
+      storedItem => storedItem.id === item.id,
+    );
+    if (existingIndex !== -1) {
+      const storedData = [...selectedData1];
+      const newArray = [...selectedData];
+      newArray[existingIndex] = {...newArray[existingIndex]};
+      newArray[existingIndex].price =
+        parseInt(newArray[existingIndex].price) +
+        parseInt(storedData[existingIndex].price);
+      newArray[existingIndex].quanitity =
+        parseInt(newArray[existingIndex].quanitity) + 1;
+
+      setSelectedData(newArray);
     }
   };
 
+  const handleDecrementLogic = item => {
+    if (item.quanitity > 1) {
+      const existingIndex = selectedData.findIndex(
+        storedItem => storedItem.id === item.id,
+      );
+      if (existingIndex !== -1) {
+        const storedData = [...selectedData1];
+        const newArray = [...selectedData];
+        newArray[existingIndex] = {...newArray[existingIndex]};
+        newArray[existingIndex].price =
+          parseInt(newArray[existingIndex].price) -
+          parseInt(storedData[existingIndex].price);
+        newArray[existingIndex].quanitity =
+          parseInt(newArray[existingIndex].quanitity) - 1;
+
+        setSelectedData(newArray);
+      }
+    }
+  };
+
+  const [totalPricee, setTotalPrice] = useState(); // Initialize with 0
+  useEffect(() => {
+    // Calculate the total price when the component is mounted
+    const newTotalPrice = selectedData.reduce((acc, item) => {
+      const price = parseInt(item.price);
+      console.log(price, 'price');
+      const quantity = parseInt(item.quanitity);
+      console.log(quantity, 'quANTOTY');
+      return acc + price;
+    }, 0);
+    console.log(newTotalPrice, 'newTotalPrice');
+    setTotalPrice(newTotalPrice);
+  }, [selectedData]); // The empty dependency array ensures this effect runs once when the component mounts
+  const {t} = useTranslation();
   return (
     <Layout>
-      <AppHeader title={'E-Receipt'} defaultStyle={{marginBottom: 30}} />
+      <AppHeader title={t('E-Receipt')} defaultStyle={{marginBottom: 30}} />
       {/* <Text>{quantity === 1 ? item.price : totalPrice}</Text> */}
       {/* <Text>{quantity + '//////' + basicPrice}</Text> */}
-      <View
-        style={{
-          width: '99%',
-          marginTop: 20,
-          marginVertical: 6,
-          elevation: 4,
-          shadowColor: colors.elev,
-          backgroundColor: colors.white,
-          borderRadius: 10,
-        }}>
+      {/* <YourComponent dataTosend={dataTosend} /> */}
+      <ScrollView
+        style={{width: '100%'}}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}>
+        {/* <View style={{}}> */}
         <View
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
+            flex: 1,
+            // width: '99%',
+            // marginTop: 20,
+            // marginVertical: 6,
+            // elevation: 4,
+            // shadowColor: colors.elev,
+            // backgroundColor: colors.red,
+            // borderRadius: 10,
           }}>
-          <View style={{height: 120, width: 155}}>
-            <ImageSwiper images={dataTosend[0].images} />
-          </View>
-          <View
-            style={{
-              justifyContent: 'space-around',
-              // height: 100,
-              paddingHorizontal: 10,
-              // width: '62%',
-              backgroundColor: colors.white,
-              borderTopRightRadius: 10,
-              borderBottomRightRadius: 10,
-              // elevation: 4,
-            }}>
-            <View style={{paddingLeft: 16}}>
-              <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
-                {item.name}
-              </Text>
-              <Text
-                style={[style.font16Re, {color: '#8C8C8C', marginVertical: 6}]}>
-                {quantity} x set
-              </Text>
-              <Text style={[style.font22Re, {fontFamily: fonts.bold}]}>
-                {basicPrice}
-              </Text>
-            </View>
-
-            {/* {onPress ? (
-            <TouchableOpacity
-              onPress={onPress}
-              style={{
-                backgroundColor: colors.primaryColor,
-                height: 25,
-                width: 100,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 20,
-                alignSelf: 'flex-end',
-                marginBottom: 3,
-              }}>
-              <Text style={[style.font12Re, {color: colors.white}]}>
-                Tracke Order
-              </Text>
-            </TouchableOpacity>
-          ) : null} */}
-          </View>
-          <View style={{paddingLeft: 20}}>
-            <TouchableOpacity onPress={handleIncrement}>
-              <Text style={[style.font24Re]}>+</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={[style.font16Re]}>{quantity}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleDecrement}>
-              <Text style={[style.font24Re]}>-</Text>
-            </TouchableOpacity>
-          </View>
+          <FlatList
+            data={selectedData}
+            // horizontal
+            keyExtractor={item => item.id.toString()} // Assuming item has an 'id'
+            renderItem={({item}) => (
+              <ProductOrderCard
+                item={item}
+                handleIncrement={() => {
+                  handleIncrementLogic(item);
+                }}
+                handleDecrement={() => handleDecrementLogic(item)}
+              />
+            )}
+          />
         </View>
-      </View>
-      <View style={{width: '100%', marginTop: 50}}>
-        <TextCard title={'Amount'} price={`$${basicPrice}`} />
-        <TextCard title={'Subtotal'} price={`$${basicPrice}`} />
-        <TextCard title={'Shipping'} price={'Free'} />
-      </View>
-      {/* <ECard
-      // images={item.images}
-      // title={item.name}
-      // price={item.price}
-      // size={'1 x set'}
-      // onPress={() => alert('ok')}
-      /> */}
-      <BaseButton
-        title={'Checkout'}
-        defaultStyle={{marginVertical: 30}}
-        onPress={() => navigation.navigate('Checkout')}
-      />
+        <View style={{width: '100%', marginTop: 50}}>
+          <TextCard title={t('Amount')} price={`$${totalPricee}`} />
+          <TextCard title={t('Subtotal')} price={`$${totalPricee}`} />
+          <TextCard title={t('Shipping')} price={'Free'} />
+        </View>
+
+        <BaseButton
+          title={t('Checkout')}
+          defaultStyle={{marginVertical: 30}}
+          onPress={() =>
+            navigation.navigate('Checkout', {
+              basicPrice: totalPricee,
+              dataTosend: dataTosend,
+              FuneralItemData: FuneralItemData,
+            })
+          }
+        />
+        {/* </View> */}
+      </ScrollView>
     </Layout>
   );
 };

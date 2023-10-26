@@ -20,7 +20,8 @@ function RootNavigation(props) {
       />
       <Stack.Navigator
         screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
-        <Stack.Screen name="Splash" component={Splash} />
+        {/* <Stack.Screen name="ShareAddress" component={ShareAddress} /> */}
+        {/* <Stack.Screen name="Splash" component={Splash} /> */}
         <Stack.Screen name="AuthStack" component={AuthStack} />
         <Stack.Screen name="MainStack" component={MainStack} />
       </Stack.Navigator>

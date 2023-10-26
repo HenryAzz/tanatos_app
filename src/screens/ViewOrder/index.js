@@ -10,18 +10,19 @@ import Card from './Card';
 
 const ViewOrder = ({route}) => {
   const navigation = useNavigation();
-  const item = route?.params?.item;
+  const {total_amount, dataTosend} = route?.params;
+  // console.log(total_amount, 'total_amount');
   // console.log(route.params.item, 'item');
-  useEffect(() => {
-    setTimeout(() => navigation.navigate('Home'), 3000);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => navigation.navigate('Home'), 3000);
+  // }, []);
   return (
     <Layout>
       <AppHeader title={'E-Receipt'} defaultStyle={{marginBottom: 30}} />
       <Card
         image={require('../../assets/vieworeder.png')}
-        price={'$100.00'}
-        title={'Pink Roses'}
+        price={`$${total_amount}`}
+        title={dataTosend?.name}
         size={'1 x set'}
         // onPress={() => alert('ok')}
       />

@@ -1,5 +1,13 @@
-import {StyleSheet, FlatList, Text, View, Image} from 'react-native';
-import React from 'react';
+import {
+  StyleSheet,
+  FlatList,
+  Text,
+  View,
+  Image,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import Layout from '../../components/Layout';
 import MyOrderCard from './MyOrderCard';
 
@@ -7,119 +15,79 @@ import style from '../../assets/css/style';
 import {fonts} from '../../constraints';
 import OrderNotFound from './OrderNotFound';
 import {useNavigation} from '@react-navigation/native';
+import ApiRequest from '../../Services/ApiRequest';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const OngoingOrder = () => {
   const navigation = useNavigation();
-  const data = [
-    {
-      id: 1,
-      image: require('../../assets/images/OrderCard/orderImg1.png'),
-      title: 'Pink Roses',
-      price: '$1000',
-      address:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-      status: 'Trace Order',
-    },
-    {
-      id: 2,
-      image: require('../../assets/images/OrderCard/orderImg1.png'),
-      title: 'Pink Roses',
-      price: '$2000',
-      address:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-      status: 'Trace Order',
-    },
-    {
-      id: 3,
-      image: require('../../assets/images/OrderCard/orderImg1.png'),
-      title: 'Pink Roses',
-      price: '$3000',
-      address:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-      status: 'Trace Order',
-    },
-    {
-      id: 4,
-      image: require('../../assets/images/OrderCard/orderImg1.png'),
-      title: 'Pink Roses',
-      price: '$4000',
-      address:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-      status: 'Trace Order',
-    },
-    {
-      id: 5,
-      image: require('../../assets/images/OrderCard/orderImg1.png'),
-      title: 'Pink Roses',
-      price: '$5000',
-      address:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-      status: 'Trace Order',
-    },
-    {
-      id: 6,
-      image: require('../../assets/images/OrderCard/orderImg1.png'),
-      title: 'Pink Roses',
-      price: '$6000',
-      address:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-      status: 'Trace Order',
-    },
-    {
-      id: 7,
-      image: require('../../assets/images/OrderCard/orderImg1.png'),
-      title: 'Pink Roses',
-      price: '$7000',
-      address:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-      status: 'Trace Order',
-    },
-    {
-      id: 8,
-      image: require('../../assets/images/OrderCard/orderImg1.png'),
-      title: 'Pink Roses',
-      price: '$8000',
-      address:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-      status: 'Trace Order',
-    },
-    {
-      id: 9,
-      image: require('../../assets/images/OrderCard/orderImg1.png'),
-      title: 'Pink Roses',
-      price: '$9000',
-      address:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-      status: 'Trace Order',
-    },
-  ];
+
+  const [orderData, setOrderData] = useState();
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false); // State for the refresh indicator
+
+  // const [isModalVisibleCat, setModalVisibleCat] = useState(false);
+  const handleOrderData = async () => {
+    const user_id = await AsyncStorage.getItem('user_id');
+    try {
+      setLoading(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'orders',
+        user_id: user_id,
+        // last_id:
+      });
+      const resp = res.data.data;
+      setOrderData(resp);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+      setRefreshing(false); // Turn off the refresh indicator
+    }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true); // Turn on the refresh indicator
+    handleOrderData();
+  };
+
+  useEffect(() => {
+    handleOrderData();
+  }, []);
+
+  const acceptedOrders = orderData?.filter(item => item?.status === 'pending');
 
   return (
     <Layout>
-      {data.length > 0 ? (
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={item => item.id}
-          data={data}
-          renderItem={({item}) => (
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={item => item.id}
+        data={acceptedOrders}
+        renderItem={({item}) => {
+          const itemsArray = JSON.parse(item.items);
+
+          return itemsArray.map((itemData, index) => (
             <MyOrderCard
-              image={item.image}
-              title={item.title}
-              price={item.price}
+              key={index}
+              images={itemData.images}
+              title={itemData.name}
+              price={itemData.price}
               address={item.address}
               status={item.status}
-              // onPress={() => alert('ok')}
               onPress={() =>
                 navigation.navigate('OrderTrack', {
                   data: item,
                 })
               }
             />
-          )}
-        />
-      ) : (
-        <OrderNotFound />
-      )}
+          ));
+        }}
+        refreshControl={
+          // Add the RefreshControl component
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
     </Layout>
   );
 };

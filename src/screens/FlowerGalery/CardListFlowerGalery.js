@@ -122,18 +122,21 @@ import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
 const windowWidth = Dimensions.get('window').width;
 
 const CardListFlowerGallery = ({item, onPress, id}) => {
-  console.log(item.store.phone, 'item/////.....///');
+  console.log(item, 'item/////.....///');
   return (
     <View style={styles.cardContainer}>
-      <View style={{height: 120, width: 155}}>
-        <ImageSwiper images={item.images} />
+      <View style={{height: 120}}>
+        <ImageSwiper
+          images={item.images}
+          imageStyle={{borderBottomRightRadius: 0, borderBottomLeftRadius: 0}}
+        />
       </View>
       <TouchableOpacity onPress={onPress} style={styles.infoContainer}>
-        <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.title}>{item.category}</Text>
-        <Text style={styles.title}>{item.store.phone}</Text>
+        <Text style={styles.title}>{item?.store?.name}</Text>
+        {/* <Text style={styles.title}>{item.category}</Text> */}
+        <Text style={styles.title}>{item?.store?.phone}</Text>
         {/* <Text style={styles.title}>{item.id}</Text> */}
-        {/* <Text style={styles.price}>{item.price}</Text> */}
+        <Text style={styles.price}>{item?.store?.location}</Text>
       </TouchableOpacity>
     </View>
   );

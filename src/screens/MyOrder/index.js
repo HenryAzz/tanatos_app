@@ -10,6 +10,10 @@ import {colors, fonts} from '../../constraints';
 import Completed from './Completed';
 import NewOrder from './NewOrder';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ApiRequest from '../../Services/ApiRequest';
+import Cancelled from './Cancelled';
+import Processing from './Processing';
+import {useTranslation} from 'react-i18next';
 
 const Top = createMaterialTopTabNavigator();
 
@@ -23,70 +27,98 @@ const MyOrder = () => {
   useEffect(() => {
     getAccountType();
   }, []);
+
+  const {t, i18n} = useTranslation();
+
+  const toggleLanguage = async () => {
+    if (i18n.language === 'en') {
+      i18n.changeLanguage('es'); // Switch to Spanish
+    } else {
+      i18n.changeLanguage('en'); // Switch to English
+    }
+  };
   return (
     <>
       <View style={{backgroundColor: colors.white}}>
-        <AppHeader title={'My Order'} defaultStyle={{marginBottom: 0}} />
+        <AppHeader title={t('My Order')} defaultStyle={{marginBottom: 0}} />
       </View>
 
-      <Top.Navigator
-        screenOptions={{
-          tabBarIndicatorStyle: {backgroundColor: colors.primaryColor},
-        }}>
-        <Top.Screen
-          name="Ongoing"
-          component={OngoingOrder}
-          options={{
-            tabBarLabel: ({focused, color, size}) => (
-              <Text
-                style={{
-                  fontSize: 16,
-                  // paddingBottom: 5,
-                  color: focused ? colors.primaryColor : colors.gray,
-                  fontFamily: focused ? fonts.bold : fonts.bold,
-                }}>
-                Ongoing
-              </Text>
-            ),
-          }}
-        />
-        <Top.Screen
-          name="Completed"
-          component={Completed}
-          options={{
-            tabBarLabel: ({focused, color, size}) => (
-              <Text
-                style={{
-                  fontSize: 16,
-                  // paddingBottom: 5,
-                  color: focused ? colors.primaryColor : colors.gray,
-                  fontFamily: focused ? fonts.bold : fonts.bold,
-                }}>
-                Completed
-              </Text>
-            ),
-          }}
-        />
-        {account_Type === 'store' && (
+      <View style={{flex: 1}}>
+        <Top.Navigator
+          screenOptions={{
+            swipeEnabled: false,
+            tabBarIndicatorStyle: {backgroundColor: colors.primaryColor},
+          }}>
           <Top.Screen
-            name="New Orders"
+            name="New"
             component={NewOrder}
             options={{
               tabBarLabel: ({focused, color, size}) => (
                 <Text
                   style={{
-                    fontSize: 16,
+                    fontSize: 12,
                     // paddingBottom: 5,
                     color: focused ? colors.primaryColor : colors.gray,
                     fontFamily: focused ? fonts.bold : fonts.bold,
                   }}>
-                  New Orders
+                  {t('New')}
                 </Text>
               ),
             }}
           />
-        )}
-      </Top.Navigator>
+          <Top.Screen
+            name="Processing"
+            component={Processing}
+            options={{
+              tabBarLabel: ({focused, color, size}) => (
+                <Text
+                  style={{
+                    fontSize: 12,
+                    // paddingBottom: 5,
+                    color: focused ? colors.primaryColor : colors.gray,
+                    fontFamily: focused ? fonts.bold : fonts.bold,
+                  }}>
+                  {t('Processing')}
+                </Text>
+              ),
+            }}
+          />
+          <Top.Screen
+            name="Completed"
+            component={Completed}
+            options={{
+              tabBarLabel: ({focused, color, size}) => (
+                <Text
+                  style={{
+                    fontSize: 12,
+                    // paddingBottom: 5,
+                    color: focused ? colors.primaryColor : colors.gray,
+                    fontFamily: focused ? fonts.bold : fonts.bold,
+                  }}>
+                  {t('Completed')}
+                </Text>
+              ),
+            }}
+          />
+          <Top.Screen
+            name="Cancelled"
+            component={Cancelled}
+            options={{
+              tabBarLabel: ({focused, color, size}) => (
+                <Text
+                  style={{
+                    fontSize: 12,
+                    // paddingBottom: 5,
+                    color: focused ? colors.primaryColor : colors.gray,
+                    fontFamily: focused ? fonts.bold : fonts.bold,
+                  }}>
+                  {t('Cancelled')}
+                </Text>
+              ),
+            }}
+          />
+        </Top.Navigator>
+      </View>
     </>
   );
 };

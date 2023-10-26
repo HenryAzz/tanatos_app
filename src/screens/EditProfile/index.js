@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ApiRequest from '../../Services/ApiRequest';
 import {ToastMessage} from '../../utils/Toast';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
+import {useTranslation} from 'react-i18next';
 const EditProfile = () => {
   const [formData, setFormData] = useState({
     userName: '',
@@ -25,8 +26,10 @@ const EditProfile = () => {
     image: '',
     path: '',
     dob: '',
+    url: '',
   });
-  // console.log(formData, 'data');
+
+  // console.log(formData, 'formData');
   const [formData1, setFormData1] = useState({
     userName: '',
     email: '',
@@ -38,7 +41,7 @@ const EditProfile = () => {
     path: '',
   });
   const [selectedImage, setSelectedImage] = useState('');
-  // console.log(selectedImage, 'img');
+  console.log(formData.url + formData.image, 'formData.url + formData.image');
   const pickImage = () => {
     ImagePicker.openPicker({
       mediaType: 'photo',
@@ -46,8 +49,9 @@ const EditProfile = () => {
       compressImageQuality: 0.4,
     })
       .then(image => {
-        // uploadImg(image);
         setSelectedImage(image.path);
+        console.log(image, 'image');
+        uploadImg(image);
       })
       .catch(error => {
         console.log('Error picking image: ', error);
@@ -64,8 +68,7 @@ const EditProfile = () => {
         table_name: 'users',
       });
       const resp = res?.data?.data[0];
-      // console.log(resp, '///////////////');
-      // setPhonen(resp?.phone);
+
       setFormData({
         userName: resp?.name,
         email: resp?.email,
@@ -73,6 +76,8 @@ const EditProfile = () => {
         dob: resp?.dob,
         city: resp.city,
         country: resp.country,
+        image: resp?.image,
+        url: resp.url,
       });
       setFormData1({
         userName: resp?.name,
@@ -90,7 +95,6 @@ const EditProfile = () => {
   };
   const [isLoading1, setIsLoading1] = useState(false);
   const [disabled, setDisabled] = useState(true);
-
   const handleUpdateData = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
     try {
@@ -106,20 +110,22 @@ const EditProfile = () => {
         dob: formData?.dob,
         city: formData.city,
         country: formData.country,
+        image: formData.image,
       });
-      const obj = {
-        type: 'update_data',
-        id: user_id,
-        table_name: 'users',
-        userName: formData?.userName,
-        email: formData?.email,
-        gender: formData?.gender,
-        dob: formData?.dob,
-        city: formData.city,
-        country: formData.country,
-      };
-      console.log(obj, 'resp update');
-      const resp = res.data;
+      // const obj = {
+      //   type: 'update_data',
+      //   image: formData.image,
+      //   id: user_id,
+      //   table_name: 'users',
+      //   userName: formData?.userName,
+      //   email: formData?.email,
+      //   gender: formData?.gender,
+      //   dob: formData?.dob,
+      //   city: formData.city,
+      //   country: formData.country,
+      // };
+      // console.log(obj, 'resp update');
+      // const resp = res?.data;
       setIsLoading1(false);
       setDisabled(false);
       handleGetData();
@@ -135,9 +141,43 @@ const EditProfile = () => {
     handleGetData();
   }, []);
 
+  const uploadImg = async image => {
+    // console.log(image, 'image starty');
+    const imageName = image.path.split('/');
+    const imageData = {
+      fileCopyUri: null,
+      name:
+        Platform.OS == 'ios' ? image.filename : imageName[imageName.length - 1],
+      size: image.size,
+      type: image.mime,
+      uri: image.path,
+    };
+
+    // console.log('start to uplod');
+    const body = new FormData();
+    body.append('type', 'upload_data');
+    body.append('file', imageData);
+    const res = await ApiRequest(body)
+      .then(res => {
+        // console.log('uplod');
+        ToastMessage(res?.data?.message);
+        setFormData({
+          ...formData,
+          image: res.data?.file_name,
+          path: res.data?.file_name,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        ToastMessage('Upload Again');
+      });
+  };
+
+  const {t, i18n} = useTranslation();
+
   return (
     <Layout>
-      <AppHeader title={'Edit Profile'} defaultStyle={{marginBottom: 30}} />
+      <AppHeader title={t('account1')} defaultStyle={{marginBottom: 30}} />
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}>
@@ -149,14 +189,18 @@ const EditProfile = () => {
             borderRadius: 100,
             justifyContent: 'center',
             alignItems: 'center',
-            // backgroundColor: colors.gray,
+            backgroundColor: colors.gray,
             alignSelf: 'center',
             marginTop: 25,
             marginBottom: 5,
           }}>
           {formData.image ? (
             <Image
-              source={{uri: selectedImage ? selectedImage : formData.image}}
+              source={{
+                uri: selectedImage
+                  ? selectedImage
+                  : formData.url + formData.image,
+              }}
               style={{
                 width: 100,
                 height: 100,
@@ -169,47 +213,49 @@ const EditProfile = () => {
         </TouchableOpacity>
         <View style={{}}>
           <AppTextInput
-            placeholder={'Name'}
-            titleText={'Name'}
+            placeholder={t('Name')}
+            titleText={t('Name')}
             value={formData.userName}
             onChangeText={text => setFormData({...formData, userName: text})}
           />
 
           <AppTextInput
-            placeholder={'Email'}
-            titleText={'Email'}
+            placeholder={t('Email')}
+            titleText={t('Email')}
             value={formData.email}
+            editable={false}
             onChangeText={text => setFormData({...formData, email: text})}
           />
           <AppTextInput
-            placeholder={'Date of Birth'}
-            titleText={'Date of Birth'}
+            placeholder={t('Date of Birth')}
+            titleText={t('Date of Birth')}
+            editable={false}
             value={formData.dob}
             onChangeText={text => setFormData({...formData, dob: text})}
           />
+
           <AppTextInput
-            placeholder={'Gender'}
-            titleText={'Gender'}
-            value={formData.gender}
-            onChangeText={text => setFormData({...formData, gender: text})}
-          />
-          <AppTextInput
-            placeholder={'City'}
-            titleText={'City'}
+            placeholder={t('City')}
+            titleText={t('City')}
             value={formData.city}
             onChangeText={text => setFormData({...formData, city: text})}
           />
           <AppTextInput
-            placeholder={'County'}
-            titleText={'County'}
+            placeholder={t('County')}
+            titleText={t('County')}
             value={formData.country}
             onChangeText={text => setFormData({...formData, country: text})}
           />
           <BaseButton
             title={
-              isLoading1 ? <ActivityIndicator color={colors.white} /> : 'Update'
+              isLoading1 ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                t('Update')
+              )
             }
-            defaultStyle={{marginBottom: 20}}
+            disabled={isLoading1}
+            defaultStyle={{marginBottom: 10, marginTop: 20}}
             onPress={handleUpdateData}
           />
         </View>

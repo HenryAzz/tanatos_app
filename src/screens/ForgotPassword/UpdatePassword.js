@@ -10,6 +10,8 @@ import {useNavigation} from '@react-navigation/native';
 import {ToastMessage} from '../../utils/Toast';
 import ApiRequest from '../../Services/ApiRequest';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {t} from 'i18next';
+import {useTranslation} from 'react-i18next';
 
 const UpdatePassword = () => {
   const navigation = useNavigation();
@@ -63,6 +65,16 @@ const UpdatePassword = () => {
     }
   };
 
+  const {t, i18n} = useTranslation();
+
+  const toggleLanguage = async () => {
+    if (i18n.language === 'en') {
+      i18n.changeLanguage('es'); // Switch to Spanish
+    } else {
+      i18n.changeLanguage('en'); // Switch to English
+    }
+  };
+
   return (
     <Layout>
       <FocusAwareStatusBar
@@ -71,11 +83,14 @@ const UpdatePassword = () => {
         backgroundColor={colors.white}
         // translucent={true}
       />
-      <AppHeader title={'Reset Password'} defaultStyle={{marginBottom: 30}} />
+      <AppHeader
+        title={t('Reset Password')}
+        defaultStyle={{marginBottom: 30}}
+      />
 
       <AppTextInput
-        titleText={'New Password'}
-        placeholder={'New Password'}
+        titleText={t('New Password')}
+        placeholder={t('New Password')}
         value={formData.password}
         onChangeText={text => handleInputChange('password', text)}
         secureTextEntry={isSecureText}
@@ -83,8 +98,8 @@ const UpdatePassword = () => {
         password
       />
       <AppTextInput
-        titleText={'Confirm Password'}
-        placeholder={'Confirm Password'}
+        titleText={t('Confirm Password')}
+        placeholder={t('Confirm Password')}
         value={formData.confirmPassword}
         onChangeText={text => handleInputChange('confirmPassword', text)}
         secureTextEntry={isSecureText1}
@@ -96,12 +111,13 @@ const UpdatePassword = () => {
           isLoading ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            'Reset Password'
+            t('Reset Password')
           )
         }
-        disabled={!validateForm}
+        // disabled={!validateForm}
         defaultStyle={{marginTop: 30}}
         onPress={handleResetPassword}
+        // onPress={() => toggleLanguage()}
       />
     </Layout>
   );

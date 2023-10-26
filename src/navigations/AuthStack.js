@@ -44,7 +44,7 @@ const AuthStack = () => {
         <Stack.Screen name="OTPChangeReset" component={OTPChangeReset} />
         <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
         <Stack.Screen name="CreateStore" component={CreateStore} />
-        {/* <Stack.Screen name="AddFlowers" component={AddFlowers} /> */}
+        <Stack.Screen name="AddFlowers" component={AddFlowers} />
       </Stack.Navigator>
     </>
   );

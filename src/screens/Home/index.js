@@ -33,6 +33,9 @@ import ApiRequest from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import {ToastMessage} from '../../utils/Toast';
 import Geolocation from 'react-native-geolocation-service';
+import Greetings from '../../components/Greetings/Greeting';
+import OrderNotFound from '../MyOrder/OrderNotFound';
+import {useTranslation} from 'react-i18next';
 const requestLocationPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -60,6 +63,7 @@ const Home = () => {
   useEffect(() => {
     getLocation();
   }, []);
+
   const getLocation = async () => {
     const result = await requestLocationPermission();
     if (result) {
@@ -92,13 +96,41 @@ const Home = () => {
     setAccountType(account_Type);
     // console.log('accountType//////', account_Type);
   };
+
+  const [formData, setFormData] = useState({
+    userName: '',
+    image: '',
+    url: '',
+  });
+
+  const handleGetData = async () => {
+    const user_id = await AsyncStorage.getItem('user_id');
+    try {
+      setShowLoadingModal(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        id: user_id,
+        table_name: 'users',
+      });
+      const resp = res?.data?.data[0];
+
+      setFormData({
+        userName: resp?.name,
+        image: resp?.image,
+        url: resp.url,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getAccountType();
   }, []);
   const [loading, setLoading] = useState(false);
   const [funeralData, setFuneralData] = useState();
   const [funeralDataOwn, setFuneralDataOwn] = useState();
-
+  console.log(funeralData, 'duen');
   const handleGetFuneralDataOwner = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
     try {
@@ -143,6 +175,7 @@ const Home = () => {
   useEffect(() => {
     handleGetFuneralData();
     handleGetFuneralDataOwner();
+    handleGetData();
   }, []);
   useEffect(() => {
     handleGetFuneralData();
@@ -246,8 +279,27 @@ const Home = () => {
     }
   };
 
+  //  {
+  //    account_Type === 'customer' ? (
+  //      <Text>Data 1</Text>
+  //    ) : funeralDataOwn.length > 0 ? (
+  //      <Text>Data found</Text>
+  //    ) : (
+  //      <Text>Data not found</Text>
+  //    );
+  //  }
+  const {t, i18n} = useTranslation();
+
+  const toggleLanguage = async () => {
+    if (i18n.language === 'en') {
+      i18n.changeLanguage('es'); // Switch to Spanish
+    } else {
+      i18n.changeLanguage('en'); // Switch to English
+    }
+  };
   return (
     <Layout>
+      {/* <BaseButton title={'Change'} onPress={() => toggleLanguage()} /> */}
       {account_Type === 'customer' && (
         <View
           style={{
@@ -264,21 +316,58 @@ const Home = () => {
               alignItems: 'center',
               justifyContent: 'space-between',
             }}>
-            <Image
-              style={{
-                height: 40,
-                width: 40,
-                // backgroundColor: 'blue',
-                resizeMode: 'center',
-                borderRadius: 20,
-              }}
-              source={require('../../assets/images/HomeImg/HomeCardImg1.png')}
-            />
+            {formData.image ? (
+              <View
+                style={{
+                  width: 55,
+                  height: 55,
+                  borderRadius: 100,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: colors.gray,
+                  alignSelf: 'center',
+                  // marginTop: 25,
+                  // marginBottom: 5,
+                }}>
+                <Image
+                  style={{
+                    height: 50,
+                    width: 50,
+                    // backgroundColor: 'blue',
+                    // resizeMode: 'center',
+                    borderRadius: 30,
+                  }}
+                  source={{uri: formData.url + formData.image}}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  width: 55,
+                  height: 55,
+                  borderRadius: 100,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: colors.gray,
+                  alignSelf: 'center',
+                  // marginTop: 25,
+                  // marginBottom: 5,
+                }}>
+                <Image
+                  style={{
+                    height: 40,
+                    width: 40,
+                    // backgroundColor: 'blue',
+                    resizeMode: 'center',
+                    borderRadius: 20,
+                  }}
+                  source={require('../../assets/images/HomeImg/HomeCardImg1.png')}
+                />
+              </View>
+            )}
             <View style={{paddingLeft: 10}}>
-              <Text style={[style.font12Re, {color: colors.textGray}]}>
-                Good Morning
-              </Text>
-              <Text style={[style.font16Re]}>Marry John</Text>
+              <Greetings />
+              <Text style={[style.font16Re]}>{formData?.userName}</Text>
             </View>
           </View>
 
@@ -293,179 +382,203 @@ const Home = () => {
           />
         </View>
       )}
-
-      {account_Type === 'customer' ||
-        (account_Type === 'funeral' && (
-          <>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                borderWidth: 1,
-                borderColor: colors.line,
-                marginVertical: 10,
-                borderRadius: 50,
-                height: 45,
-                paddingLeft: 14,
-              }}>
-              <SearchPic />
-              <TextInput
-                placeholder="Buscar"
-                style={{width: '100%', paddingLeft: 10}}
-              />
-            </View>
-          </>
-        ))}
-      {account_Type === 'customer' ? <ListOfSearches /> : null}
-
-      <ScrollView
-        style={{width: '100%'}}
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}>
-        {account_Type === 'customer' ? (
-          <>
-            <TextCardView
-              title={'Funeral Homes'}
-              subtitle={'View all'}
-              onPress={() => navigation.navigate('FuneralDetailed')}
-            />
-            <FlatList
-              horizontal
-              keyExtractor={item => item.id}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              data={funeralData}
-              renderItem={({item}) => {
-                return (
-                  // <View style={{backgroundColor: 'red'}}>
-                  <HomeCard
-                    name={item.name}
-                    subTitle={item.description}
-                    image={item.image}
-                    url={item.url}
-                    time={item.time}
-                    // navigation={props.navigation}
-                  />
-                  // </View>
-                );
-              }}
-            />
-          </>
-        ) : null}
-
-        <TextCardView
-          title={'Obituaries Near you'}
-          subtitle={'View all'}
-          onPress={() =>
-            navigation.navigate('FuneralNearDetailed', {
-              initialRegion: initialRegion,
-            })
-          }
+      {!funeralData ? (
+        <OrderNotFound
+          title={'Not Found data'}
+          subtitle={"You don't have any data at this time"}
         />
-        <View>
-          {account_Type === 'customer' ? (
-            ///obtained
-            <FlatList
-              keyExtractor={item => item.id}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              data={funeralData}
-              renderItem={({item, index}) =>
-                index < 2 ? (
-                  <BottomCard
-                    title={item.name}
-                    subtitle={item.description}
-                    account_Type={account_Type}
-                    onPress1={() =>
-                      navigation.navigate('FuneralDetailedPage', {item: item})
-                    }
+      ) : (
+        <>
+          {account_Type === 'customer' ||
+            (account_Type === 'funeral' && (
+              <>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: colors.line,
+                    marginVertical: 10,
+                    borderRadius: 50,
+                    height: 45,
+                    paddingLeft: 14,
+                  }}>
+                  <SearchPic />
+                  <TextInput
+                    placeholder="Buscar"
+                    style={{width: '100%', paddingLeft: 10}}
                   />
-                ) : null
+                </View>
+              </>
+            ))}
+          {account_Type === 'customer' ? <ListOfSearches /> : null}
+
+          <ScrollView
+            style={{width: '100%'}}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}>
+            {account_Type === 'customer' ? (
+              <>
+                <TextCardView
+                  title={'Funeral Homes'}
+                  subtitle={'View all'}
+                  onPress={() => navigation.navigate('FuneralDetailed')}
+                />
+                <FlatList
+                  horizontal
+                  keyExtractor={item => item.id}
+                  showsVerticalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={false}
+                  data={funeralData}
+                  renderItem={({item}) => {
+                    return (
+                      // <View style={{backgroundColor: 'red'}}>
+                      <HomeCard
+                        name={item.name}
+                        subTitle={item.description}
+                        image={item.image}
+                        url={item.url}
+                        time={item.time}
+                        // navigation={props.navigation}
+                      />
+                      // </View>
+                    );
+                  }}
+                />
+              </>
+            ) : null}
+
+            <TextCardView
+              title={'Obituaries Near you'}
+              subtitle={account_Type === 'customer' ? 'View all' : null}
+              onPress={() =>
+                navigation.navigate('FuneralNearDetailed', {
+                  initialRegion: initialRegion,
+                })
               }
             />
-          ) : (
-            <FlatList
-              keyExtractor={item => item.id}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              data={funeralDataOwn}
-              renderItem={({item}) => {
-                // console.log(item.image, 'akjska');
-                return (
-                  <BottomCard
-                    title={item.name}
-                    subtitle={item.description}
-                    account_Type={account_Type}
-                    onPressDel={() => {
-                      setShowDeletegModal(true);
-                      setDeleteItemId(item.id);
-                    }}
-                    onPress={() =>
-                      navigation.navigate('FuneralUpdate', {item: item})
-                    }
-                  />
-                );
-              }}
-            />
-          )}
-        </View>
+            <View>
+              {account_Type === 'customer' ? (
+                <FlatList
+                  keyExtractor={item => item.id}
+                  showsVerticalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={false}
+                  data={funeralData}
+                  renderItem={({item, index}) =>
+                    index < 2 ? (
+                      <BottomCard
+                        title={item.name}
+                        subtitle={item.description}
+                        account_Type={account_Type}
+                        onPress1={() =>
+                          navigation.navigate('FuneralDetailedPage', {
+                            item: item,
+                          })
+                        }
+                      />
+                    ) : null
+                  }
+                />
+              ) : (
+                <FlatList
+                  keyExtractor={item => item.id}
+                  showsVerticalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={false}
+                  ListEmptyComponent={() => (
+                    <OrderNotFound
+                      title={t('Not Found data')}
+                      subtitle={t("You don't have any data at this time")}
+                    />
+                  )}
+                  data={funeralDataOwn}
+                  renderItem={({item}) => {
+                    // console.log(item.id, 'akjska');
+                    return (
+                      <BottomCard
+                        title={item.name}
+                        subtitle={item.description}
+                        account_Type={account_Type}
+                        gotoDetailePage={() => {
+                          navigation.navigate('AddFuneralScreen', {
+                            item: item,
+                            id: item.id,
+                          });
+                        }}
+                        onPressDel={() => {
+                          setShowDeletegModal(true);
+                          setDeleteItemId(item.id);
+                        }}
+                        onPress={() =>
+                          navigation.navigate('FuneralUpdate', {
+                            item: item,
+                            id: item.id,
+                          })
+                        }
+                      />
+                    );
+                  }}
+                />
+              )}
+            </View>
 
-        {/* <FuneralCard status="home" /> */}
-        {/* <FuneralCard status="home" /> */}
-        {/* )} */}
-        {/* <TextCardView title={'Obituarios cerca de ti'} subtitle={'Ver todos'} /> */}
-      </ScrollView>
-      <ModalLoadingTrans
-        showLoadingModal={showLoadingModal}
-        setShowLoadingModal={setShowLoadingModal}
-      />
-      <Modal
-        transparent
-        visible={showDeleteModal}
-        animationType="fade"
-        onRequestClose={() => setShowDeletegModal(false)}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <View
-            style={{
-              backgroundColor: colors.white,
-              alignItems: 'center',
-              height: 130,
-              width: '90%',
-              justifyContent: 'space-evenly',
-              borderRadius: 10,
-            }}>
-            <Text style={[style.font16Re]}>
-              Are you sure you want to delete !
-            </Text>
+            {/* <FuneralCard status="home" /> */}
+            {/* <FuneralCard status="home" /> */}
+            {/* )} */}
+            {/* <TextCardView title={'Obituarios cerca de ti'} subtitle={'Ver todos'} /> */}
+          </ScrollView>
+          <ModalLoadingTrans
+            showLoadingModal={showLoadingModal}
+            setShowLoadingModal={setShowLoadingModal}
+          />
+          <Modal
+            transparent
+            visible={showDeleteModal}
+            animationType="fade"
+            onRequestClose={() => setShowDeletegModal(false)}>
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                width: '70%',
+                flex: 1,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}>
-              <BaseButton
-                title={'Cansel'}
-                onPress={() => setShowDeletegModal(false)}
-                defaultStyle={{width: 100, height: 35}}
-                textStyle={{fontSize: 12}}
-              />
+              <View
+                style={{
+                  backgroundColor: colors.white,
+                  alignItems: 'center',
+                  height: 130,
+                  width: '90%',
+                  justifyContent: 'space-evenly',
+                  borderRadius: 10,
+                }}>
+                <Text style={[style.font16Re]}>
+                  Are you sure you want to delete !
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    width: '70%',
+                  }}>
+                  <BaseButton
+                    title={'Cansel'}
+                    onPress={() => setShowDeletegModal(false)}
+                    defaultStyle={{width: 100, height: 35}}
+                    textStyle={{fontSize: 12}}
+                  />
 
-              <BaseButton
-                title={'Ok'}
-                onPress={() => handleDelete()}
-                defaultStyle={{width: 100, height: 35}}
-                textStyle={{fontSize: 12}}
-              />
+                  <BaseButton
+                    title={'Ok'}
+                    onPress={() => handleDelete()}
+                    defaultStyle={{width: 100, height: 35}}
+                    textStyle={{fontSize: 12}}
+                  />
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
-      </Modal>
+          </Modal>
+        </>
+      )}
     </Layout>
   );
 };

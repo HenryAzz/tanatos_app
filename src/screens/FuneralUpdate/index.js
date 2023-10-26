@@ -366,38 +366,7 @@ const FuneralUpdate = () => {
             />
           )}
         </TouchableOpacity>
-        <AppTextInput
-          titleText={'Name'}
-          placeholder={'Name'}
-          value={formData.name}
-          onChangeText={text => handleInputChange('name', text)}
-        />
-        <Text
-          style={[
-            style.font16Re,
 
-            // {fontFamily: fonts.medium, marginBottom: multiline ? 25 : 2},
-          ]}>
-          Description
-        </Text>
-        <TextInput
-          placeholder="Description"
-          multiline={true}
-          textAlignVertical="top"
-          value={formData.description}
-          onChangeText={text => handleInputChange('description', text)}
-          style={{
-            paddingLeft: 15,
-            paddingTop: 10,
-            borderColor: '#E0E0E0',
-            backgroundColor: '#F5F5F5',
-            borderWidth: 1,
-            marginVertical: 5,
-            width: '100%',
-            height: 100,
-            borderRadius: 10,
-          }}
-        />
         {/* <AppTextInput titleText={'Location'} placeholder={'Location'} /> */}
         <Text
           style={[

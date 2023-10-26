@@ -24,9 +24,12 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {ToastMessage} from '../../../utils/Toast';
 import ApiRequest from '../../../Services/ApiRequest';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {useMemo} from 'react';
+import {useTranslation} from 'react-i18next';
 
 const HomeFuneral = () => {
+  const route = useRoute();
   const [formData, setFormData] = useState({
     starting_date: undefined,
     starting_dateModal: undefined,
@@ -187,8 +190,6 @@ const HomeFuneral = () => {
       minute: '2-digit',
       hour12: true,
     });
-  console.log(formattedTimeCh, '11111');
-  console.log(formattedTimeFun, '11111');
 
   const handleAddObi = async () => {
     setdisabled(true);
@@ -249,9 +250,42 @@ const HomeFuneral = () => {
       setLoading(false);
     }
   };
+
+  const [valid, setValid] = useState();
+  useMemo(() => {
+    const isFormFilled =
+      imagesToSend?.length > 0 &&
+      // selectedItem.name &&
+      formData.name &&
+      formData.description &&
+      shortMessage &&
+      formData.starting_date &&
+      formData.starting_date1 &&
+      formattedTimeFun &&
+      formattedTimeCh &&
+      formData.name;
+    setValid(!isFormFilled);
+  }, [imagesToSend, formData, shortMessage, formattedTimeCh, formattedTimeFun]);
+
+  const status = route?.params;
+  console.log(status?.status);
+  const {t} = useTranslation();
   return (
     <Layout>
-      <AppHeader title={'Add Obituaries'} />
+      <AppHeader
+        title={t('Add Obituaries')}
+        skip={status?.status}
+        onPress={() =>
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: 'MainStack',
+              },
+            ],
+          })
+        }
+      />
       <ScrollView
         style={{width: '100%'}}
         showsHorizontalScrollIndicator={false}
@@ -288,8 +322,8 @@ const HomeFuneral = () => {
           )}
         </TouchableOpacity>
         <AppTextInput
-          titleText={'Name'}
-          placeholder={'Name'}
+          titleText={t('Name')}
+          placeholder={t('Name')}
           value={formData.name}
           onChangeText={text => handleInputChange('name', text)}
         />
@@ -299,10 +333,10 @@ const HomeFuneral = () => {
 
             // {fontFamily: fonts.medium, marginBottom: multiline ? 25 : 2},
           ]}>
-          Description
+          {t('addflower3')}
         </Text>
         <TextInput
-          placeholder="Description"
+          placeholder={t('addflower3')}
           multiline={true}
           textAlignVertical="top"
           value={formData.description}
@@ -326,10 +360,10 @@ const HomeFuneral = () => {
 
             // {fontFamily: fonts.medium, marginBottom: multiline ? 25 : 2},
           ]}>
-          Short Message
+          {t('funeral3')}
         </Text>
         <TextInput
-          placeholder="Short Message"
+          placeholder={t('funeral3')}
           multiline={true}
           textAlignVertical="top"
           maxLength={maxLength}
@@ -360,13 +394,13 @@ const HomeFuneral = () => {
               marginVertical: 16,
             },
           ]}>
-          Home Funeral Time
+          {t('funeral4')}
         </Text>
         {/* funeral_location funeral_lat funeral_lng chruch_location chruch_lat
         chruch_lng */}
         <Text
           style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
-          Funeral Location
+          {t('funeral5')}
         </Text>
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
@@ -379,7 +413,7 @@ const HomeFuneral = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text> {area ? area : 'Enter Funeral Location'}</Text>
+          <Text> {area ? area : t('funeral6')}</Text>
         </TouchableOpacity>
         <TimePicker
           // initialTime={formData.timeCherch}
@@ -388,10 +422,10 @@ const HomeFuneral = () => {
           show={showTimepicker}
           showTimepicker={() => setShowTimepicker(true)}
           onChange={handleTimeChange}
-          title="Funeral Time"
+          title={t('funeral7')}
         />
         <DatePicker
-          title={'Date'}
+          title={t('funeral8')}
           date={formData.starting_date}
           show={formData.starting_dateModal}
           // disable={route.params?.user === 'owner' ? false : true}
@@ -421,11 +455,11 @@ const HomeFuneral = () => {
               marginVertical: 16,
             },
           ]}>
-          Church Time
+          {t('funeral11')}
         </Text>
         <Text
           style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
-          Chruch Location
+          {t('funeral9')}
         </Text>
         <TouchableOpacity
           onPress={() => setModalVisible1(true)}
@@ -438,7 +472,7 @@ const HomeFuneral = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text> {area1 ? area1 : 'Enter Church Location'}</Text>
+          <Text> {area1 ? area1 : t('funeral0')}</Text>
         </TouchableOpacity>
         <TimePicker
           // initialTime={formData.timeCherch}
@@ -447,7 +481,7 @@ const HomeFuneral = () => {
           show={showTimepicker1}
           showTimepicker={() => setShowTimepicker1(true)}
           onChange={handleTimeChange1}
-          title="Chruch Time"
+          title={t('funeral11')}
         />
         <DatePicker
           title={'Date'}
@@ -477,7 +511,14 @@ const HomeFuneral = () => {
 
         <BaseButton
           onPress={handleAddObi}
-          title={loading ? <ActivityIndicator color={colors.white} /> : 'Add'}
+          disabled={valid}
+          title={
+            loading ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              t('funeral12')
+            )
+          }
           defaultStyle={{marginVertical: 20}}
         />
       </ScrollView>

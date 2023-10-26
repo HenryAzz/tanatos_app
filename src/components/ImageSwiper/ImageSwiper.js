@@ -23,6 +23,7 @@ colors;
 // };
 
 const ImageSwiper = ({images, imageStyle}) => {
+  // console.log(images, 'swiper getting imge ');
   return (
     <Swiper
       style={styles.swiper}
@@ -37,15 +38,20 @@ const ImageSwiper = ({images, imageStyle}) => {
         <View key={index} style={styles.slide}>
           <Image
             source={{uri: `https://locatestudent.com/tanatos/upload/${image}`}}
-            style={{
-              border: 10,
-              borderRadius: 10,
-              // borderBottomRightRadius: 10,
-              width: '100%',
-              height: '100%',
-              // borderTopRightRadius: imageStyle ? 0 : 10,
-              // borderTopLeftRadius: 10,
-            }}
+            style={[
+              {
+                // border: 10,
+                borderRadius: 10,
+                // borderBottomRightRadius: 10,
+                width: '100%',
+                height: '100%',
+                // marginRight: 20,
+                resizeMode: 'center',
+                // borderTopRightRadius: imageStyle ? 0 : 10,
+                // borderTopLeftRadius: 10,
+              },
+              imageStyle,
+            ]}
           />
         </View>
       ))}
@@ -76,3 +82,4 @@ const styles = StyleSheet.create({
 
 // how we call
 //   <Swiper images={swiperImages} />;
+//

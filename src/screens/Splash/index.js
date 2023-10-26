@@ -3,6 +3,7 @@ import React, {useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Layout from '../../components/Layout';
+import {colors} from '../../constraints';
 
 const Splash = () => {
   const navigation = useNavigation();
@@ -45,13 +46,19 @@ const Splash = () => {
   }, []);
 
   return (
-    <Layout>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.white,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
       <Image
-        source={require('../../assets/logo_splash.png')}
-        style={{width: 125}}
+        source={require('../../../bootsplash_logo.png')}
+        style={{width: 300}}
         resizeMode="center"
       />
-    </Layout>
+    </View>
   );
 };
 

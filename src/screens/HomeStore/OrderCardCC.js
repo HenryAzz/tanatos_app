@@ -32,6 +32,7 @@ const OrderCardCC = ({item, images}) => {
       style={{
         width: 158,
         // height: 100,
+        // alignSelf: 'flex-start',
         backgroundColor: colors.white,
         elevation: 5,
         shadowColor: colors.elev,
@@ -70,7 +71,7 @@ const OrderCardCC = ({item, images}) => {
           justifyContent: 'space-between',
         }}>
         <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
-          {item.price}
+          {item.price}$
         </Text>
         {item.status ? (
           <TouchableOpacity

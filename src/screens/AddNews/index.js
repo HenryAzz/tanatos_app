@@ -1,100 +1,3 @@
-// import {ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
-// import React, {useState} from 'react';
-// import Layout from '../../components/Layout';
-// import AppHeader from '../../components/AppHeader/AppHeader';
-// import AppTextInput from '../../components/FloatingLabelInput';
-// import {BaseButton} from '../../components/BaseButton';
-// import style from '../../assets/css/style';
-// import {colors, fonts} from '../../constraints';
-// import {useNavigation} from '@react-navigation/native';
-// import {DatePicker} from '../../components/DateComponent';
-
-// const AddNews = () => {
-//   const navigation = useNavigation();
-//   const [formData, setFormData] = useState({
-//     starting_date: undefined,
-//     starting_dateModal: undefined,
-//   });
-//   const onDateChange = (event, selectedDate, dateName, modalName) => {
-//     if (event.type === 'dismissed') {
-//       console.log('user cancelled');
-//     } else {
-//       setFormData(prevState => ({
-//         ...prevState,
-//         [modalName]: false,
-//         [dateName]: selectedDate?.toDateString(),
-//       }));
-//     }
-//   };
-//   return (
-//     <Layout>
-//       <AppHeader title={'Add News'} />
-//       <AppTextInput titleText={'Name'} placeholder={'Name'} />
-//       <ScrollView style={{width: '100%'}}>
-//         <View>
-//           <Text
-//             style={[
-//               style.font16Re,
-//               {fontFamily: fonts.medium, alignSelf: 'flex-start'},
-//             ]}>
-//             Upload Photo
-//           </Text>
-//           <View
-//             style={{
-//               width: '100%',
-//               marginVertical: 10,
-//               marginBottom: 10,
-//               height: 120,
-//               alignItems: 'center',
-//               justifyContent: 'center',
-//               borderWidth: 1.5,
-//               borderStyle: 'dashed',
-//             }}>
-//             <BaseButton
-//               title={'Upload a Photo'}
-//               defaultStyle={{width: '60%'}}
-//             />
-//           </View>
-
-//           {/* <View style={{width: '100%'}}>
-//             <DatePicker
-//               title={'Date of Birth'}
-//               date={formData.starting_date}
-//               show={formData.starting_dateModal}
-//               // disable={route.params?.user === 'owner' ? false : true}
-//               showDatepicker={() => {
-//                 setFormData(prevState => ({
-//                   ...prevState,
-//                   starting_dateModal: true,
-//                 }));
-//               }}
-//               onChange={(event, selectedDate) => {
-//                 onDateChange(
-//                   event,
-//                   selectedDate,
-//                   'starting_date',
-//                   'starting_dateModal',
-//                 );
-//               }}
-//               maxDate={new Date()}
-//             />
-//           </View> */}
-//           {/* <AppTextInput titleText={'Date'} placeholder={'Date'} /> */}
-//           <BaseButton
-//             title={'Add News'}
-//             defaultStyle={{marginTop: 40}}
-//             onPress={() => navigation.navigate('Phone')}
-//           />
-//         </View>
-//       </ScrollView>
-//     </Layout>
-//   );
-// };
-
-// export default AddNews;
-
-// const styles = StyleSheet.create({});
-
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
@@ -111,9 +14,7 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import style from '../../assets/css/style';
-// import {UploadImg} from '../../../assets/images';
 
-// import {UpdateUser, upload_data} from '../../../Services/LoginFunctions';
 import Icon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Layout from '../../components/Layout';
@@ -122,7 +23,8 @@ import {BaseButton} from '../../components/BaseButton';
 import {colors, constants, fonts} from '../../constraints';
 import {ToastMessage} from '../../utils/Toast';
 import ApiRequest from '../../Services/ApiRequest';
-const AddNews = props => {
+import {useMemo} from 'react';
+const AddNews = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const id = route?.params?.id;
@@ -224,45 +126,39 @@ const AddNews = props => {
 
     const dataToPost = {
       type: 'update_data',
-      table_name: 'stores',
+      // table_name: 'stores',
+      table_name: 'stores_gallery',
       id: id,
       images: JSON.stringify(imagesToSend),
     };
-
-    console.log(dataToPost, 'image uplod');
     try {
       const res = await ApiRequest(dataToPost);
-      console.log(res.data, 'image uplod');
       if (res?.data?.result) {
-        ToastMessage(res?.data?.message);
-        if (route?.params?.account_Type === 'funeral') {
-          navigation.navigate('MainStack', {screen: 'HomeFuneral'});
-          // navigation.navigate('MainStack', {screen: 'AddFlowers'});
-          // navigation.navigate('', {id: id});
-        }
-        // else {
-        //   navigation.reset({
-        //     index: 0,
-        //     routes: [
-        //       {
-        //         name: 'MainStack',
-        //       },
-        //     ],
-        //   });
-        // }
-        setLoading(false);
-        setdisabled(false);
-      } else if (route?.params?.account_Type === 'store') {
-        console.log(res?.data?.message);
-        navigation.navigate('MainStack', {
-          screen: 'AddFlowers',
-          params: {
-            id: id,
-            account_Type: account_Type,
-          },
-        });
+        console.log(res.data, 'image uplod');
 
-        // ToastMessage('1');
+        // ToastMessage(res?.data?.message);
+
+        if (route?.params?.account_Type === 'funeral') {
+          console.log('1st');
+          navigation.navigate('MainStack', {
+            screen: 'HomeFuneral',
+            params: {
+              status: 'before',
+            },
+          });
+        } else {
+          console.log('2nd');
+          navigation.navigate('MainStack', {
+            screen: 'AddFlowers',
+            params: {
+              id: id,
+              account_Type: account_Type,
+            },
+          });
+          setLoading(false);
+          setdisabled(false);
+        }
+
         setLoading(false);
         setdisabled(false);
       }
@@ -273,23 +169,16 @@ const AddNews = props => {
       setdisabled(false);
     }
   };
+
+  const [valid, setValid] = useState(true);
+
+  useMemo(() => {
+    const isFormFilled = imagesToSend?.length > 0;
+    setValid(!isFormFilled);
+  }, [imagesToSend]);
   return (
     <Layout>
       <ScrollView style={{width: '100%'}}>
-        {/* <View style={[style.layout, style.headerView]}> */}
-        {/* <Text style={style.headerText}>Add photos</Text>
-        <Text style={[style.emailText1, style.topLowMargin]}>
-          add your home photos
-        </Text>
-        <View style={style.topHighMargin} />
-        <TouchableOpacity
-          style={styles.imgBox}
-          onPress={openGallery}
-          // disabled={imageLoader && true}
-        >
-          <Text>Uplod image</Text>
-          <Text style={[style.emailText5, style.topMargin]}>Upload photos</Text> */}
-        {/* </TouchableOpacity> */}
         <AppHeader title={'Upload Photo'} />
         <View>
           <Text
@@ -311,43 +200,13 @@ const AddNews = props => {
               borderStyle: 'dashed',
             }}>
             <BaseButton
-              title={'Upload a Photo'}
+              title={'Upload Photo'}
               onPress={openGallery}
               defaultStyle={{width: '60%'}}
             />
           </View>
-
-          {/* <View style={{width: '100%'}}>
-            <DatePicker
-              title={'Date of Birth'}
-              date={formData.starting_date}
-              show={formData.starting_dateModal}
-              // disable={route.params?.user === 'owner' ? false : true}
-              showDatepicker={() => {
-                setFormData(prevState => ({
-                  ...prevState,
-                  starting_dateModal: true,
-                }));
-              }}
-              onChange={(event, selectedDate) => {
-                onDateChange(
-                  event,
-                  selectedDate,
-                  'starting_date',
-                  'starting_dateModal',
-                );
-              }}
-              maxDate={new Date()}
-            />
-          </View> */}
-          {/* <AppTextInput titleText={'Date'} placeholder={'Date'} /> */}
-          {/* <BaseButton
-            title={'Add News'}
-            defaultStyle={{marginTop: 40}}
-            onPress={() => navigation.navigate('Phone')}
-          /> */}
         </View>
-        {/* <Text style={[style.emailText, style.topMargin]}>Photos</Text> */}
+
         <FlatList
           data={images}
           horizontal
@@ -420,8 +279,8 @@ const AddNews = props => {
             marginVertical: 100,
           }}>
           <BaseButton
-            title={buttonText}
-            // disabled={disabled}
+            title={'Continue'}
+            disabled={valid || loading}
             loading={loading}
             onPress={handleSubmit}
           />

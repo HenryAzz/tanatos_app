@@ -1,24 +1,41 @@
-import {
-  StyleSheet,
-  Image,
-  top,
-  Text,
-  View,
-  TouchableOpacity,
-} from 'react-native';
 import React from 'react';
+import {Text, View, TouchableOpacity} from 'react-native';
 import {colors, fonts} from '../../constraints';
 import style from '../../assets/css/style';
 import {useNavigation} from '@react-navigation/native';
-
-const MyOrderCard = ({price, address, image, title, onPress, status}) => {
+import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
+import Icon from 'react-native-vector-icons/Entypo';
+const MyOrderCard = ({
+  price,
+  phone,
+  name,
+  location,
+  address,
+  images,
+  title,
+  onPress,
+  status,
+  accept,
+  cancel,
+  account_Type,
+  track,
+  id,
+  totalPrice,
+}) => {
+  // console.log(account_Type, '123456');
   const navigation = useNavigation();
+
   return (
-    <View
+    <TouchableOpacity
+      onPress={onPress}
       style={{
-        width: '99%',
+        width: account_Type === 'store ' ? '98%' : null,
+        marginVertical: 5,
+        marginHorizontal: 5,
+        height: 120,
+        // backgroundColor: 'red',
         marginTop: 20,
-        marginVertical: 6,
+        // margin: 6,
         elevation: 4,
         shadowColor: colors.elev,
         backgroundColor: colors.white,
@@ -28,95 +45,63 @@ const MyOrderCard = ({price, address, image, title, onPress, status}) => {
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          //   elevation: 4,
-
-          // width: '100%',  elevation: 4,
-          // backgroundColor: 'red',
         }}>
-        {/* <Text>sdsdsds</Text> */}
-        <Image
-          style={{
-            height: 100,
-            width: 120,
-
-            elevation: 4,
-          }}
-          source={image}
-        />
         <View
           style={{
-            justifyContent: 'space-evenly',
-            height: 100,
-            paddingHorizontal: 10,
-            width: '62%',
-            backgroundColor: colors.white,
+            height: 120,
+            padding: 12,
+            width: '100%',
+            // backgroundColor: colors.white,
             borderTopRightRadius: 10,
             borderBottomRightRadius: 10,
-            // elevation: 4,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
           }}>
+          {/* <Text>{id}</Text> */}
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+              flex: 1,
+              // width: '70%',
+              // flexDirection: 'row',
+              // alignItems: 'center',
               justifyContent: 'space-between',
             }}>
-            <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
-              {title}
+            <Text
+              style={[
+                style.font16Re,
+                {fontFamily: fonts.bold, color: colors.black},
+              ]}>
+              {name}
             </Text>
-
-            <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
-              {price}
+            <Text
+              style={[style.font14Re, {color: colors.black, marginTop: 10}]}>
+              {phone}
+            </Text>
+            <View style={{flex: 1}}>
+              <Text
+                style={[style.font14Re, {color: colors.black}]}
+                numberOfLines={2}>
+                {location}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{alignItems: 'flex-end', justifyContent: 'space-between'}}>
+            <TouchableOpacity onPress={onPress}>
+              <Icon
+                name="chevron-right"
+                color={colors.primaryColor}
+                size={28}
+              />
+            </TouchableOpacity>
+            <Text style={[style.font14Re, {fontFamily: fonts.bold}]}>
+              {totalPrice}$
             </Text>
           </View>
-
-          <Text
-            style={[
-              style.font8Re,
-              {
-                color: colors.textGray,
-
-                fontFamily: fonts.medium,
-                color: '#8C8994',
-              },
-            ]}>
-            132, My Street, Kingston, New York 12401
-          </Text>
-          <Text
-            style={[
-              style.font10Re,
-              {
-                color: colors.textGray,
-
-                fontFamily: fonts.medium,
-                color: '#8C8994',
-              },
-            ]}>
-            {address}
-          </Text>
-          {onPress ? (
-            <TouchableOpacity
-              onPress={onPress}
-              style={{
-                backgroundColor: colors.primaryColor,
-                height: 25,
-                width: 100,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 20,
-                alignSelf: 'flex-end',
-                marginBottom: 3,
-              }}>
-              <Text style={[style.font12Re, {color: colors.white}]}>
-                {status}
-              </Text>
-            </TouchableOpacity>
-          ) : null}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 export default MyOrderCard;
-
-const styles = StyleSheet.create({});

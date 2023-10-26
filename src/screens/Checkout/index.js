@@ -1,5 +1,11 @@
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import Layout from '../../components/Layout';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import style from '../../assets/css/style';
@@ -9,13 +15,75 @@ import Cardpic from '../../assets/images/svg/Card.svg';
 import Cardpic1 from '../../assets/images/svg/Card1.svg';
 import Icon from 'react-native-vector-icons/Ionicons';
 import TextCard from './TextCard';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {devWidth} from '../../constraints/Dimentions';
+import BalanceModal from '../PaymentMethod/BallanceModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ApiRequest from '../../Services/ApiRequest';
+import {ToastMessage} from '../../utils/Toast';
+import {useTranslation} from 'react-i18next';
 const CheckoutScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const total_amount = route?.params?.basicPrice;
+  const dataTosend = route?.params?.dataTosend;
+  const FuneralItemData = route?.params?.FuneralItemData;
+  console.log(dataTosend, 'dataTosend');
+  const [value, setValue] = useState('');
+  const [show, setShow] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  // console.log(FuneralItemData.id, 'fueraid');
+
+  const [catData, setCatData] = useState();
+
+  const [loading, setLoading] = useState(false);
+  const handleOrderData = async () => {
+    // console.log(' dataTosend[0].store_id', dataTosend[0]?.store_id);
+    const user_id = await AsyncStorage.getItem('user_id');
+    try {
+      setLoading(true);
+      // ,,,
+
+      const res = await ApiRequest({
+        type: 'add_data',
+        table_name: 'orders',
+        id: '',
+        user_id: user_id,
+        store_id: dataTosend[0]?.store_id,
+        store_gallery_id: dataTosend[0].id,
+        items: JSON.stringify(dataTosend),
+        full_name: FuneralItemData.user.name,
+        address: FuneralItemData.funeral_location,
+        email: FuneralItemData.user.email,
+        phone: FuneralItemData.user.phone,
+        status: 'pending',
+        // status: 'completed',
+        // status: 'cancelled',
+        // status: 'accepted',
+        lat: FuneralItemData.funeral_lat,
+        lng: FuneralItemData.funeral_lng,
+        funeral_id: FuneralItemData.id,
+        sympathy_text: 'Rest in piece',
+        total_amount: total_amount,
+      });
+      // console.log('2');
+      const resp = res.data;
+      if (resp.result) {
+        ToastMessage(resp.message);
+        setModalVisible(true);
+      }
+      // console.log(resp, 'order done');
+    } catch (err) {
+      console.log('order errrrrooorrr', err);
+    } finally {
+      // console.log('order errrrrooorrr');
+      setLoading(false);
+    }
+  };
+  const {t} = useTranslation();
   return (
     <Layout>
-      <AppHeader title={'Checkout'} />
+      <AppHeader title={t('Checkout')} />
 
       {/* <ScrollView
         showsHorizontalScrollIndicator={false}
@@ -23,9 +91,9 @@ const CheckoutScreen = () => {
       <View style={{alignSelf: 'flex-start', width: '100%'}}>
         <Text
           style={[style.font18Re, {fontFamily: fonts.bold, marginBottom: 10}]}>
-          Shipping Address
+          {t('Dirección de envío')}
         </Text>
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -46,7 +114,7 @@ const CheckoutScreen = () => {
             size={22}
             color={colors.primaryColor}
           />
-        </View>
+        </View> */}
         <View
           style={{
             backgroundColor: colors.white,
@@ -62,7 +130,9 @@ const CheckoutScreen = () => {
               width: '100%',
               alignItems: 'center',
             }}>
-            <Text style={[style.font14Re, {marginBottom: 10}]}>Jane Doe</Text>
+            <Text style={[style.font14Re, {marginBottom: 10}]}>
+              {FuneralItemData.user.name}
+            </Text>
             <Text
               style={[
                 style.font14Re,
@@ -72,16 +142,16 @@ const CheckoutScreen = () => {
                   //   fontFamily: fonts.bold,
                 },
               ]}>
-              Change
+              {t('Change')}
             </Text>
           </View>
           <Text style={[style.font14Re, {width: 200}]}>
-            3 Newbridge Court Chino Hills, CA 91709, United States
+            {FuneralItemData.funeral_location}
           </Text>
         </View>
         <Text
           style={[style.font14Re, {alignSelf: 'flex-end', marginVertical: 4}]}>
-          we send to the funeral home
+          {t('we send to the funeral home')}
         </Text>
         {/* <View
           style={{
@@ -151,16 +221,34 @@ const CheckoutScreen = () => {
               color={colors.primaryColor}
             />
           </View> */}
-          <TextCard title={'Order:'} price={'112$'} />
-          <TextCard title={'Delivery:'} price={'15$'} />
-          <TextCard title={'Summay:'} price={'127$'} />
+          <TextCard title={t('Order')} price={`$${total_amount}`} />
+          <TextCard
+            title={t('Delivery')}
+            price={`$${parseInt(total_amount) + 20}`}
+          />
+          <TextCard title={'Summay'} price={'127$'} />
         </View>
       </View>
       {/* </ScrollView> */}
       <BaseButton
-        title={'Continue to Payment'}
-        onPress={() => navigation.navigate('ShippingAddress')}
+        title={
+          loading ? (
+            <ActivityIndicator color={colors.white} />
+          ) : (
+            t('Continue to Payment')
+          )
+        }
+        disabled={loading}
+        // onPress={() => navigation.navigate('ShippingAddress')}
+        // onPress={() => setModalVisible(true)}
+        onPress={() => handleOrderData()}
         defaultStyle={{marginTop: 33, marginBottom: 20}}
+      />
+      <BalanceModal
+        total_amount={total_amount}
+        dataTosend={dataTosend}
+        isModalVisible={isModalVisible}
+        setModalVisible={setModalVisible}
       />
     </Layout>
   );

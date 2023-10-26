@@ -1,12 +1,16 @@
 import {
+  ActivityIndicator,
+  FlatList,
   Image,
   ImageBackground,
+  Modal,
+  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Layout from '../../components/Layout';
 import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
@@ -15,8 +19,96 @@ import FuneralCard from '../Home/FuneralCard';
 import {ScrollView} from 'react-native';
 import Edit from '../../assets/Edit1.png';
 import {devWidth} from '../../constraints/Dimentions';
+import {useRoute} from '@react-navigation/native';
+import ApiRequest from '../../Services/ApiRequest';
+import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
+import Icon from 'react-native-vector-icons/Entypo';
+import OrderNotFound from '../MyOrder/OrderNotFound';
 
 const AddFuneralScreen = () => {
+  const route = useRoute();
+  const item = route.params.item;
+  const id = route.params.id;
+  const [funeralData, setFuneralData] = useState([]);
+  console.log(funeralData, 'funeralData rece');
+
+  const cleanedPath = item.image?.replace(/^"(.*)"$/, '$1');
+  // console.log(item.image, 'funeralData');
+  // console.log('item.url + cleanedPath', item.url + cleanedPath);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const handleGetFuneralData = async () => {
+    try {
+      setLoading(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'orders',
+        // funeral_id: item.id,
+        funeral_id: item.id,
+      });
+      const resp = res?.data?.data;
+      // console.log(resp, 'resp');
+      setFuneralData(resp);
+      // if (res?.data?.length > 0) {
+      //   setFuneralData(resp);
+      // } else {
+      //   setFuneralData([]);
+      // }
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleGetFuneralDataMore = async () => {
+    try {
+      setBottomLoader(true);
+      // setLoading(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'orders',
+        // funeral_id: item.id,
+        funeral_id: item.id,
+        last_id: funeralData[funeralData.length - 1]?.id,
+      });
+      const resp = res?.data?.data;
+      // console.log(resp, 'resp');
+      setBottomLoader(false);
+      if (resp && resp != undefined && resp.length > 0) {
+        setFuneralData([...funeralData, ...resp]);
+      }
+      // setFuneralData(resp);
+      // if (res?.data?.length > 0) {
+      //   setFuneralData(resp);
+      // } else {
+      //   setFuneralData([]);
+      // }
+    } catch (err) {
+    } finally {
+      setBottomLoader(false);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    handleGetFuneralData();
+  }, []);
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const [showImage, setShowImage] = useState();
+
+  // last_id: catalogData[catalogData.length - 1]?.id,
+  //   if (resp && resp != undefined && resp.length > 0) {
+  //     setCatalogData([...catalogData, ...resp]);
+  // }
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    handleGetCatData();
+  };
+  const [bottomLoader, setBottomLoader] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const handleScroll = () => {
+    setScrolled(true);
+  };
+
   return (
     <View style={{flex: 1, width: '100%', backgroundColor: colors.white}}>
       <AppHeader
@@ -38,12 +130,14 @@ const AddFuneralScreen = () => {
           }}>
           <View style={{width: '66%', left: 10}}>
             <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                // width: devWidth,
-              }}>
+              style={
+                {
+                  // flexDirection: 'row',
+                  // alignItems: 'center',
+                  // justifyContent: 'space-between',
+                  // width: '100%',
+                }
+              }>
               <Text
                 style={[
                   style.font24Re,
@@ -51,10 +145,8 @@ const AddFuneralScreen = () => {
                 ]}>
                 TANATOS
               </Text>
-              <TouchableOpacity style={{position: 'absolute'}}>
-                <Image source={Edit} style={{height: 20, width: 20}} />
-              </TouchableOpacity>
             </View>
+
             <Text
               style={[
                 style.font12Re,
@@ -63,7 +155,7 @@ const AddFuneralScreen = () => {
                   color: colors.white,
                 },
               ]}>
-              {/* ESQUELAS ONLINE */}
+              ESQUELAS ONLINE
             </Text>
             <Text
               style={[
@@ -74,34 +166,120 @@ const AddFuneralScreen = () => {
                   marginVertical: 10,
                 },
               ]}>
-              Marry Phillips
+              {/* name */}
+              {item.name}
+              {/* {'funeralData[0]?.full_name'} */}
             </Text>
             <Text style={[{fontSize: 13, color: colors.white}]}>
-              Fining Solace in the shared memories we hold dear
+              {item.short_message}
             </Text>
           </View>
+
           <Image
-            source={require('../../assets/Sharedimg.png')}
+            source={{uri: item.url + cleanedPath}}
             style={{
               height: 160,
               width: 160,
               right: 20,
+              borderRadius: 80,
               top: 30,
             }}
           />
         </View>
+        {/* <TouchableOpacity style={{position: 'absolute', right: 20, top: 40}}>
+          <Image source={Edit} style={{height: 20, width: 20}} />
+        </TouchableOpacity> */}
       </ImageBackground>
-      <ScrollView
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}>
-        <View style={{marginHorizontal: 10, marginVertical: 40}}>
-          <FuneralCard />
-          <FuneralCard />
-          <FuneralCard />
-          <FuneralCard />
-          <FuneralCard />
-        </View>
-      </ScrollView>
+      {funeralData?.length > 0 ? (
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}>
+          <View style={{marginHorizontal: 10, marginVertical: 40}}>
+            <FlatList
+              data={funeralData} // Your array of funeral items
+              keyExtractor={item => item.id.toString()}
+              onScroll={handleScroll}
+              onEndReached={scrolled ? handleGetFuneralDataMore : null}
+              ListEmptyComponent={
+                <OrderNotFound
+                  title={'Not Found data'}
+                  subtitle={"You don't have any at this time"}
+                />
+              }
+              ListFooterComponent={
+                bottomLoader && (
+                  <ActivityIndicator size="large" color={colors.gray} />
+                )
+              }
+              ListFooterComponentStyle={{
+                width: '100%',
+                marginTop: 5,
+              }}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+              renderItem={({item}) => {
+                // console.log(item, 'sd');
+                const items = JSON.parse(item.items);
+                const imagesArray = items.flatMap(item => item.images);
+
+                return (
+                  <View style={{}}>
+                    <FuneralCard
+                      name={item?.funeral?.name}
+                      description={item?.funeral?.description}
+                      images={imagesArray}
+                      sympathy_text={item.sympathy_text}
+                      onPress={() => {
+                        setShowLoadingModal(true);
+                        setShowImage(imagesArray);
+                      }}
+                    />
+                  </View>
+                );
+              }}
+            />
+          </View>
+          <Modal
+            transparent
+            visible={showLoadingModal}
+            animationType="fade"
+            onRequestClose={() => setShowLoadingModal(false)}>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <View style={{backgroundColor: colors.white, flex: 1}}>
+                {/* <View style={{height: 120, width: 120, borderRadius: 10}}> */}
+                <ImageSwiper images={showImage} />
+                <TouchableOpacity
+                  onPress={() => setShowLoadingModal(false)}
+                  style={{
+                    position: 'absolute',
+                    right: 20,
+                    top: 20,
+                    // backgroundColor: 'red',
+                  }}>
+                  <Icon
+                    name="circle-with-cross"
+                    color={colors.black}
+                    size={30}
+                  />
+                </TouchableOpacity>
+                {/* </View> */}
+              </View>
+            </View>
+          </Modal>
+        </ScrollView>
+      ) : (
+        <OrderNotFound
+          title={'Not Found data'}
+          subtitle={"You don't have any data at this time"}
+        />
+      )}
     </View>
   );
 };

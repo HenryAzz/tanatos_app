@@ -8,6 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 import ApiRequest from '../../Services/ApiRequest';
 import {isValidNumber} from 'react-native-phone-number-input';
 import {colors} from '../../constraints';
+import {useTranslation} from 'react-i18next';
 
 const ForgotPassword = () => {
   const navigation = useNavigation();
@@ -59,14 +60,12 @@ const ForgotPassword = () => {
       setIsLoading(false);
     }
   };
+  const {t, i18n} = useTranslation();
 
   return (
     <Layout>
-      <View>
-        <AuthHeader
-          title={'Forgot Password'}
-          subTitle={'Enter Your phone Number to change passwprd'}
-        />
+      <View style={{width: '100%'}}>
+        <AuthHeader title={t('resetpass1')} subTitle={t('resetpass2')} />
         <PhoneNumberInput
           title={'Phone Number'}
           valid={valid}
@@ -80,7 +79,7 @@ const ForgotPassword = () => {
         title={
           isLoading ? <ActivityIndicator color={colors.white} /> : 'Continue'
         }
-        disabled={valid}
+        disabled={valid || isLoading}
         defaultStyle={{marginTop: 30}}
         onPress={handleOTP}
       />

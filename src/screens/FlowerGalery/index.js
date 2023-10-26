@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Button,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Layout from '../../components/Layout';
@@ -20,11 +21,13 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import BuyNowb from '../../components/BuyNow';
 import ApiRequest from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
+import {useTranslation} from 'react-i18next';
+import OrderNotFound from '../MyOrder/OrderNotFound';
 
 const FlowerGalery = () => {
   const route = useRoute();
-  const item1 = route?.params?.item;
-  // console.log(item1, 'item receiver');
+  const FuneralItemData = route?.params?.item;
+  // console.log(FuneralItemData, 'item receiver');
   const navigation = useNavigation();
   const cardData = [
     {
@@ -76,7 +79,7 @@ const FlowerGalery = () => {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
 
   const handleGetStoreData = async () => {
-    console.log(1);
+    // console.log(1);
     try {
       setShowLoadingModal(true);
       setLoading(true);
@@ -87,8 +90,31 @@ const FlowerGalery = () => {
         // last_id:
       });
       const resp = res.data.data;
-      console.log(resp, 'resp///////////');
+      console.log(resp, 'get store data///////////');
       setStoreData(resp);
+      setShowLoadingModal(false);
+    } catch (err) {
+    } finally {
+      setShowLoadingModal(false);
+      setLoading(false);
+    }
+  };
+  const handleGetStoreDataMore = async () => {
+    try {
+      setShowLoadingModal(true);
+      setLoading(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'stores_gallery',
+        last_id: storeData[storeData.length - 1]?.id,
+        // last_id:
+      });
+      const resp = res.data.data;
+      if (resp && resp != undefined && resp.length > 0) {
+        setStoreData([...storeData, ...resp]);
+      }
+      // console.log(resp, 'get store data///////////');
+      // setStoreData(resp);
       setShowLoadingModal(false);
     } catch (err) {
     } finally {
@@ -99,17 +125,31 @@ const FlowerGalery = () => {
   useEffect(() => {
     handleGetStoreData();
   }, []);
+  const {t} = useTranslation();
+  // const [isLoading, setIsLoading] = useState(true);
+  const [bottomLoader, setBottomLoader] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const handleScroll = () => {
+    setScrolled(true);
+  };
 
   return (
     <Layout>
-      <AppHeader title={'Westside Florist'} defaultStyle={{marginBottom: 30}} />
+      <AppHeader
+        title={t('Westside Florist')}
+        defaultStyle={{marginBottom: 30}}
+      />
       <View style={{alignSelf: 'flex-start'}}>
         <Text style={[style.font24Re, {fontFamily: fonts.bold}]}>
-          List of Stores
+          {t('List of Stores')}
         </Text>
         <Text
-          style={{color: '#A2A2A2', fontFamily: fonts.regular, fontSize: 15}}>
-          Choose the store
+          style={{
+            color: '#A2A2A2',
+            fontFamily: fonts.regular,
+            fontSize: 15,
+          }}>
+          {t('Choose the store')}
         </Text>
       </View>
       {/* <Button title="click" onPress={() => handleGetStoreData()} /> */}
@@ -131,7 +171,7 @@ const FlowerGalery = () => {
           marginBottom: 30,
         }}>
         <Icon name="search" size={24} color="#8C8C8C" />
-        <TextInput placeholder="Search" style={{width: '95%'}} />
+        <TextInput placeholder={t('Search')} style={{width: '95%'}} />
       </View>
       {/* <ScrollView> */}
       <FlatList
@@ -140,16 +180,37 @@ const FlowerGalery = () => {
         showsHorizontalScrollIndicator={false}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.listContainer}
+        onScroll={handleScroll}
+        onEndReached={scrolled ? handleGetStoreDataMore : null}
+        onEndReachedThreshold={0.2}
+        ListEmptyComponent={
+          !isLoading && (
+            <OrderNotFound
+              title={'No service added'}
+              subTitle={'Future added services will be showing here...'}
+            />
+          )
+        }
+        ListFooterComponent={
+          bottomLoader && (
+            <ActivityIndicator size="large" color={colors.gray3} />
+          )
+        }
+        ListFooterComponentStyle={{
+          width: '100%',
+          marginTop: 5,
+        }}
         numColumns={2}
         renderItem={({item}) => {
-          // console.log(item.image, 'jj');
+          // console.log(item, 'item.store');
           return (
             <CardListFlowerGalery
               item={item}
               onPress={() =>
                 navigation.navigate('SpecificStoreGalery', {
                   item: item,
-                  item1: item1,
+                  id: item.id,
+                  item1: FuneralItemData,
                 })
               }
               // onPress={() => setModalVisible(true)}

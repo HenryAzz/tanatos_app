@@ -46,6 +46,10 @@ import Map from '../screens/Map';
 import AddFlowers from '../screens/AddFlowers';
 import Catalog from '../screens/Catalog';
 import SpecificStoreGalery from '../screens/FlowerGalery/SpecificStoreGalery';
+import OrderAllDetails from '../screens/OrderAllDetails/OrderAllDetails';
+import CreateStore from '../screens/CreateStore';
+import {useTranslation} from 'react-i18next';
+import UploadPhoto from '../screens/AddNews/UploadPhoto';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -82,14 +86,18 @@ const MainStack = () => {
       <Stack.Screen name="PaymentConfirmOtp" component={PaymentConfirmOtp} />
       <Stack.Screen name="ViewOrder" component={ViewOrder} />
       <Stack.Screen name="AddNewss" component={AddNews} />
+      <Stack.Screen name="UploadPhoto" component={UploadPhoto} />
       <Stack.Screen name="HomeFuneral" component={HomeFuneral} />
       <Stack.Screen name="FuneralUpdate" component={FuneralUpdate} />
       <Stack.Screen name="Map" component={Map} />
       <Stack.Screen name="AddFlowers" component={AddFlowers} />
+      <Stack.Screen name="AddFuneralScreen" component={AddFuneralScreen} />
+      <Stack.Screen name="OrderAllDetails" component={OrderAllDetails} />
       <Stack.Screen
         name="SpecificStoreGalery"
         component={SpecificStoreGalery}
       />
+      <Stack.Screen name="CreateStoreapp" component={CreateStore} />
     </Stack.Navigator>
   );
 };
@@ -103,6 +111,9 @@ const AppStack = () => {
   useEffect(() => {
     getAccountType();
   }, []);
+
+  const {t, i18n} = useTranslation();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -137,12 +148,13 @@ const AppStack = () => {
                 color: focused ? colors.primaryColor : colors.gray,
                 fontFamily: focused ? fonts.medium : fonts.regular,
               }}>
-              {account_Type === 'funeral' ? 'Add Obituaries' : 'Home'}
+              {account_Type === 'funeral' ? t('Add Obituaries') : t('Home')}
             </Text>
           ),
         }}
       />
-      {account_Type === 'customer' || account_Type === 'store' ? (
+      {/* {account_Type === 'customer' || account_Type === 'store' ? ( */}
+      {account_Type === 'customer' ? (
         <Tab.Screen
           name="MyOrder"
           component={MyOrder}
@@ -158,7 +170,7 @@ const AppStack = () => {
                   color: focused ? colors.primaryColor : color,
                   fontFamily: focused ? fonts.medium : fonts.regular,
                 }}>
-                My Order
+                {t('My Order')}
               </Text>
             ),
           }}
@@ -180,7 +192,7 @@ const AppStack = () => {
                   color: focused ? colors.primaryColor : color,
                   fontFamily: focused ? fonts.medium : fonts.regular,
                 }}>
-                Favorite
+                {t('Favorite')}
               </Text>
             ),
           }}
@@ -203,7 +215,7 @@ const AppStack = () => {
                   color: focused ? colors.primaryColor : color,
                   fontFamily: focused ? fonts.medium : fonts.regular,
                 }}>
-                Add Funeral
+                {t('Add Funeral')}
               </Text>
             ),
           }}
@@ -225,12 +237,36 @@ const AppStack = () => {
                   color: focused ? colors.primaryColor : color,
                   fontFamily: focused ? fonts.medium : fonts.regular,
                 }}>
-                Catalog
+                {t('Catalog')}
               </Text>
             ),
           }}
         />
       )}
+
+      {account_Type === 'store' && (
+        <Tab.Screen
+          name="CreateStoreapp"
+          // component={AddNews}
+          component={CreateStore}
+          options={{
+            tabBarIcon: ({focused}) =>
+              focused ? <AddNewsIcon focused={focused} /> : <AddNewsIcon />,
+            tabBarLabel: ({focused, color, size}) => (
+              <Text
+                style={{
+                  // fontSize: 14,
+                  paddingBottom: 5,
+                  color: focused ? colors.primaryColor : color,
+                  fontFamily: focused ? fonts.medium : fonts.regular,
+                }}>
+                {t('Store')}
+              </Text>
+            ),
+          }}
+        />
+      )}
+
       <Tab.Screen
         name="Account"
         component={Account}
@@ -245,7 +281,7 @@ const AppStack = () => {
                 color: focused ? colors.primaryColor : color,
                 fontFamily: focused ? fonts.medium : fonts.regular,
               }}>
-              Account
+              {t('Account')}
             </Text>
           ),
         }}
@@ -268,7 +304,7 @@ const AppStackWithoutBottom = () => {
       <Stack.Screen name="DataProtection" component={DataProtection} />
       <Stack.Screen name="FAQs" component={FAQs} />
       <Stack.Screen name="Balance" component={BallanceScreen} />
-      {/* <Stack.Screen name="PaymentMethod" component={} /> */}
+      <Stack.Screen name="UploadPhoto" component={UploadPhoto} />
     </Stack.Navigator>
   );
 };

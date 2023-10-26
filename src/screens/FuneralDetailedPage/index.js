@@ -17,6 +17,7 @@ import style from '../../assets/css/style';
 import FuneralCardShow from './FuneralCardShow';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
 import Share from 'react-native-share';
+import {useTranslation} from 'react-i18next';
 const FuneralDetailedPage = () => {
   const route = useRoute();
   const item = route?.params?.item;
@@ -25,7 +26,7 @@ const FuneralDetailedPage = () => {
   const pathFromBackend = item.image;
 
   const cleanedPath = pathFromBackend.replace(/^"(.*)"$/, '$1');
-  console.log(item, 'data item');
+  // console.log(item, 'data item');
   const navigation = useNavigation();
   const ShareMe = async () => {
     const shareOptions = {
@@ -45,7 +46,7 @@ const FuneralDetailedPage = () => {
   )},${parseFloat(item.funeral_lng)}&destination=${parseFloat(
     item.chruch_lat,
   )},${parseFloat(item.chruch_lng)}`;
-
+  const {t} = useTranslation();
   return (
     <View style={{flex: 1, width: '100%', backgroundColor: colors.white}}>
       <FocusAwareStatusBar
@@ -55,80 +56,76 @@ const FuneralDetailedPage = () => {
         translucent={true}
       />
 
-      <ScrollView
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-        style={{width: '100%'}}>
-        <ImageBackground
-          style={{height: 270, paddingTop: 16}}
-          source={require('../../assets/Sharedbg.jpg')}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{}}>
-            <Image
-              source={require('../../assets/BackButtonp.png')}
-              style={{
-                height: 44,
-                width: 44,
-                position: 'absolute',
-                marginVertical: 10,
-              }}
-            />
-          </TouchableOpacity>
-          <View
+      <ImageBackground
+        style={{height: 270, paddingTop: 16}}
+        source={require('../../assets/Sharedbg.jpg')}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{}}>
+          <Image
+            source={require('../../assets/BackButtonp.png')}
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 4,
-              paddingLeft: 16,
-              marginTop: 30,
-              width: '96%',
-              alignSelf: 'center',
-            }}>
-            <View style={{width: '66%', left: 10}}>
-              <Text
-                style={[
-                  style.font24Re,
-                  {fontFamily: fonts.bold, color: colors.white},
-                ]}>
-                TANATOS
-              </Text>
-              <Text
-                style={[
-                  style.font12Re,
-                  {
-                    fontFamily: fonts.bold,
-                    color: colors.white,
-                  },
-                ]}>
-                ESQUELAS ONLINE
-              </Text>
-              <Text
-                style={[
-                  style.font24Re,
-                  {
-                    fontFamily: fonts.bold,
-                    color: colors.white,
-                    marginVertical: 10,
-                  },
-                ]}>
-                {item.name}
-              </Text>
-              <Text style={[{fontSize: 13, color: colors.white}]}>
-                {item.short_message}
-              </Text>
-            </View>
-            <Image
-              source={{uri: item.url + cleanedPath}}
-              resizeMode="contain"
-              style={{
-                height: 160,
-                width: 160,
-                right: 20,
-                top: 30,
-                borderRadius: 80,
-              }}
-            />
-            {/* <Image
+              height: 44,
+              width: 44,
+              position: 'absolute',
+              marginVertical: 10,
+            }}
+          />
+        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 4,
+            paddingLeft: 16,
+            marginTop: 30,
+            width: '96%',
+            alignSelf: 'center',
+          }}>
+          <View style={{width: '66%', left: 10}}>
+            <Text
+              style={[
+                style.font24Re,
+                {fontFamily: fonts.bold, color: colors.white},
+              ]}>
+              {t('TANATOS')}
+            </Text>
+            <Text
+              style={[
+                style.font12Re,
+                {
+                  fontFamily: fonts.bold,
+                  color: colors.white,
+                },
+              ]}>
+              {t('ESQUELAS ONLINE')}
+            </Text>
+            <Text
+              style={[
+                style.font24Re,
+                {
+                  fontFamily: fonts.bold,
+                  color: colors.white,
+                  marginVertical: 10,
+                },
+              ]}>
+              {item.name}
+            </Text>
+            <Text style={[{fontSize: 13, color: colors.white}]}>
+              {item.short_message}
+            </Text>
+          </View>
+          <Image
+            source={{uri: item.url + cleanedPath}}
+            resizeMode="contain"
+            style={{
+              height: 160,
+              width: 160,
+              right: 20,
+              top: 30,
+              borderRadius: 80,
+            }}
+          />
+          {/* <Image
               source={require('../../assets/logoimg.png')}
               resizeMode="contain"
               style={{
@@ -138,8 +135,12 @@ const FuneralDetailedPage = () => {
                 top: 30,
               }}
             /> */}
-          </View>
-        </ImageBackground>
+        </View>
+      </ImageBackground>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        style={{width: '100%'}}>
         <View style={{padding: 14, marginBottom: 20}}>
           <View style={{paddingVertical: 14}}>
             <Text style={[style.font16Re, {color: '#858585'}]}>
@@ -207,11 +208,11 @@ const FuneralDetailedPage = () => {
             // }}
           />
           <BaseButton
-            title={'Send Flowers'}
+            title={t('Send Flowers')}
             defaultStyle={{marginVertical: 10}}
             onPress={() => navigation.navigate('FlowerGalery', {item: item})}
           />
-          <BaseButton title={'Share'} onPress={ShareMe} />
+          <BaseButton title={t('Share')} onPress={ShareMe} />
         </View>
       </ScrollView>
     </View>

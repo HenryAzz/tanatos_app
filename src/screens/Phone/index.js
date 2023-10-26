@@ -23,7 +23,7 @@ const Phone = () => {
   const route = useRoute();
   const navigation = useNavigation();
   // const formDataUser = route?.params?.formDataUser;
-  const {formData, account_Type, city, state, country, area} = route.params;
+  // const {formData, account_Type, city, state, country, area} = route.params;
   // console.log(formData, '>>>>>>>>>>>>>>>'); // Check if it's defined and contains data
 
   const [data, setData] = useState({
@@ -46,13 +46,6 @@ const Phone = () => {
       if (formData && account_Type && data.phoneNumber) {
         navigation.navigate('OtpVerified', {
           OTP: res?.data?.code,
-          formData: formData,
-          account_Type: account_Type,
-          phone: data.phoneNumber,
-          city: city,
-          state: state,
-          country: country,
-          area: area,
         });
       }
       setIsLoading(false);

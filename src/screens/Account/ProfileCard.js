@@ -4,7 +4,16 @@ import {colors} from '../../constraints';
 import {deviceWidth} from '../../constants/Dimentions';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useTranslation} from 'react-i18next';
 const ProfileCard = ({title, source, onPress}) => {
+  const {t, i18n} = useTranslation();
+  const toggleLanguage = async () => {
+    if (i18n.language === 'en') {
+      i18n.changeLanguage('es'); // Switch to Spanish
+    } else {
+      i18n.changeLanguage('en'); // Switch to English
+    }
+  };
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -42,7 +51,7 @@ const ProfileCard = ({title, source, onPress}) => {
               // resizeMode="center"
             />
           </View>
-          <Text style={[style.font16Re, {paddingLeft: 16}]}>{title}</Text>
+          <Text style={[style.font16Re, {paddingLeft: 16}]}>{t(title)}</Text>
         </View>
         <Icon name={'chevron-forward'} size={22} color={colors.primaryColor} />
       </View>
