@@ -38,7 +38,7 @@ const Splash = () => {
           ],
         });
       }
-    }, 1500);
+    }, 2000);
   };
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const Splash = () => {
       }}>
       <StatusBar hidden translucent={true} />
       <Image
-        source={require('../../../src/assets/Bootsplash.png')}
+        source={require('../../../src/assets/bootsplash_logo_original.png')}
         style={{width: 250}}
         resizeMode="center"
       />

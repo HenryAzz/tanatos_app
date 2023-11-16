@@ -40,14 +40,14 @@ const App = () => {
   useEffect(() => {
     setTimeout(() => {
       RNBootSplash.hide({fade: true});
-    }, 1000);
+    }, 50);
   }, []);
 
   return (
     <Provider store={store}>
       <RootSiblingParent>
         <I18nextProvider i18n={i18n}>
-          <NavigationContainer>
+          <NavigationContainer onReady={() => RNBootSplash.hide()}>
             <RootNavigation />
           </NavigationContainer>
         </I18nextProvider>
