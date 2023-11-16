@@ -55,7 +55,7 @@ const Splash = () => {
       }}>
       <StatusBar hidden translucent={true} />
       <Image
-        source={require('../../../Bootsplash.png')}
+        source={require('../../../src/assets/Bootsplash.png')}
         style={{width: 250}}
         resizeMode="center"
       />
