@@ -20,6 +20,7 @@ import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTranslation} from 'react-i18next';
 import LogoutBottomSheet from '../../components/Logout/LogoutBottomSheet';
+import DontHaveAccount from '../../components/DontHaveAccount';
 
 const Account = () => {
   const navigation = useNavigation();
@@ -46,10 +47,10 @@ const Account = () => {
     //   image: require('../../assets/images/AccountImg/Order.png'),
     // },
     {
-      id: 4,
-      navigate: 'ContactUs',
-      title: 'Contact Us',
-      image: require('../../assets/images/AccountImg/Contact.png'),
+      id: 3,
+      navigate: 'PaymentMethod',
+      title: 'Payment Method',
+      image: require('../../assets/images/AccountImg/Payment.png'),
     },
     {
       id: 5,
@@ -59,9 +60,9 @@ const Account = () => {
     },
     {
       id: 6,
-      navigate: 'PaymentMethod',
-      title: 'Payment Method',
-      image: require('../../assets/images/AccountImg/Payment.png'),
+      navigate: 'ContactUs',
+      title: 'Contact Us',
+      image: require('../../assets/chat.png'),
     },
     {
       id: 7,
@@ -119,10 +120,10 @@ const Account = () => {
   const getSelectedLanguage = async () => {
     try {
       const language = await AsyncStorage.getItem('selectedLanguage');
-      return language || 'en'; // Default to English if no language is stored
+      return language || 'es'; // Default to Spanish if no language is stored
     } catch (error) {
       console.error('Error getting selected language:', error);
-      return 'en'; // Default to English in case of an error
+      return 'es'; // Default to Spanish in case
     }
   };
 
@@ -134,6 +135,7 @@ const Account = () => {
       setIsSpanish(language === 'es');
     });
   }, []);
+
   const [isSpanish, setIsSpanish] = useState(false);
 
   const [currentLanguageName, setCurrentLanguageName] = useState('English');
@@ -157,6 +159,24 @@ const Account = () => {
       });
   };
 
+  const [showDontHaveModal, setShowDontHaveModal] = useState(false);
+
+  const handleDontHaveAccout = () => {
+    // Implement your delete logic here
+    // ...
+    setShowDontHaveModal(false);
+  };
+
+  const checkGuest = async () => {
+    // const user_type = await AsyncStorage.getItem('account_type');
+    const user_id = await AsyncStorage.getItem('user_id');
+    if (!user_id || null) {
+      setShowDontHaveModal(true);
+    }
+  };
+  useEffect(() => {
+    checkGuest();
+  }, []);
   return (
     <Layout>
       <FocusAwareStatusBar
@@ -225,6 +245,18 @@ const Account = () => {
         </View>
       </View>
       <LogoutBottomSheet bottomSheetRef={bottomSheetRef} />
+      <DontHaveAccount
+        visible={showDontHaveModal}
+        closeModal={() => {
+          setShowDontHaveModal(false);
+          navigation.replace('MainStack');
+        }}
+        handleDontHave={handleDontHaveAccout}
+        setShowDontHaveModa={setShowDontHaveModal}
+        message={t(
+          "Hey there! It looks like you're not logged in. Log in to proceed further.",
+        )}
+      />
     </Layout>
   );
 };

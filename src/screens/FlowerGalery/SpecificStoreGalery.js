@@ -29,9 +29,9 @@ import OrderNotFound from '../MyOrder/OrderNotFound';
 
 const SpecificStoreGalery = ({route}) => {
   const store_id = route.params.item.store_id;
-  const item = route.params.item;
-  const FuneralItemData = route.params.item1;
-  console.log(FuneralItemData.id, 'FuneralItemData item');
+  const item = route?.params?.item;
+  const FuneralItemData = route?.params?.item1;
+  // console.log(FuneralItemData?.id, 'FuneralItemData item');
   const navigation = useNavigation();
   const cardData = [
     {
@@ -229,8 +229,8 @@ const SpecificStoreGalery = ({route}) => {
           onEndReached={scrolled ? handleGetStoreDataMore : null}
           ListEmptyComponent={
             <OrderNotFound
-              title={'Not Found data'}
-              subtitle={"You don't have any at this time"}
+              title={t('Not Found data')}
+              subtitle={t("You don't have any data at this time")}
             />
           }
           ListFooterComponent={

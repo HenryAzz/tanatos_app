@@ -128,6 +128,7 @@ import ApiRequest from '../../Services/ApiRequest';
 import AppTextInput from '../../components/FloatingLabelInput';
 import {useMemo} from 'react';
 import OrderNotFound from '../MyOrder/OrderNotFound';
+import {useTranslation} from 'react-i18next';
 const AddFlowers = props => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -222,7 +223,7 @@ const AddFlowers = props => {
       );
     }
   };
-
+  const {t} = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -369,16 +370,15 @@ const AddFlowers = props => {
   const handleScroll = () => {
     setScrolled(true);
   };
-
   return (
     <Layout>
       <ScrollView style={{width: '100%'}}>
-        <AppHeader title={'Add Flowers'} />
+        <AppHeader title={t('addflower1')} />
         <View>
           <AppTextInput
-            titleText={'Flower Name'}
+            titleText={t('addflower2')}
             // keyboardType="email-address"
-            placeholder={'Flower Name'}
+            placeholder={t('addflower2')}
             value={formData.name}
             onChangeText={text => handleInputChange('name', text)}
           />
@@ -387,7 +387,7 @@ const AddFlowers = props => {
               style.font16Re,
               {fontFamily: fonts.medium, alignSelf: 'flex-start'},
             ]}>
-            Upload Photo
+            {t('Upload Photo')}
           </Text>
           <View
             style={{
@@ -401,7 +401,7 @@ const AddFlowers = props => {
               borderStyle: 'dashed',
             }}>
             <BaseButton
-              title={'Upload Photo'}
+              title={t('Upload Photo')}
               onPress={openGallery}
               defaultStyle={{width: '60%'}}
             />
@@ -418,7 +418,7 @@ const AddFlowers = props => {
             // ListEmptyComponent={
             //   <OrderNotFound
             //     title={'Not Found data'}
-            //     subtitle={"You don't have any at this time"}
+            //     subtitle={"You don't have any data at this time"}
             //   />
             // }
             // ListFooterComponent={
@@ -499,10 +499,10 @@ const AddFlowers = props => {
 
               // {fontFamily: fonts.medium, marginBottom: multiline ? 25 : 2},
             ]}>
-            Description
+            {t('addflower3')}
           </Text>
           <TextInput
-            placeholder="Description"
+            placeholder={t('addflower3')}
             multiline={true}
             textAlignVertical="top"
             value={formData.description}
@@ -520,16 +520,16 @@ const AddFlowers = props => {
             }}
           />
           <AppTextInput
-            titleText={'Price'}
+            titleText={t('addflower4')}
             // keyboardType="email-address"
             keyboardType="number-pad"
-            placeholder={'Price'}
+            placeholder={t('addflower4')}
             value={formData.price}
             onChangeText={text => handleInputChange('price', text)}
           />
           <Text
             style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
-            Category
+            {t('addflower5')}
           </Text>
           <TouchableOpacity
             onPress={() => setModalVisibleCat(true)}
@@ -542,7 +542,7 @@ const AddFlowers = props => {
               justifyContent: 'center',
               paddingLeft: 10,
             }}>
-            <Text> {selectedItem ? selectedItem.name : 'Category'}</Text>
+            <Text> {selectedItem ? selectedItem.name : t('addflower5')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -564,7 +564,7 @@ const AddFlowers = props => {
             marginBottom: 30,
           }}>
           <BaseButton
-            title={'Next'}
+            title={t('addflower6')}
             // disabled={disabled}
             // loading={loading}
             // onPress={() => {

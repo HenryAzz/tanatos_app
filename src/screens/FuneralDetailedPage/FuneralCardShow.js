@@ -2,6 +2,8 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
+import {t} from 'i18next';
+import {useTranslation} from 'react-i18next';
 
 const FuneralCardShow = ({
   title,
@@ -11,83 +13,143 @@ const FuneralCardShow = ({
   date,
   time,
   onPress,
+  heading,
+  description,
+  name,
+  hall_no,
 }) => {
+  const {t} = useTranslation();
   return (
     <View
       style={{
-        // height: 60,
-        paddingVertical: 10,
         backgroundColor: '#F5F5F5',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
         width: '100%',
         marginVertical: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
       }}>
-      <View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingVertical: 6,
+        }}>
+        <View
+          style={{
+            height: 30,
+            width: 30,
+            backgroundColor: colors.white,
+            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            alignSelf: 'flex-start',
+            marginTop: 10,
+            // marginLeft: 6,
+            marginHorizontal: 7,
+          }}>
+          <Image
+            source={img1}
             style={{
-              height: 30,
-              width: 25,
-              backgroundColor: colors.white,
-              borderRadius: 20,
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignSelf: 'flex-start',
-              marginTop: 16,
-              marginLeft: 6,
-            }}>
-            <Image
-              source={img1}
-              style={{
-                height: 14,
-                width: 14,
-              }}
-            />
-          </View>
-
-          <View style={{marginHorizontal: 10, marginTop: 10, width: '50%'}}>
+              height: 14,
+              width: 14,
+            }}
+          />
+        </View>
+        <View style={{width: 160, justifyContent: 'space-evenly', height: 150}}>
+          <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
+            {heading}
+          </Text>
+          {hall_no && (
             <Text
               style={[
                 style.font12Re,
                 {
                   color: colors.primaryColor,
                   fontFamily: fonts.bold,
-                  marginTop: 10,
+                  marginVertical: 2,
                   // width: '100%',
                 },
               ]}
-              numberOfLines={2}>
-              {title}
+              numberOfLines={1}>
+              {hall_no}
+            </Text>
+          )}
+          {name && description ? (
+            <>
+              <Text
+                style={[
+                  style.font12Re,
+                  {
+                    color: colors.primaryColor,
+                    fontFamily: fonts.bold,
+                    marginVertical: 2,
+                    // width: '100%',
+                  },
+                ]}
+                numberOfLines={1}>
+                {name}
+              </Text>
+              <Text
+                style={[
+                  style.font12Re,
+                  {
+                    color: colors.primaryColor,
+                    fontFamily: fonts.bold,
+                    marginVertical: 6,
+                    // width: '100%',
+                  },
+                ]}
+                numberOfLines={2}>
+                {description}
+              </Text>
+            </>
+          ) : null}
+          <Text
+            style={[
+              style.font12Re,
+              {
+                color: colors.primaryColor,
+                fontFamily: fonts.bold,
+                // marginTop: 10,
+                // width: '100%',
+              },
+            ]}
+            numberOfLines={2}>
+            {title}
+          </Text>
+          {/* <Text
+            style={[
+              style.font10Re,
+              {
+                color: '#A2A2A2',
+                paddingVertical: 5,
+                fontFamily: fonts.medium,
+              },
+            ]}>
+            {subTitle}
+          </Text> */}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              // justifyContent: 'space-between',
+            }}>
+            <Text
+              style={[
+                style.font14Re,
+                {color: '#A2A2A2', fontFamily: fonts.bold},
+              ]}>
+              {date}/
             </Text>
             <Text
               style={[
-                style.font10Re,
-                {
-                  color: '#A2A2A2',
-                  paddingVertical: 5,
-                  fontFamily: fonts.medium,
-                },
+                style.font14Re,
+                {color: '#A2A2A2', fontFamily: fonts.bold},
               ]}>
-              {subTitle}
+              {time}
             </Text>
           </View>
-        </View>
-        <View style={{left: 44}}>
-          <Text
-            style={[
-              style.font14Re,
-              {color: '#A2A2A2', fontFamily: fonts.bold},
-            ]}>
-            {date}
-          </Text>
-          <Text
-            style={[
-              style.font14Re,
-              {color: '#A2A2A2', fontFamily: fonts.bold},
-            ]}>
-            {time}
-          </Text>
           <TouchableOpacity
             onPress={onPress}
             style={{
@@ -110,20 +172,22 @@ const FuneralCardShow = ({
                 style.font12Re,
                 {color: colors.white, fontFamily: fonts.bold},
               ]}>
-              Map
+              {t('Map')}
             </Text>
           </TouchableOpacity>
         </View>
       </View>
-      <Image
-        source={img2}
-        style={{
-          height: 130,
-          width: 120,
-          borderTopRightRadius: 10,
-          borderBottomRightRadius: 10,
-        }}
-      />
+      <View style={{}}>
+        <Image
+          source={img2}
+          style={{
+            height: 150,
+            width: 120,
+            borderTopRightRadius: 10,
+            borderBottomRightRadius: 10,
+          }}
+        />
+      </View>
     </View>
   );
 };

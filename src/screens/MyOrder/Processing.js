@@ -32,33 +32,34 @@ const Processing = () => {
     const user_id = await AsyncStorage.getItem('user_id');
     const account_Type = await AsyncStorage.getItem('account_Type');
     const store_id = await AsyncStorage.getItem('store_id');
+    if (user_id) {
+      try {
+        setLoading(true);
+        const dataForReq = {
+          type: 'get_data',
+          table_name: 'orders',
+          status: 'accepted',
+        };
+        if (account_Type === 'customer') {
+          dataForReq.own = 1;
+          dataForReq.user_id = JSON.parse(user_id);
+        } else if (account_Type === 'store') {
+          dataForReq.store_id = JSON.parse(store_id);
+        }
+        // setRefreshing(false)
+        setAccountType(account_Type);
+        const res = await ApiRequest(dataForReq);
+        const resp = res.data.data;
 
-    try {
-      setLoading(true);
-      const dataForReq = {
-        type: 'get_data',
-        table_name: 'orders',
-        status: 'accepted',
-      };
-      if (account_Type === 'customer') {
-        dataForReq.own = 1;
-        dataForReq.user_id = JSON.parse(user_id);
-      } else if (account_Type === 'store') {
-        dataForReq.store_id = JSON.parse(store_id);
+        setOrderData(resp);
+        // console.log(resp, 'resp new order');
+      } catch (err) {
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-      // setRefreshing(false)
-      setAccountType(account_Type);
-      const res = await ApiRequest(dataForReq);
-      const resp = res.data.data;
-
-      setOrderData(resp);
-      // console.log(resp, 'resp new order');
-    } catch (err) {
-    } finally {
-      setLoading(false);
     }
   };
-
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {
     setRefreshing(true);
@@ -170,7 +171,7 @@ const Processing = () => {
         showsHorizontalScrollIndicator={false}
         keyExtractor={item => item.id}
         onScroll={handleScroll}
-        onEndReached={scrolled ? ' paginatio' : null}
+        onEndReached={scrolled ? handleOrderDataMore : null}
         ListEmptyComponent={<OrderNotFound />}
         ListFooterComponent={
           bottomLoader && <ActivityIndicator size="large" color={colors.gray} />

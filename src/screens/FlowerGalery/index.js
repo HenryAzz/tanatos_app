@@ -23,6 +23,7 @@ import ApiRequest from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import {useTranslation} from 'react-i18next';
 import OrderNotFound from '../MyOrder/OrderNotFound';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FlowerGalery = () => {
   const route = useRoute();
@@ -78,21 +79,63 @@ const FlowerGalery = () => {
   // const [selectedItem, setSelectedItem] = useState(null);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
 
+  const handleGetLike = async (store_id, like, item) => {
+    const user_id = await AsyncStorage.getItem('user_id');
+    console.log(user_id, 'user id', store_id, 'storeid', like, 'like');
+    try {
+      const res = await ApiRequest({
+        type: 'like_dislike',
+        user_id: user_id,
+        store_id: store_id,
+        status: like === 'like' ? 'dislike' : 'like',
+      });
+      const resp = res.data;
+      if (resp) {
+        handleGetStoreData();
+      }
+      console.log(resp, 'get store likes');
+    } catch (err) {
+    } finally {
+    }
+  };
+  const heartPress = async (store_id, like, item) => {
+    const user_id = await AsyncStorage.getItem('user_id');
+    const sendData = {
+      type: 'like_dislike',
+      user_id: user_id,
+      store_id: store_id,
+      status: like === 'like' ? 'dislike' : 'like',
+    };
+    let data2 = storeData.findIndex(x => x.id === item.id);
+    if (item.favourite == 'like') {
+      storeData[data2].favourite = 'dislike';
+    } else {
+      storeData[data2].favourite = 'like';
+    }
+    setStoreData(storeData);
+    // setRefresh(pre => !pre);
+    try {
+      await ApiRequest(sendData);
+      handleGetStoreData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleGetStoreData = async () => {
     // console.log(1);
+    const user_id = await AsyncStorage.getItem('user_id');
     try {
-      setShowLoadingModal(true);
       setLoading(true);
       const res = await ApiRequest({
         type: 'get_data',
         table_name: 'stores_gallery',
-
+        user_id: JSON.parse(user_id),
         // last_id:
       });
       const resp = res.data.data;
       console.log(resp, 'get store data///////////');
       setStoreData(resp);
-      setShowLoadingModal(false);
     } catch (err) {
     } finally {
       setShowLoadingModal(false);
@@ -101,8 +144,7 @@ const FlowerGalery = () => {
   };
   const handleGetStoreDataMore = async () => {
     try {
-      setShowLoadingModal(true);
-      setLoading(true);
+      setBottomLoader(true);
       const res = await ApiRequest({
         type: 'get_data',
         table_name: 'stores_gallery',
@@ -113,12 +155,12 @@ const FlowerGalery = () => {
       if (resp && resp != undefined && resp.length > 0) {
         setStoreData([...storeData, ...resp]);
       }
+      setBottomLoader(false);
       // console.log(resp, 'get store data///////////');
       // setStoreData(resp);
-      setShowLoadingModal(false);
     } catch (err) {
     } finally {
-      setShowLoadingModal(false);
+      setBottomLoader(false);
       setLoading(false);
     }
   };
@@ -184,17 +226,13 @@ const FlowerGalery = () => {
         onEndReached={scrolled ? handleGetStoreDataMore : null}
         onEndReachedThreshold={0.2}
         ListEmptyComponent={
-          !isLoading && (
-            <OrderNotFound
-              title={'No service added'}
-              subTitle={'Future added services will be showing here...'}
-            />
-          )
+          <OrderNotFound
+            title={'No Found Data'}
+            subTitle={'You don"t have any data'}
+          />
         }
         ListFooterComponent={
-          bottomLoader && (
-            <ActivityIndicator size="large" color={colors.gray3} />
-          )
+          bottomLoader && <ActivityIndicator size="large" color={colors.gray} />
         }
         ListFooterComponentStyle={{
           width: '100%',
@@ -206,6 +244,11 @@ const FlowerGalery = () => {
           return (
             <CardListFlowerGalery
               item={item}
+              images={item.image}
+              onPressLike={() =>
+                heartPress(item.store_id, item.favourite, item)
+              }
+              // onPressLike={() => console.log(item.favourite, 'favourite')}
               onPress={() =>
                 navigation.navigate('SpecificStoreGalery', {
                   item: item,

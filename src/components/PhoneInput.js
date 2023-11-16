@@ -126,6 +126,7 @@ import React, {useRef, useState} from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import {colors, fonts} from '../constraints';
+import {useTranslation} from 'react-i18next';
 
 const PhoneNumberInput = ({
   value,
@@ -144,11 +145,11 @@ const PhoneNumberInput = ({
     setValid(checkValid);
     setCountryCode(phoneInput.current?.getCountryCode() || '');
   };
-
+  const {t} = useTranslation();
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.wrapper}>
-        <Text style={[styles.label]}>{'Phone'}</Text>
+        <Text style={[styles.label]}>{t('Phone Number')}</Text>
         <PhoneInput
           ref={phoneInput}
           defaultValue={value}
@@ -163,7 +164,7 @@ const PhoneNumberInput = ({
             borderColor: '#E0E0E0',
             backgroundColor: '#F5F5F5',
             width: '100%',
-            height: 50,
+            // height: 50,
             borderRadius: 5,
           }}
           textContainerStyle={{
@@ -172,8 +173,9 @@ const PhoneNumberInput = ({
             backgroundColor: '#F5F5F5',
             borderTopEndRadius: 5,
             borderBottomEndRadius: 5,
+            height: 50,
           }}
-          textInputStyle={{fontFamily: 'Inter-Regular', height: 52}}
+          textInputStyle={{fontFamily: fonts.regular, height: 52}}
           codeTextStyle={{fontSize: 16}}
           onChangeText={text => {
             setValue({...formData, phoneNumber: text});
@@ -188,7 +190,7 @@ const PhoneNumberInput = ({
         />
         {value && valid && (
           <Text style={{top: 2, color: colors.red}}>
-            Enter a valid phone number
+            {t('Enter a valid phone number')}
           </Text>
         )}
       </SafeAreaView>
@@ -229,3 +231,8 @@ export default PhoneNumberInput;
 //             const valueValid = valid && formData.phoneNumber;
 //             return valueValid;
 //           }, [formData]);
+
+// const [data, setData] = useState({
+//   phoneNumber: '',
+// });
+// const [valid, setValid] = useState(true);

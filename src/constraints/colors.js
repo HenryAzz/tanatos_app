@@ -5,6 +5,7 @@ const black = 'black';
 const white = 'white';
 const placeholderText = '#A29E9E';
 const primaryColor = '#663399';
+const primaryColor1 = '#663366';
 const gd1 = '#DA3955';
 const gd2 = '#FF7388';
 const welgrey = '#A6A6A6';
@@ -21,8 +22,9 @@ const textGray = '#A2A2A2';
 const red = '#DA3955';
 
 export default {
-  primaryColor,
   textGray,
+  primaryColor,
+  primaryColor1,
   red,
   backgroundColor,
   ButtonColor,

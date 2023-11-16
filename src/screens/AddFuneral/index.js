@@ -24,13 +24,14 @@ import ApiRequest from '../../Services/ApiRequest';
 import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
 import Icon from 'react-native-vector-icons/Entypo';
 import OrderNotFound from '../MyOrder/OrderNotFound';
+import {useTranslation} from 'react-i18next';
 
 const AddFuneralScreen = () => {
   const route = useRoute();
   const item = route.params.item;
   const id = route.params.id;
   const [funeralData, setFuneralData] = useState([]);
-  console.log(funeralData, 'funeralData rece');
+  console.log(item, 'funeralData rece');
 
   const cleanedPath = item.image?.replace(/^"(.*)"$/, '$1');
   // console.log(item.image, 'funeralData');
@@ -108,7 +109,7 @@ const AddFuneralScreen = () => {
   const handleScroll = () => {
     setScrolled(true);
   };
-
+  const {t} = useTranslation();
   return (
     <View style={{flex: 1, width: '100%', backgroundColor: colors.white}}>
       <AppHeader
@@ -141,7 +142,7 @@ const AddFuneralScreen = () => {
               <Text
                 style={[
                   style.font24Re,
-                  {fontFamily: fonts.bold, color: colors.white},
+                  {fontFamily: fonts.bold, color: 'rgba(255, 255, 255, 0.5)'},
                 ]}>
                 TANATOS
               </Text>
@@ -165,7 +166,8 @@ const AddFuneralScreen = () => {
                   color: colors.white,
                   marginVertical: 10,
                 },
-              ]}>
+              ]}
+              numberOfLines={3}>
               {/* name */}
               {item.name}
               {/* {'funeralData[0]?.full_name'} */}
@@ -190,96 +192,91 @@ const AddFuneralScreen = () => {
           <Image source={Edit} style={{height: 20, width: 20}} />
         </TouchableOpacity> */}
       </ImageBackground>
-      {funeralData?.length > 0 ? (
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}>
-          <View style={{marginHorizontal: 10, marginVertical: 40}}>
-            <FlatList
-              data={funeralData} // Your array of funeral items
-              keyExtractor={item => item.id.toString()}
-              onScroll={handleScroll}
-              onEndReached={scrolled ? handleGetFuneralDataMore : null}
-              ListEmptyComponent={
-                <OrderNotFound
-                  title={'Not Found data'}
-                  subtitle={"You don't have any at this time"}
-                />
-              }
-              ListFooterComponent={
-                bottomLoader && (
-                  <ActivityIndicator size="large" color={colors.gray} />
-                )
-              }
-              ListFooterComponentStyle={{
-                width: '100%',
-                marginTop: 5,
-              }}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-              renderItem={({item}) => {
-                // console.log(item, 'sd');
-                const items = JSON.parse(item.items);
-                const imagesArray = items.flatMap(item => item.images);
 
-                return (
-                  <View style={{}}>
-                    <FuneralCard
-                      name={item?.funeral?.name}
-                      description={item?.funeral?.description}
-                      images={imagesArray}
-                      sympathy_text={item.sympathy_text}
-                      onPress={() => {
-                        setShowLoadingModal(true);
-                        setShowImage(imagesArray);
-                      }}
-                    />
-                  </View>
-                );
-              }}
-            />
-          </View>
-          <Modal
-            transparent
-            visible={showLoadingModal}
-            animationType="fade"
-            onRequestClose={() => setShowLoadingModal(false)}>
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <View style={{backgroundColor: colors.white, flex: 1}}>
-                {/* <View style={{height: 120, width: 120, borderRadius: 10}}> */}
-                <ImageSwiper images={showImage} />
-                <TouchableOpacity
-                  onPress={() => setShowLoadingModal(false)}
-                  style={{
-                    position: 'absolute',
-                    right: 20,
-                    top: 20,
-                    // backgroundColor: 'red',
-                  }}>
-                  <Icon
-                    name="circle-with-cross"
-                    color={colors.black}
-                    size={30}
+      <Text
+        style={[style.font16Re, {paddingHorizontal: 10, paddingVertical: 20}]}>
+        {item.description}
+      </Text>
+
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}>
+        <View style={{marginHorizontal: 10, marginVertical: 40}}>
+          <FlatList
+            data={funeralData} // Your array of funeral items
+            keyExtractor={item => item.id.toString()}
+            onScroll={handleScroll}
+            onEndReached={scrolled ? handleGetFuneralDataMore : null}
+            ListEmptyComponent={
+              <OrderNotFound
+                title={t('Not Found data')}
+                subtitle={t("You don't have any data at this time")}
+              />
+            }
+            ListFooterComponent={
+              bottomLoader && (
+                <ActivityIndicator size="large" color={colors.gray} />
+              )
+            }
+            ListFooterComponentStyle={{
+              width: '100%',
+              marginTop: 5,
+            }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            renderItem={({item}) => {
+              // console.log(item, 'sd');
+              const items = JSON.parse(item.items);
+              const imagesArray = items.flatMap(item => item.images);
+
+              return (
+                <View style={{}}>
+                  <FuneralCard
+                    name={item?.funeral?.name}
+                    description={item?.funeral?.description}
+                    images={imagesArray}
+                    sympathy_text={item.sympathy_text}
+                    onPress={() => {
+                      setShowLoadingModal(true);
+                      setShowImage(imagesArray);
+                    }}
                   />
-                </TouchableOpacity>
-                {/* </View> */}
-              </View>
+                </View>
+              );
+            }}
+          />
+        </View>
+        <Modal
+          transparent
+          visible={showLoadingModal}
+          animationType="fade"
+          onRequestClose={() => setShowLoadingModal(false)}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <View style={{backgroundColor: colors.white, flex: 1}}>
+              {/* <View style={{height: 120, width: 120, borderRadius: 10}}> */}
+              <ImageSwiper images={showImage} />
+              <TouchableOpacity
+                onPress={() => setShowLoadingModal(false)}
+                style={{
+                  position: 'absolute',
+                  right: 20,
+                  top: 20,
+                  // backgroundColor: 'red',
+                }}>
+                <Icon name="circle-with-cross" color={colors.black} size={30} />
+              </TouchableOpacity>
+              {/* </View> */}
             </View>
-          </Modal>
-        </ScrollView>
-      ) : (
-        <OrderNotFound
-          title={'Not Found data'}
-          subtitle={"You don't have any data at this time"}
-        />
-      )}
+          </View>
+        </Modal>
+      </ScrollView>
     </View>
   );
 };

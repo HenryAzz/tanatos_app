@@ -30,11 +30,13 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import {colors, constants, fonts} from '../../constraints';
+import PhoneNumberInput from '../../components/PhoneInput';
+import {useTranslation} from 'react-i18next';
 
 const FuneralUpdate = () => {
   const route = useRoute();
   const item = route?.params?.item;
-  console.log(item.image + ' ===== ' + item.id, 'get item');
+  console.log(item, 'sdsssssssssssssssssssssssssssssssssssssssssss');
   const pathFromBackend = item.image;
 
   const cleanedPath = pathFromBackend.replace(/^"(.*)"$/, '$1');
@@ -106,6 +108,7 @@ const FuneralUpdate = () => {
     setImagesToSend(cleanedPath);
     //   setImages(item.url + item.image);
     setShowLoadingModal(false);
+    console.log(item.funeral_location, 'item.funeral_location');
   }, []);
 
   const [formData, setFormData] = useState({
@@ -122,6 +125,10 @@ const FuneralUpdate = () => {
 
   const onDateChange = (event, selectedDate, dateName, modalName) => {
     if (event.type === 'dismissed') {
+      setFormData({
+        ...formData,
+        [modalName]: false,
+      });
       console.log('user cancelled');
     } else {
       setFormData(prevState => ({
@@ -187,7 +194,7 @@ const FuneralUpdate = () => {
   const [disabled, setdisabled] = useState(true);
   const [imageLoader, setImageLoader] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const {t} = useTranslation();
   const openGallery = async () => {
     ImagePicker.openPicker({
       mediaType: 'photo',
@@ -325,7 +332,7 @@ const FuneralUpdate = () => {
 
   return (
     <Layout>
-      <AppHeader title={'Add Obituaries'} />
+      <AppHeader title={'Editar esquela'} />
       <ScrollView
         style={{width: '100%'}}
         showsHorizontalScrollIndicator={false}
@@ -367,20 +374,26 @@ const FuneralUpdate = () => {
           )}
         </TouchableOpacity>
 
-        {/* <AppTextInput titleText={'Location'} placeholder={'Location'} /> */}
+        <AppTextInput
+          titleText={t('Name')}
+          placeholder={t('Name')}
+          value={formData.name}
+          onChangeText={text => handleInputChange('name', text)}
+        />
         <Text
           style={[
             style.font16Re,
 
             // {fontFamily: fonts.medium, marginBottom: multiline ? 25 : 2},
           ]}>
-          Short Message
+          {t('addflower3')}
         </Text>
         <TextInput
-          placeholder="Short Message"
+          placeholder={t('addflower3')}
           multiline={true}
           textAlignVertical="top"
-          maxLength={maxLength}
+          value={formData.description}
+          onChangeText={text => handleInputChange('description', text)}
           style={{
             paddingLeft: 15,
             paddingTop: 10,
@@ -389,16 +402,10 @@ const FuneralUpdate = () => {
             borderWidth: 1,
             marginVertical: 5,
             width: '100%',
-            height: 70,
+            height: 100,
             borderRadius: 10,
           }}
-          value={shortMessage}
-          onChangeText={handleChangeText}
         />
-        <Text style={[style.font14Re, {alignSelf: 'flex-end'}]}>
-          Max 20 character / {remainingCharacters}
-        </Text>
-
         <Text
           style={[
             style.font16Re,
@@ -562,7 +569,7 @@ const FuneralUpdate = () => {
           </TouchableOpacity> */}
 
           <GooglePlacesAutocomplete
-            placeholder="Search "
+            placeholder={t('SearchD')}
             GooglePlacesDetailsQuery={{fields: 'geometry'}}
             // renderPoweredByGoogle={false}
             enablePoweredByContainer={false}
@@ -642,7 +649,7 @@ const FuneralUpdate = () => {
           </TouchableOpacity> */}
 
           <GooglePlacesAutocomplete
-            placeholder="Search "
+            placeholder={t('SearchD')}
             GooglePlacesDetailsQuery={{fields: 'geometry'}}
             // renderPoweredByGoogle={false}
             enablePoweredByContainer={false}

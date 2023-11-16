@@ -18,7 +18,8 @@ import {BaseButton} from '../../components/BaseButton';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import style from '../../assets/css/style';
 import {colors} from '../../constraints';
-
+import {useTransition} from 'react';
+import {useTranslation} from 'react-i18next';
 const Catalog = () => {
   const dataCompleted = [
     {
@@ -68,11 +69,7 @@ const Catalog = () => {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
   const [catalogData, setCatalogData] = useState();
-  // console.log(catalogData, 'catalogData');
-  // const [showLoadingModal, setShowLoadingModal] = useState(false);
-  // useEffect(() => {
-  //   setShowLoadingModal(false);
-  // }, [isFocused]);
+
   const handleGetCatData = async () => {
     try {
       setLoading(true);
@@ -145,10 +142,10 @@ const Catalog = () => {
     setRefreshing(true);
     handleGetCatData();
   };
-
+  const {t} = useTranslation();
   return (
     <Layout>
-      <AppHeader title={'Catalog'} />
+      <AppHeader title={t('Catalog')} />
       <BaseButton
         defaultStyle={{
           height: 30,
@@ -157,23 +154,30 @@ const Catalog = () => {
           marginBottom: 20,
         }}
         textStyle={[style.font12Re, {color: colors.white}]}
-        title={'Add More Gallery'}
+        title={t('Add More Gallery')}
         onPress={() => navigation.navigate('AddFlowers')}
       />
-      <View style={{alignItems: 'flex-start', alignSelf: 'flex-start'}}>
+      <View style={{alignSelf: 'center'}}>
         <FlatList
           data={catalogData}
           ListEmptyComponent={
-            <>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+                width: '100%',
+                alignSelf: 'center',
+              }}>
               <OrderNotFound
-                title={'Not Found data'}
-                subtitle={"You don't have any at this time"}
+                title={t('Not Found data')}
+                subtitle={t("You don't have any data at this time")}
               />
               <BaseButton
-                title={'Add Gallery'}
+                title={t('Add Gallery')}
                 onPress={() => navigation.navigate('AddFlowers')}
               />
-            </>
+            </View>
           }
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}

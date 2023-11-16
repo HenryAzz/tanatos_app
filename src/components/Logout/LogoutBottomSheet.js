@@ -5,14 +5,21 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import style from '../../assets/css/style';
 import {colors} from '../../constraints';
+import {useTranslation} from 'react-i18next';
+import {useDispatch} from 'react-redux';
+import {userId, userType} from '../../store/reducer/usersSlice';
 const LogoutBottomSheet = ({bottomSheetRef}) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
   const handleLogout = async () => {
     bottomSheetRef.current.close();
     await AsyncStorage.clear();
-
+    dispatch(userType({userType: ''}));
+    dispatch(userId({user_id: ''}));
     navigation.replace('AuthStack', {screen: 'login'});
   };
+  const {t} = useTranslation();
   return (
     <RBSheet
       ref={bottomSheetRef}
@@ -33,13 +40,13 @@ const LogoutBottomSheet = ({bottomSheetRef}) => {
       }}>
       <View style={{flex: 1}}>
         <View style={{flex: 1}}>
-          <Text
+          {/* <Text
             style={[style.font16Re, {marginVertical: 15, textAlign: 'center'}]}>
-            Hold On!
-          </Text>
+            {t('Hold On!')}
+          </Text> */}
           <Text
             style={[style.font18Re, {marginVertical: 15, textAlign: 'center'}]}>
-            Are you sure you want to logout?
+            {t('Are you sure you want to logout?')}
           </Text>
         </View>
         <View style={[style.justifySpaBtwRow, {marginBottom: 20}]}>
@@ -48,12 +55,16 @@ const LogoutBottomSheet = ({bottomSheetRef}) => {
               bottomSheetRef.current.close();
             }}
             style={[styles.Btn, {backgroundColor: colors.primaryColor}]}>
-            <Text style={[style.font16Re, {color: colors.white}]}>Cancel</Text>
+            <Text style={[style.font16Re, {color: colors.white}]}>
+              {t('Cancel')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleLogout}
             style={[styles.Btn, {backgroundColor: colors.primaryColor}]}>
-            <Text style={[style.font16Re, {color: colors.white}]}>Logout</Text>
+            <Text style={[style.font16Re, {color: colors.white}]}>
+              {t('Logout1')}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -69,9 +80,9 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    // borderWidth: 1,
     borderRadius: 10,
-    backgroundColor: colors.btnColor,
-    borderColor: colors.btnColor,
+    backgroundColor: colors.primaryColor,
+    // borderColor: colors.btnColor,
   },
 });

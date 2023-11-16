@@ -12,7 +12,13 @@ import {BaseButton} from '../../components/BaseButton';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
 
 import {useTranslation} from 'react-i18next';
+import style from '../../assets/css/style';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch} from 'react-redux';
+import {userType} from '../../store/reducer/usersSlice';
 const Onboarding = () => {
+  const dispatch = useDispatch();
+
   const dots = [];
   const [progress, setProgress] = useState(1);
   const navigation = useNavigation();
@@ -105,11 +111,64 @@ const Onboarding = () => {
           justifyContent: 'flex-end',
         }}>
         <BaseButton
-          title={imageIndex === 1 ? 'Continue' : "Let's Started"}
+          title={imageIndex === 1 ? t('Continue') : t("Let's Started")}
           defaultStyle={{marginVertical: 30, width: '80%', borderRadius: 40}}
           onPress={handleButtonPress}
           // onPress={() => toggleLanguage()}
         />
+      </View>
+      <View
+        style={{
+          marginBottom: 10,
+          flexDirection: 'row',
+          alignItems: 'center',
+          alignSelf: 'center',
+        }}>
+        <Text
+          style={[
+            style.font16Re,
+            {
+              textAlign: 'center',
+              color: colors.gray,
+              fontFamily: fonts.medium,
+            },
+          ]}>
+          {t('Continue as')}
+        </Text>
+        <TouchableOpacity
+          style={{}}
+          onPress={async () => {
+            await AsyncStorage.setItem('account_Type', 'customer');
+            dispatch(userType({user_type: 'Guest'}));
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'MainStack',
+                  state: {
+                    routes: [
+                      {
+                        name: 'AppStack',
+                      },
+                    ],
+                  },
+                },
+              ],
+            });
+          }}>
+          <Text
+            style={[
+              style.font16Re,
+              {
+                textAlign: 'center',
+                color: colors.primaryColor,
+                fontFamily: fonts.medium,
+                paddingLeft: 5,
+              },
+            ]}>
+            {t('Guest')}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

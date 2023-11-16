@@ -233,7 +233,7 @@ const HomeStore = () => {
                     borderRadius: 100,
                     justifyContent: 'center',
                     alignItems: 'center',
-                    backgroundColor: colors.gray,
+                    backgroundColor: colors.primaryColor,
                     alignSelf: 'center',
                     // marginTop: 25,
                     // marginBottom: 5,
@@ -250,14 +250,20 @@ const HomeStore = () => {
                   />
                 </View>
               ) : (
-                <View
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() =>
+                    navigation.navigate('AppStackWithoutBottom', {
+                      screen: 'EditProfile',
+                    })
+                  }
                   style={{
-                    width: 55,
-                    height: 55,
+                    width: 50,
+                    height: 50,
                     borderRadius: 100,
                     justifyContent: 'center',
                     alignItems: 'center',
-                    backgroundColor: colors.gray,
+                    backgroundColor: colors.primaryColor,
                     alignSelf: 'center',
                     // marginTop: 25,
                     // marginBottom: 5,
@@ -270,9 +276,9 @@ const HomeStore = () => {
                       resizeMode: 'center',
                       borderRadius: 20,
                     }}
-                    source={require('../../assets/images/HomeImg/HomeCardImg1.png')}
+                    source={require('../../assets/app_icon.png')}
                   />
-                </View>
+                </TouchableOpacity>
               )}
               <View style={{paddingLeft: 10}}>
                 <Greetings accountType={formData.accountType} />
@@ -304,7 +310,7 @@ const HomeStore = () => {
             marginVertical: 10,
           }}>
           <Text style={[style.font20Re, {fontFamily: fonts.bold}]}>
-            New Orders
+            {t('New Orders')}
           </Text>
           {/* <Text
             style={[
@@ -397,10 +403,10 @@ const HomeStore = () => {
           <View
             style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
             <Text style={[style.font14Re, {marginVertical: 20}]}>
-              You Don't have store, Please create store
+              {t("You Don't have store, Please create store")}
             </Text>
             <BaseButton
-              title={'Create Store'}
+              title={t('Create Store')}
               defaultStyle={{width: 140, height: 35}}
               textStyle={[style.font14Re, {color: colors.white}]}
               onPress={() => navigation.navigate('CreateStoreapp')}

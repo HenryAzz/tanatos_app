@@ -13,6 +13,7 @@ import OTPComponent from '../../components/OtpComponent';
 import {ToastMessage} from '../../utils/Toast';
 import TimerComp from '../../components/TimerComp/TimerComp';
 import ApiRequest from '../../Services/ApiRequest';
+import {useTranslation} from 'react-i18next';
 const OtpVerified = () => {
   const navigation = useNavigation();
   const [value, setValue] = useState('');
@@ -82,6 +83,7 @@ const OtpVerified = () => {
   };
   const [remainingTime, setRemainingTime] = useState(0);
   // console.log(remainingTime, 'remainingTime');
+  const {t} = useTranslation();
   return (
     <Layout>
       <FocusAwareStatusBar
@@ -102,7 +104,7 @@ const OtpVerified = () => {
         remainingTime={remainingTime}
       />
       <BaseButton
-        title={'Continue'}
+        title={t('Continue')}
         defaultStyle={{}}
         onPress={handleVerify}
         disabled={!validateForm || remainingTime > 0}

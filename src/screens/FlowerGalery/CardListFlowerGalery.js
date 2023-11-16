@@ -118,19 +118,32 @@ import {
 import Swiper from 'react-native-swiper';
 import {colors, fonts} from '../../constraints';
 import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const windowWidth = Dimensions.get('window').width;
 
-const CardListFlowerGallery = ({item, onPress, id}) => {
-  console.log(item, 'item/////.....///');
+const CardListFlowerGallery = ({item, onPress, id, onPressLike}) => {
+  // console.log(item, 'item/////.....///');
   return (
-    <View style={styles.cardContainer}>
+    <TouchableOpacity onPress={onPress} style={styles.cardContainer}>
       <View style={{height: 120}}>
         <ImageSwiper
           images={item.images}
           imageStyle={{borderBottomRightRadius: 0, borderBottomLeftRadius: 0}}
         />
       </View>
+
+      <TouchableOpacity
+        style={{position: 'absolute', right: 10, top: 10}}
+        onPress={onPressLike}>
+        <Icon
+          name={item.favourite === 'like' ? 'heart-outline' : 'heart'}
+          color={colors.primaryColor}
+          size={30}
+        />
+        {/* <Text>{item.id}</Text> */}
+      </TouchableOpacity>
+
       <TouchableOpacity onPress={onPress} style={styles.infoContainer}>
         <Text style={styles.title}>{item?.store?.name}</Text>
         {/* <Text style={styles.title}>{item.category}</Text> */}
@@ -138,7 +151,7 @@ const CardListFlowerGallery = ({item, onPress, id}) => {
         {/* <Text style={styles.title}>{item.id}</Text> */}
         <Text style={styles.price}>{item?.store?.location}</Text>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 

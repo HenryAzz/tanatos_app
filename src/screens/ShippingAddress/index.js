@@ -9,6 +9,7 @@ import {useNavigation} from '@react-navigation/native';
 import PhoneNumberInput from '../../components/PhoneInput';
 import ApiRequest from '../../Services/ApiRequest';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useTranslation} from 'react-i18next';
 
 const ShippingAddress = () => {
   const navigation = useNavigation();
@@ -60,36 +61,39 @@ const ShippingAddress = () => {
       console.log(error);
     }
   };
+
+  const {t} = useTranslation();
+
   return (
     <Layout>
       <AppHeader
-        title={'Westside Florists'}
+        title={t('Westside Florists')}
         defaultStyle={{marginBottom: 30}}
       />
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}>
         <AppTextInput
-          placeholder={'Full Name'}
-          titleText={'Full Name'}
+          placeholder={t('Full Name')}
+          titleText={t('Full Name')}
           onChangeText={value => handleFieldChange('name', value)}
           value={formData.name}
         />
         <AppTextInput
-          placeholder={'Address'}
-          titleText={'Address'}
+          placeholder={t('singup3')}
+          titleText={t('singup3')}
           onChangeText={value => handleFieldChange('address', value)}
           value={formData.address}
         />
         <AppTextInput
-          placeholder={'City'}
-          titleText={'City'}
+          placeholder={t('City')}
+          titleText={t('City')}
           onChangeText={value => handleFieldChange('city', value)}
           value={formData.city}
         />
         <AppTextInput
-          placeholder={'State'}
-          titleText={'State'}
+          placeholder={t('State')}
+          titleText={t('State')}
           value={formData.state}
           onChangeText={value => handleFieldChange('state', value)}
         />
@@ -104,27 +108,27 @@ const ShippingAddress = () => {
 
         {/* <AppTextInput placeholder={'Phone'} titleText={'Phone'} /> */}
         <AppTextInput
-          placeholder={'Phone Number'}
-          titleText={'Phone Number'}
+          placeholder={t('Phone Number')}
+          titleText={t('Phone Number')}
           keyboardType="number-pad"
           onChangeText={value => handleFieldChange('phone', value)}
           value={formData.phoneNumber}
         />
         <AppTextInput
-          placeholder={'ZipCode'}
-          titleText={'ZipCode'}
+          placeholder={t('ZipCode')}
+          titleText={t('ZipCode')}
           keyboardType="number-pad"
           onChangeText={value => handleFieldChange('zip', value)}
           value={formData.zip}
         />
         <AppTextInput
-          placeholder={'Country'}
-          titleText={'Country'}
+          placeholder={t('Country')}
+          titleText={t('Country')}
           onChangeText={value => handleFieldChange('country', value)}
           value={formData.country}
         />
         <BaseButton
-          title={'Continue to Payment'}
+          title={t('Continue to Payment')}
           onPress={() => navigation.navigate('PaymentMethod')}
           defaultStyle={{marginTop: 30, marginBottom: 20}}
         />

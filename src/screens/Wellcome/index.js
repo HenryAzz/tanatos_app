@@ -15,11 +15,13 @@ import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAware
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTranslation} from 'react-i18next';
 import {Button} from 'react-native-share';
+import {useDispatch} from 'react-redux';
+import {userType} from '../../store/reducer/usersSlice';
 
 const Wellcome = () => {
   const navigation = useNavigation();
   const {t, i18n} = useTranslation();
-
+  const dispatch = useDispatch();
   return (
     <ImageBackground
       source={require('../../assets/Wellcome.png')}
@@ -53,6 +55,7 @@ const Wellcome = () => {
       <BaseButton
         title={t('welcome3')}
         onPress={async () => {
+          dispatch(userType({user_type: ''}));
           await AsyncStorage.setItem('account_Type', 'customer');
           navigation.navigate('Signup', {account_Type: 'customer'});
         }}
@@ -66,6 +69,7 @@ const Wellcome = () => {
       <BaseButton
         title={t('welcome4')}
         onPress={async () => {
+          dispatch(userType({user_type: ''}));
           await AsyncStorage.setItem('account_Type', 'store');
           navigation.navigate('Signup', {account_Type: 'store'});
         }}
@@ -79,6 +83,7 @@ const Wellcome = () => {
       <BaseButton
         title={t('welcome5')}
         onPress={async () => {
+          dispatch(userType({user_type: ''}));
           await AsyncStorage.setItem('account_Type', 'funeral');
           navigation.navigate('Signup', {account_Type: 'funeral'});
         }}

@@ -11,6 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import style from '../../../assets/css/style';
 import {colors, fonts} from '../../../constraints';
+import {t} from 'i18next';
 
 const phoneScreen = {
   height: Dimensions.get('window').height,
@@ -26,13 +27,13 @@ export const TimePicker = ({
   title,
   timeFuneral,
 }) => {
-  // Format the selected time as "12:23 PM"
+  console.log(time, 'tme');
   const formattedTime =
     time &&
     time.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true,
+      hour12: false,
     });
 
   return (
@@ -47,7 +48,9 @@ export const TimePicker = ({
         </Text>
       ) : null}
       <TouchableOpacity onPress={showTimepicker} style={styles.box}>
-        <Text style={styles.time}>{formattedTime || 'Select Time'}</Text>
+        <Text style={styles.time}>
+          {formattedTime ? `${formattedTime}h` : t('Select Time')}
+        </Text>
         <Icon name="clock-outline" size={20} color={colors.primaryColor} />
       </TouchableOpacity>
       {show && (
@@ -55,7 +58,7 @@ export const TimePicker = ({
           testID="timePicker"
           value={time || new Date()}
           mode="time"
-          is24Hour={false} // Use 12-hour format
+          is24Hour={true} // Use 12-hour format
           onChange={onChange}
         />
       )}
@@ -84,3 +87,12 @@ const styles = StyleSheet.create({
     height: 48,
   },
 });
+
+// <TimePicker
+
+//   time={selectedTime}
+//   show={showTimepicker}
+//   showTimepicker={() => setShowTimepicker(true)}
+//   onChange={handleTimeChange}
+//   title="Funeral Time"
+// />;

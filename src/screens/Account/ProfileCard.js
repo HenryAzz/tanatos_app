@@ -47,7 +47,7 @@ const ProfileCard = ({title, source, onPress}) => {
             }}>
             <Image
               source={source}
-              style={{height: 20, width: 20}}
+              style={{height: 20, width: 20, tintColor: colors.primaryColor}}
               // resizeMode="center"
             />
           </View>

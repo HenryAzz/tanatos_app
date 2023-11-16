@@ -18,6 +18,7 @@ import AuthHeader from '../../components/AuthHeader';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import PhoneNumberInput from '../../components/PhoneInput';
 import ApiRequest from '../../Services/ApiRequest';
+import {useTranslation} from 'react-i18next';
 
 const Phone = () => {
   const route = useRoute();
@@ -63,7 +64,7 @@ const Phone = () => {
     const isFormFilled = data.phoneNumber && valid;
     setValid(!isFormFilled);
   }, [data.phoneNumber]);
-
+  const {t} = useTranslation();
   return (
     <Layout>
       <FocusAwareStatusBar
@@ -85,7 +86,7 @@ const Phone = () => {
         <AppTextInput titleText={'Phone Number'} placeholder={'Phone Number'} /> */}
 
         <PhoneNumberInput
-          title={'Phone Number'}
+          title={t('Phone Number')}
           valid={valid}
           value={data.phoneNumber}
           setValid={setValid}
@@ -94,7 +95,11 @@ const Phone = () => {
         />
         <BaseButton
           title={
-            isLoading ? <ActivityIndicator color={colors.white} /> : 'Continue'
+            isLoading ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              t('Continue')
+            )
           }
           disabled={valid || isLoading}
           defaultStyle={{marginTop: 30}}

@@ -239,14 +239,10 @@ const ShareAddress = () => {
           {t('share2')}
         </Text>
       </View>
-      {/* <Image
-        source={require('../../assets/Address.png')}
-        style={{height: 200, width: 200, marginVertical: 60}}
-      /> */}
 
       {initialRegion ? (
         <MapView
-          style={{height: 400, width: 300, marginVertical: 30}}
+          style={{height: 300, width: 300, marginVertical: 30}}
           initialRegion={{
             latitude: initialRegion?.latitude || 0,
             longitude: initialRegion?.longitude || 0,

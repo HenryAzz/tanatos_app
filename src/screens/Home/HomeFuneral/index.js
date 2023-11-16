@@ -37,11 +37,16 @@ const HomeFuneral = () => {
     starting_dateModal1: undefined,
     name: '',
     description: '',
+    hallno: '',
   });
   //   console.log(formData);
 
   const onDateChange = (event, selectedDate, dateName, modalName) => {
     if (event.type === 'dismissed') {
+      setFormData({
+        ...formData,
+        [modalName]: false,
+      });
       console.log('user cancelled');
     } else {
       setFormData(prevState => ({
@@ -86,7 +91,7 @@ const HomeFuneral = () => {
   });
   //   console.log(markerData, '12345', markerData1);
 
-  const [shortMessage, setShortMessage] = useState('');
+  // const [shortMessage, setShortMessage] = useState('');
   const maxLength = 20;
 
   const handleChangeText = inputText => {
@@ -94,9 +99,9 @@ const HomeFuneral = () => {
       setShortMessage(inputText);
     }
   };
-  const remainingCharacters = maxLength - shortMessage.length;
+  // const remainingCharacters = maxLength - shortMessage.length;
   const [images, setImages] = useState([]);
-  const [imagesToSend, setImagesToSend] = useState([]);
+  const [imagesToSend, setImagesToSend] = useState();
   const [disabled, setdisabled] = useState(true);
   const [imageLoader, setImageLoader] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -181,14 +186,14 @@ const HomeFuneral = () => {
     selectedTime.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true,
+      hour12: false,
     });
   const formattedTimeFun =
     selectedTime1 &&
     selectedTime1.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true,
+      hour12: false,
     });
 
   const handleAddObi = async () => {
@@ -200,10 +205,11 @@ const HomeFuneral = () => {
       type: 'add_data',
       table_name: 'funerals',
       user_id: user_id,
-      image: JSON.stringify(imagesToSend),
+      hall_no: formData.hallno,
+      image: imagesToSend,
       name: formData.name,
       description: formData.description,
-      short_message: shortMessage,
+      short_message: 'descanse en paz',
       funeral_date: formatDate(formData.starting_date),
       funeral_time: formattedTimeFun,
       church_time: formattedTimeCh,
@@ -254,18 +260,19 @@ const HomeFuneral = () => {
   const [valid, setValid] = useState();
   useMemo(() => {
     const isFormFilled =
-      imagesToSend?.length > 0 &&
       // selectedItem.name &&
       formData.name &&
       formData.description &&
-      shortMessage &&
+      formData.hallno &&
       formData.starting_date &&
       formData.starting_date1 &&
       formattedTimeFun &&
       formattedTimeCh &&
-      formData.name;
+      formData.name &&
+      area &&
+      area1;
     setValid(!isFormFilled);
-  }, [imagesToSend, formData, shortMessage, formattedTimeCh, formattedTimeFun]);
+  }, [formData, formattedTimeCh, formattedTimeFun, area && area1]);
 
   const status = route?.params;
   console.log(status?.status);
@@ -298,27 +305,54 @@ const HomeFuneral = () => {
             shadowColor: colors.elev,
           }}
           onPress={openGallery}>
-          {imagesToSend.length > 0 ? (
-            <Image
-              source={{
-                uri: 'https://locatestudent.com/tanatos/upload/' + imagesToSend,
-              }}
-              // source={require('../../../assets/profilepic.png')}
+          {imagesToSend ? (
+            <View
               style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-              }}
-            />
+                backgroundColor: colors.white,
+                shadowColor: colors.elev,
+                elevation: 10,
+                borderRadius: 53,
+              }}>
+              <Image
+                source={{
+                  uri:
+                    'https://locatestudent.com/tanatos/upload/' + imagesToSend,
+                }}
+                // source={require('../../../assets/profilepic.png')}
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                }}
+              />
+              {imageLoader && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 30,
+                    left: 40,
+                  }}>
+                  <ActivityIndicator color={colors.white} size={30} />
+                </View>
+              )}
+            </View>
           ) : (
-            <Image
-              source={require('../../../assets/profilepic.png')}
+            <View
               style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-              }}
-            />
+                backgroundColor: colors.white,
+                shadowColor: colors.elev,
+                elevation: 10,
+                borderRadius: 53,
+              }}>
+              <Image
+                source={require('../../../assets/profilepic.png')}
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                }}
+              />
+            </View>
           )}
         </TouchableOpacity>
         <AppTextInput
@@ -326,6 +360,12 @@ const HomeFuneral = () => {
           placeholder={t('Name')}
           value={formData.name}
           onChangeText={text => handleInputChange('name', text)}
+        />
+        <AppTextInput
+          titleText={t('Hall')}
+          placeholder={t('Hall')}
+          value={formData.hallno}
+          onChangeText={text => handleInputChange('hallno', text)}
         />
         <Text
           style={[
@@ -354,7 +394,7 @@ const HomeFuneral = () => {
           }}
         />
         {/* <AppTextInput titleText={'Location'} placeholder={'Location'} /> */}
-        <Text
+        {/* <Text
           style={[
             style.font16Re,
 
@@ -383,7 +423,7 @@ const HomeFuneral = () => {
         />
         <Text style={[style.font14Re, {alignSelf: 'flex-end'}]}>
           Max 20 character / {remainingCharacters}
-        </Text>
+        </Text> */}
 
         <Text
           style={[
@@ -416,8 +456,6 @@ const HomeFuneral = () => {
           <Text> {area ? area : t('funeral6')}</Text>
         </TouchableOpacity>
         <TimePicker
-          // initialTime={formData.timeCherch}
-          // timeFuneral={formData.timeFuneral}
           time={selectedTime}
           show={showTimepicker}
           showTimepicker={() => setShowTimepicker(true)}
@@ -549,7 +587,7 @@ const HomeFuneral = () => {
           </TouchableOpacity> */}
 
           <GooglePlacesAutocomplete
-            placeholder="Search "
+            placeholder={t('SearchD')}
             GooglePlacesDetailsQuery={{fields: 'geometry'}}
             // renderPoweredByGoogle={false}
             enablePoweredByContainer={false}
@@ -629,7 +667,7 @@ const HomeFuneral = () => {
           </TouchableOpacity> */}
 
           <GooglePlacesAutocomplete
-            placeholder="Search "
+            placeholder={t('SearchD')}
             GooglePlacesDetailsQuery={{fields: 'geometry'}}
             // renderPoweredByGoogle={false}
             enablePoweredByContainer={false}

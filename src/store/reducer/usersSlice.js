@@ -1,47 +1,49 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createSlice } from '@reduxjs/toolkit';
-import ApiRequest, { GetApiRequest } from '../../Services/ApiRequest';
+import {createSlice} from '@reduxjs/toolkit';
+import ApiRequest from '../../Services/ApiRequest';
 
 // First, define the reducer and action creators via `createSlice`
 export const usersSlice = createSlice({
   name: 'users',
   initialState: {
-    users: {},
-    address: [],
     loading: false,
-    cards: [],
-    preference: {}
+    users: {},
+    user_id: '',
+    user_type: '',
+    business_type: '',
   },
   reducers: {
-    loadingStart(state, action) {
-      state.loading = true
+    usersLoading(state, action) {
+      // Use a "state machine" approach for loading state instead of booleans
+      state.loading = true;
     },
-    loadingEnd(state, action) {
-      state.loading = false
+    usersLoadingEnd(state, action) {
+      // Use a "state machine" approach for loading state instead of booleans
+      state.loading = false;
     },
-    addUsersCard(state, action) {
-      state.cards = action.payload;
-    },
-    setUsers(state, action) {
+
+    usersReceived(state, action) {
+      state.loading = false;
       state.users = action.payload;
     },
-    setPreference(state, action) {
-      state.preference = action.payload;
+
+    userLogin(state, action) {
+      state.user_id = action.payload.user_id;
+      state.user_type = action.payload.user_type;
     },
-    updateUsers(state, action) {
-      state.users = { ...state.users, ...action.payload };
+    userType(state, action) {
+      state.user_type = action.payload.user_type;
     },
-    setUserAddress(state, action) {
-      state.address = action.payload;
+    userId(state, action) {
+      state.user_id = action.payload.user_id;
     },
-    updateUserAddress(state, action) {
-      state.address = [...state.address, ...action.payload];
-    },
+
     userLogout(state) {
-      state.users = {};
-      state.address = [];
-      state.cards = [];
+      state.business_type = '';
       state.loading = false;
+      state.users = {};
+      state.user_id = '';
+      state.user_type = '';
     },
   },
 });
@@ -49,56 +51,23 @@ export const usersSlice = createSlice({
 // // Action creators are generated for each case reducer function
 // Destructure and export the plain action creators
 export const {
-  setUsers,
+  usersLoading,
+  usersReceived,
+  userLogin,
   userLogout,
-  updateUsers,
-  setUserAddress,
-  updateUserAddress,
-  loadingStart,
-  loadingEnd,
-  addUsersCard,
-  setPreference
+  usersLoadingEnd,
+  userType,
+  userId,
 } = usersSlice.actions;
 
 // Define a thunk that dispatches those action creators
-export const fetchUsers = (user_id) => async dispatch => {
-  try {
-    const response = await GetApiRequest("users/get", { id: user_id });
-    console.log(response.data)
-    dispatch(setUsers(response.data.data));
-  } catch (error) { }
-};
-// Define a thunk that dispatches those action creators
-export const fetchPreferences = () => async dispatch => {
-  try {
-    const response = await ApiRequest({ type: 'get_data', table_name: "preferences", id: 1 });
-    dispatch(setPreference(response.data.data[0]));
-    console.log(response.data.data[0])
-  } catch (error) { }
-};
-// Define a thunk that dispatches those action creators
-export const fetchUsersAddress = () => async dispatch => {
-  dispatch(loadingStart())
-  const user_id = await AsyncStorage.getItem('user_id');
-  try {
-    const response = await ApiRequest({ type: 'get_data', table_name: "user_addresses", user_id: user_id });
-    if (response.data.data) {
-      dispatch(setUserAddress(response.data.data));
-    }
-  } catch (error) { }
-  finally {
-    dispatch(loadingEnd())
-  }
-};
-
-export const fetchUsersCards = () => async dispatch => {
+export const fetchUsers = () => async dispatch => {
   const user_id = await AsyncStorage.getItem('user_id');
   if (user_id) {
     try {
-      const response = await ApiRequest({ type: 'get_data', user_id: user_id, table_name: "cards" });
-      if (response.data.data) {
-        dispatch(addUsersCard(response.data.data));
-      }
-    } catch (error) { }
+      dispatch(usersLoading());
+      const response = await ApiRequest({type: 'profile', user_id: user_id});
+      dispatch(usersReceived(response.data.profile));
+    } catch (error) {}
   }
 };

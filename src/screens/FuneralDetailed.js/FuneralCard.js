@@ -18,7 +18,7 @@ const HomeCard = ({
   image,
   url,
   profile,
-
+  onPress,
   time,
   styling,
   subTitle,
@@ -36,7 +36,9 @@ const HomeCard = ({
     getAccountType();
   }, []);
   return (
-    <View
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.8}
       // onPress={() => navigation.navigate('Details', {name})}
       style={[
         styling,
@@ -48,6 +50,7 @@ const HomeCard = ({
           // paddingTop: 14,
           // width: 230,
           // margin: 4,
+          marginVertical: 10,
           marginRight: 10,
         },
       ]}>
@@ -56,32 +59,57 @@ const HomeCard = ({
       //   navigation.navigate('HomeStackWithoutBottom', {screen: 'ChefScreen'})
       // }
       >
-        <Image
-          source={{uri: url + cleanedPath}}
-          style={{
-            height: 100,
-            width: 160,
-            borderTopRightRadius: 20,
-            borderTopLeftRadius: 20,
-            elevation: 10,
-            shadowColor: colors.elev,
-            // backgroundColor: 'red',
-          }}
-        />
+        {!image && !image.length > 0 ? (
+          <Image
+            // source={require('../../assets/app_icon.png')}
+            source={require('../../assets/app_icon.png')}
+            // source={{uri: item.url + cleanedPath}}
+            style={{
+              width: 160,
+              height: 100,
+              borderTopRightRadius: 20,
+              borderTopLeftRadius: 20,
+              top: 0,
+              // backgroundColor: 'red',
+            }}
+          />
+        ) : (
+          <Image
+            // accessibilityLabel="No"
+            source={{uri: url + cleanedPath}}
+            style={{
+              width: 160,
+              height: 100,
+              borderTopRightRadius: 20,
+              borderTopLeftRadius: 20,
+              elevation: 10,
+              shadowColor: colors.elev,
+              borderWidth: 1,
+              // backgroundColor: colors.gray,
+            }}
+          />
+        )}
       </TouchableOpacity>
       <View
         style={{
-          backgroundColor: colors.white,
-          padding: 10,
+          paddingVertical: 20,
+          justifyContent: 'space-evenly',
+          paddingHorizontal: 6,
           width: 160,
           height: 100,
           borderBottomRightRadius: 20,
+          // flex: 1,
           borderBottomLeftRadius: 20,
           elevation: 10,
           shadowColor: colors.elev,
+          backgroundColor: colors.white,
           //   backgroundColor: 'red',
         }}>
-        <Text style={[style.font18Re, {fontFamily: fonts.bold}]}>{name}</Text>
+        <Text
+          style={[style.font18Re, {fontFamily: fonts.bold}]}
+          numberOfLines={1}>
+          {name}
+        </Text>
         <Text
           numberOfLines={2}
           style={{
@@ -92,53 +120,8 @@ const HomeCard = ({
           }}>
           {subTitle}
         </Text>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-          {/* {account_Type === 'customer' && (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <Image
-                source={profile}
-                style={{
-                  height: 30,
-                  width: 30,
-                  borderRadius: 15,
-                }}
-              />
-              <Text
-                style={{
-                  color: colors.primaryColor,
-                  paddingLeft: 6,
-                  fontFamily: fonts.regular,
-                  fontSize: 11,
-                }}>
-                Shop Roses
-              </Text>
-            </View>
-          )} */}
-          {account_Type !== 'customer'}
-          <Text></Text>
-          <Text
-            style={{
-              color: colors.primaryColor,
-              paddingLeft: 6,
-              fontFamily: fonts.regular,
-              fontSize: 11,
-            }}>
-            {time}
-          </Text>
-        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

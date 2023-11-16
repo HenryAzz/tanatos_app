@@ -9,6 +9,10 @@ import ApiRequest from '../../Services/ApiRequest';
 import {isValidNumber} from 'react-native-phone-number-input';
 import {colors} from '../../constraints';
 import {useTranslation} from 'react-i18next';
+import Toast from 'react-native-root-toast';
+import {ToastMessage} from '../../utils/Toast';
+import AppTextInput from '../../components/FloatingLabelInput';
+import {validateEmail} from '../../utils/Validations';
 
 const ForgotPassword = () => {
   const navigation = useNavigation();
@@ -17,11 +21,6 @@ const ForgotPassword = () => {
   });
 
   const [valid, setValid] = useState(true);
-
-  useMemo(() => {
-    const isFormFilled = data.phoneNumber && valid;
-    setValid(!isFormFilled);
-  }, [data.phoneNumber]);
 
   // useMemo(() => {
   //   const isFormFilled =
@@ -35,24 +34,47 @@ const ForgotPassword = () => {
   //   setdisabled(!isFormFilled);
   // }, [formData]);
 
+  const [formData, setFormData] = useState({
+    email: '',
+  });
+  const handleInputChange = (name, value) => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+  useMemo(() => {
+    const isFormFilled = validateEmail(formData.email);
+    setValid(!isFormFilled);
+  }, [formData]);
+
   const [isLoading, setIsLoading] = useState(false);
   const handleOTP = async () => {
     try {
       setIsLoading(true);
       const res = await ApiRequest({
-        type: 'send_otp',
-        phone: data.phoneNumber,
+        type: 'forgot_password',
+        email: formData.email,
       });
       const resp = res?.data;
-      console.log(resp);
-      if (resp.code) {
-        navigation.navigate('OTPChangeReset', {OTP: resp?.code});
+      const respon = res?.data.user_exist;
+      console.log(respon);
+      if (resp) {
+        console.log('resp?.code', resp?.code);
+        navigation.navigate('OTPChangeReset', {
+          OTP: resp?.code,
+          email: formData.email,
+          user_id: resp?.user_id,
+        });
+        setFormData({email: ''});
 
         // navigation.navigate('OtpVerified', {
         //   OTP: resp?.code.code,
         // });
 
         setIsLoading(false);
+      } else {
+        ToastMessage('Invalid User Credentials');
       }
     } catch (error) {
       console.log(error);
@@ -66,18 +88,25 @@ const ForgotPassword = () => {
     <Layout>
       <View style={{width: '100%'}}>
         <AuthHeader title={t('resetpass1')} subTitle={t('resetpass2')} />
-        <PhoneNumberInput
-          title={'Phone Number'}
+        <AppTextInput
+          titleText={t('Email')}
+          keyboardType="email-address"
+          placeholder={t('Email')}
+          value={formData.email}
+          onChangeText={text => handleInputChange('email', text)}
+        />
+        {/* <PhoneNumberInput
+          title={t('Phone Number')}
           valid={valid}
           value={data.phoneNumber}
           setValid={setValid}
           setValue={setData}
           formData={data}
-        />
+        /> */}
       </View>
       <BaseButton
         title={
-          isLoading ? <ActivityIndicator color={colors.white} /> : 'Continue'
+          isLoading ? <ActivityIndicator color={colors.white} /> : t('Continue')
         }
         disabled={valid || isLoading}
         defaultStyle={{marginTop: 30}}

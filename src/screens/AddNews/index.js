@@ -24,6 +24,7 @@ import {colors, constants, fonts} from '../../constraints';
 import {ToastMessage} from '../../utils/Toast';
 import ApiRequest from '../../Services/ApiRequest';
 import {useMemo} from 'react';
+import {useTranslation} from 'react-i18next';
 const AddNews = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -171,7 +172,7 @@ const AddNews = () => {
   };
 
   const [valid, setValid] = useState(true);
-
+  const {t} = useTranslation();
   useMemo(() => {
     const isFormFilled = imagesToSend?.length > 0;
     setValid(!isFormFilled);
@@ -179,14 +180,14 @@ const AddNews = () => {
   return (
     <Layout>
       <ScrollView style={{width: '100%'}}>
-        <AppHeader title={'Upload Photo'} />
+        <AppHeader title={t('Upload Photo')} />
         <View>
           <Text
             style={[
               style.font16Re,
               {fontFamily: fonts.medium, alignSelf: 'flex-start'},
             ]}>
-            Upload Photo
+            {t('Upload Photo')}
           </Text>
           <View
             style={{
@@ -200,7 +201,7 @@ const AddNews = () => {
               borderStyle: 'dashed',
             }}>
             <BaseButton
-              title={'Upload Photo'}
+              title={t('Upload Photo')}
               onPress={openGallery}
               defaultStyle={{width: '60%'}}
             />
@@ -279,7 +280,7 @@ const AddNews = () => {
             marginVertical: 100,
           }}>
           <BaseButton
-            title={'Continue'}
+            title={t('Continue')}
             disabled={valid || loading}
             loading={loading}
             onPress={handleSubmit}

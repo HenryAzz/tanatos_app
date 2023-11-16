@@ -19,7 +19,7 @@ import {BakcButton} from '../../assets/images/svg';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
 import AuthHeader from '../../components/AuthHeader';
 import {useNavigation} from '@react-navigation/native';
-import {validateEmail} from '../../utils/Validations';
+import {validateEmail, validatePassword} from '../../utils/Validations';
 import {DatePicker} from '../../components/DateComponent';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Tick from '../../assets/Tick.svg';
@@ -221,7 +221,7 @@ const Signup = ({route}) => {
           {!validateEmail(formData.email) && formData.email.length >= 2 && (
             <Text style={{top: -8, color: colors.red}}>
               {' '}
-              Enter valid email (abc@gmail.com)
+              {t('Enter valid email (abc@gmail.com)')}
             </Text>
           )}
         </View>
@@ -234,6 +234,12 @@ const Signup = ({route}) => {
           value={formData.password}
           onChangeText={text => handleInputChange('password', text)}
         />
+        {!validatePassword(formData.password) &&
+          formData.password.length >= 2 && (
+            <Text style={{top: -8, color: colors.red}}>
+              {t('Password must be 8 digits (Aa1234*/)')}
+            </Text>
+          )}
         <AppTextInput
           titleText={t('Confirm Password')}
           placeholder={t('Confirm Password')}
@@ -243,7 +249,12 @@ const Signup = ({route}) => {
           value={formData.confirmPassword}
           onChangeText={text => handleInputChange('confirmPassword', text)}
         />
-
+        {!validatePassword(formData.confirmPassword) &&
+          formData.confirmPassword.length >= 2 && (
+            <Text style={{top: -8, color: colors.red}}>
+              {t('Password must be 8 digits (Aa1234*/)')}
+            </Text>
+          )}
         <Text
           style={[
             style.font16Re,
@@ -286,89 +297,16 @@ const Signup = ({route}) => {
           }}
           maxDate={new Date()}
         />
-        {/* <Text
-          style={[
-            style.font16Re,
-            {fontFamily: fonts.medium, marginVertical: 4},
-          ]}>
-          Select Gender
-        </Text>
-        <TouchableOpacity
-          style={{
-            height: 50,
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: '#E0E0E0',
-            backgroundColor: '#F5F5F5',
-            marginBottom: 10,
-            justifyContent: 'space-between',
-            padding: 15,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-          onPress={() => {
-            ref.current.open();
-          }}>
-          <Text
-            style={[
-              style.font16Re,
-              {color: !formData.gender ? '#969696' : colors.gray},
-            ]}>
-            {formData.gender ? formData.gender : 'Select Gender'}
-          </Text>
-        </TouchableOpacity> */}
-        {/* </> */}
-        {/* ) : null} */}
-        {/* {account_Type === 'funeral' ? (
-          <AppTextInput
-            titleText={'Address'}
-            placeholder={'Address'}
-            value={formData.address}
-            onChangeText={text => handleInputChange('address', text)}
-          />
-        ) : null} */}
-
-        {/* {account_Type === 'store' ? (
-          <>
-            <AppTextInput
-              titleText={'Shop Name'}
-              placeholder={'Shop Name'}
-              value={formData.shopName}
-              onChangeText={text => handleInputChange('shopName', text)}
-            />
-            <AppTextInput
-              titleText={'Category'}
-              placeholder={'Category'}
-              value={formData.category}
-              onChangeText={text => handleInputChange('category', text)}
-            />
-        
-            <PhoneNumberInput
-              title={'PHONE'}
-              valid={valid}
-              value={formData.phoneNumber}
-              setValid={setValid}
-              setValue={setFormData}
-              formData={formData}
-            />
-
-            <AppTextInput
-              titleText={'Shop Location'}
-              placeholder={'Shop Location'}
-              value={formData.shopLocation}
-              onChangeText={text => handleInputChange('shopLocation', text)}
-            />
-          </>
-        ) : null} */}
 
         <BaseButton
           title={
-            loading ? <ActivityIndicator color={colors.white} /> : 'Continue'
+            loading ? <ActivityIndicator color={colors.white} /> : t('Continue')
           }
           defaultStyle={{marginVertical: 20}}
           disabled={disable || loading || !isEmailValid}
           onPress={handleSignup}
         />
+
         <View
           style={{
             marginVertical: 10,
@@ -408,99 +346,12 @@ const Signup = ({route}) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      {/* <RBSheet
-        ref={ref}
-        closeOnDragDown={true}
-        closeOnPressMask={true}
-        height={300}
-        openDuration={250}
-        customStyles={{
-          wrapper: {
-            backgroundColor: 'transparent',
-          },
-          draggableIcon: {
-            backgroundColor: '#000',
-          },
-          container: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            paddingHorizontal: 20,
-          },
-        }}>
-        <View>
-          <Text style={[style.font16Re, {marginVertical: 15}]}>
-            Select Account Type
-          </Text>
-          <TouchableOpacity
-            style={{
-              height: 50,
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: colors.gray5,
-              marginBottom: 10,
-              justifyContent: 'space-between',
-              padding: 15,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-            onPress={() => {
-              handleSelect('Male');
-            }}>
-            <Text style={style.font16Re}>Male</Text>
-            {formData.gender === 'Male' ? <Tick /> : null}
-            <Tick />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              marginTop: 10,
-              height: 50,
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: colors.gray5,
-              marginBottom: 10,
-              justifyContent: 'space-between',
-              padding: 15,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-            onPress={() => {
-              handleSelect('Female');
-            }}>
-            <Text style={style.font16Re}>Female</Text>
-            {formData.gender === 'Female' ? <Tick /> : null}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              marginTop: 10,
-              height: 50,
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: colors.gray5,
-              marginBottom: 10,
-              justifyContent: 'space-between',
-              padding: 15,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-            onPress={() => {
-              handleSelect('Other');
-            }}>
-            <Text style={style.font16Re}>Other</Text>
-            {formData.gender === 'Other' ? <Tick /> : null}
-          </TouchableOpacity>
-        </View>
-      </RBSheet> */}
+
       <Modal
         visible={isModalVisible}
         animationType="slide"
         transparent={true}
         defaultStyle={{}}
-        // style={{
-        //   width: '90%',
-        //   justifyContent: 'center',
-        //   alignItems: 'center',
-        //   backgroundColor: 'red', // Add an overlay background color if desired
-        // }}
         onRequestClose={() => setModalVisible(false)}>
         <View
           style={{
@@ -512,38 +363,20 @@ const Signup = ({route}) => {
             alignItems: 'center',
             backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
           }}>
-          {/* <TouchableOpacity onPress={() => setModalVisible(false)}>
-            <Text>Close</Text>
-          </TouchableOpacity> */}
-
           <GooglePlacesAutocomplete
-            placeholder="Search "
+            placeholder={t('SearchD')}
             GooglePlacesDetailsQuery={{fields: 'geometry'}}
-            // renderPoweredByGoogle={false}
             enablePoweredByContainer={false}
             styles={{
               container: {
-                // height: 10,
-                //   flex: 1,
-                //   zIndex: 2,
-                // height: '70%',
                 width: '100%',
                 alignSelf: 'center',
-                // borderWidth: 1,
-                // borderColor: '#E0E0E0',
-                // backgroundColor: '#F5F5F5',
-                // backgroundColor: 'red',
-                // marginTop: 10,
-                // borderRadius: 10,
               },
               textInput: {
                 height: '110%',
-                // borderRadius: 10,
-                //   borderWidth: 1,
-                //   borderColor: '#E0E0E0',
+
                 backgroundColor: 'white',
-                //   borderBottomColor: '#d4d4d4',
-                //   borderBottomWidth: 0.5,
+
                 color: 'black',
               },
             }}

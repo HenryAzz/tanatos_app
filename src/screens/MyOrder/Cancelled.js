@@ -1,133 +1,3 @@
-// import {StyleSheet, FlatList, Text, View, Image} from 'react-native';
-// import React from 'react';
-// import Layout from '../../components/Layout';
-// import MyOrderCard from './MyOrderCard';
-
-// import style from '../../assets/css/style';
-// import {fonts} from '../../constraints';
-// import OrderNotFound from './OrderNotFound';
-// import {useNavigation} from '@react-navigation/native';
-// const NewOrder = () => {
-//   const navigation = useNavigation();
-//   const data = [
-//     {
-//       id: 1,
-//       image: require('../../assets/images/OrderCard/orderImg1.png'),
-//       title: 'Pink Roses',
-//       price: '$1000',
-//       address:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-//       status: 'Confirm',
-//     },
-//     {
-//       id: 2,
-//       image: require('../../assets/images/OrderCard/orderImg1.png'),
-//       title: 'Pink Roses',
-//       price: '$2000',
-//       address:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-//       status: 'Confirm',
-//     },
-//     {
-//       id: 3,
-//       image: require('../../assets/images/OrderCard/orderImg1.png'),
-//       title: 'Pink Roses',
-//       price: '$3000',
-//       address:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-//       status: 'Confirm',
-//     },
-//     {
-//       id: 4,
-//       image: require('../../assets/images/OrderCard/orderImg1.png'),
-//       title: 'Pink Roses',
-//       price: '$4000',
-//       address:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-//       status: 'Confirm',
-//     },
-//     {
-//       id: 5,
-//       image: require('../../assets/images/OrderCard/orderImg1.png'),
-//       title: 'Pink Roses',
-//       price: '$5000',
-//       address:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-//       status: 'Confirm',
-//     },
-//     {
-//       id: 6,
-//       image: require('../../assets/images/OrderCard/orderImg1.png'),
-//       title: 'Pink Roses',
-//       price: '$6000',
-//       address:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-//       status: 'Confirm',
-//     },
-//     {
-//       id: 7,
-//       image: require('../../assets/images/OrderCard/orderImg1.png'),
-//       title: 'Pink Roses',
-//       price: '$7000',
-//       address:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-//       status: 'Confirm',
-//     },
-//     {
-//       id: 8,
-//       image: require('../../assets/images/OrderCard/orderImg1.png'),
-//       title: 'Pink Roses',
-//       price: '$8000',
-//       address:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-//       status: 'Confirm',
-//     },
-//     {
-//       id: 9,
-//       image: require('../../assets/images/OrderCard/orderImg1.png'),
-//       title: 'Pink Roses',
-//       price: '$9000',
-//       address:
-//         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-//       status: 'Confirm',
-//     },
-//   ];
-
-//   return (
-//     <Layout>
-//       {data.length > 0 ? (
-//         <FlatList
-//           showsVerticalScrollIndicator={false}
-//           showsHorizontalScrollIndicator={false}
-//           keyExtractor={item => item.id}
-//           data={data}
-//           renderItem={({item}) => (
-//             <MyOrderCard
-//               image={item.image}
-//               title={item.title}
-//               price={item.price}
-//               address={item.address}
-//               status={item.status}
-//               // onPress={() => alert('ok')}
-//               onPress={() =>
-//                 navigation.navigate('OrderTrack', {
-//                   data: item,
-//                 })
-//               }
-//             />
-//           )}
-//         />
-//       ) : (
-//         <OrderNotFound />
-//       )}
-//     </Layout>
-//   );
-// };
-
-// export default NewOrder;
-
-// const styles = StyleSheet.create({});
-
 import {
   StyleSheet,
   FlatList,
@@ -142,7 +12,7 @@ import Layout from '../../components/Layout';
 import MyOrderCard from './MyOrderCard';
 
 import style from '../../assets/css/style';
-import {fonts} from '../../constraints';
+import {colors, fonts} from '../../constraints';
 import OrderNotFound from './OrderNotFound';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import ApiRequest from '../../Services/ApiRequest';
@@ -163,30 +33,32 @@ const Cancelled = () => {
     const user_id = await AsyncStorage.getItem('user_id');
     const account_Type = await AsyncStorage.getItem('account_Type');
     const store_id = await AsyncStorage.getItem('store_id');
+    if (user_id) {
+      try {
+        setLoading(true);
+        const dataForReq = {
+          type: 'get_data',
+          table_name: 'orders',
+          status: 'cancelled',
+        };
+        if (account_Type === 'customer') {
+          dataForReq.own = 1;
+          dataForReq.user_id = JSON.parse(user_id);
+        } else if (account_Type === 'store') {
+          dataForReq.store_id = JSON.parse(store_id);
+        }
+        // setRefreshing(false)
+        setAccountType(account_Type);
+        const res = await ApiRequest(dataForReq);
+        const resp = res.data.data;
 
-    try {
-      setLoading(true);
-      const dataForReq = {
-        type: 'get_data',
-        table_name: 'orders',
-        status: 'cancelled',
-      };
-      if (account_Type === 'customer') {
-        dataForReq.own = 1;
-        dataForReq.user_id = JSON.parse(user_id);
-      } else if (account_Type === 'store') {
-        dataForReq.store_id = JSON.parse(store_id);
+        setOrderData(resp);
+        // console.log(resp, 'resp new order');
+      } catch (err) {
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-      // setRefreshing(false)
-      setAccountType(account_Type);
-      const res = await ApiRequest(dataForReq);
-      const resp = res.data.data;
-
-      setOrderData(resp);
-      // console.log(resp, 'resp new order');
-    } catch (err) {
-    } finally {
-      setLoading(false);
     }
   };
 

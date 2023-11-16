@@ -7,16 +7,16 @@ import esTranslations from './es.json'; // Spanish translations
 i18n
   .use(initReactI18next) // Initialize react-i18next
   .init({
-    lng: 'en', // Default language
-    fallbackLng: 'en', // Fallback language
+    lng: 'es', // Default language
+    fallbackLng: 'es', // Fallback language
     resources: {
-      en: {
-        translation: enTranslations,
-      },
       es: {
-        translation: esTranslations,
+        translation: esTranslations, // Spanish translations
+      },
+      en: {
+        translation: enTranslations, // English translations
       },
     },
   });
 
-export default i18n; // Fixed the export statement
+export default i18n;

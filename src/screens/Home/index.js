@@ -22,7 +22,7 @@ import TextCardView from './TextCardView';
 import BottomCard from './BottomCard';
 import SearchPic from '../../assets/images/HomeImg/Search.svg';
 import ListOfSearches from './ListOfSearches';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import FuneralCard from './FuneralCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppTextInput from '../../components/FloatingLabelInput';
@@ -105,22 +105,25 @@ const Home = () => {
 
   const handleGetData = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
-    try {
-      setShowLoadingModal(true);
-      const res = await ApiRequest({
-        type: 'get_data',
-        id: user_id,
-        table_name: 'users',
-      });
-      const resp = res?.data?.data[0];
+    console.log('useruser_id_id', user_id);
+    if (user_id) {
+      try {
+        setShowLoadingModal(true);
+        const res = await ApiRequest({
+          type: 'get_data',
+          id: user_id,
+          table_name: 'users',
+        });
+        const resp = res?.data?.data[0];
 
-      setFormData({
-        userName: resp?.name,
-        image: resp?.image,
-        url: resp.url,
-      });
-    } catch (error) {
-      console.log(error);
+        setFormData({
+          userName: resp?.name,
+          image: resp?.image,
+          url: resp.url,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -130,26 +133,28 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [funeralData, setFuneralData] = useState();
   const [funeralDataOwn, setFuneralDataOwn] = useState();
-  console.log(funeralData, 'duen');
+  // console.log(funeralData, 'duen');
   const handleGetFuneralDataOwner = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
-    try {
-      setLoading(true);
-      setShowLoadingModal(true);
-      const res = await ApiRequest({
-        type: 'get_data',
-        table_name: 'funerals',
-        own: 1,
-        user_id: user_id,
-      });
-      const resp = res.data.data;
-      // console.log(resp, 'resp////////////////////////owner');
-      setFuneralDataOwn(resp);
-      setShowLoadingModal(false);
-    } catch (err) {
-    } finally {
-      setShowLoadingModal(false);
-      setLoading(false);
+    if (user_id) {
+      try {
+        setLoading(true);
+        setShowLoadingModal(true);
+        const res = await ApiRequest({
+          type: 'get_data',
+          table_name: 'funerals',
+          own: 1,
+          user_id: user_id,
+        });
+        const resp = res.data.data;
+        // console.log(resp, 'resp////////////////////////owner');
+        setFuneralDataOwn(resp);
+        setShowLoadingModal(false);
+      } catch (err) {
+      } finally {
+        setShowLoadingModal(false);
+        setLoading(false);
+      }
     }
   };
   const handleGetFuneralData = async () => {
@@ -172,11 +177,12 @@ const Home = () => {
       setLoading(false);
     }
   };
+  const isFocused = useIsFocused();
   useEffect(() => {
     handleGetFuneralData();
     handleGetFuneralDataOwner();
     handleGetData();
-  }, []);
+  }, [isFocused]);
   useEffect(() => {
     handleGetFuneralData();
   }, [route?.params?.update]);
@@ -297,6 +303,7 @@ const Home = () => {
       i18n.changeLanguage('en'); // Switch to English
     }
   };
+
   return (
     <Layout>
       {/* <BaseButton title={'Change'} onPress={() => toggleLanguage()} /> */}
@@ -319,20 +326,21 @@ const Home = () => {
             {formData.image ? (
               <View
                 style={{
-                  width: 55,
-                  height: 55,
+                  width: 50,
+                  height: 50,
                   borderRadius: 100,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: colors.gray,
+                  backgroundColor: colors.primaryColor,
+                  alignSelf: 'center',
                   alignSelf: 'center',
                   // marginTop: 25,
                   // marginBottom: 5,
                 }}>
                 <Image
                   style={{
-                    height: 50,
-                    width: 50,
+                    height: 40,
+                    width: 40,
                     // backgroundColor: 'blue',
                     // resizeMode: 'center',
                     borderRadius: 30,
@@ -341,14 +349,19 @@ const Home = () => {
                 />
               </View>
             ) : (
-              <View
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('AppStackWithoutBottom', {
+                    screen: 'EditProfile',
+                  })
+                }
                 style={{
-                  width: 55,
-                  height: 55,
+                  width: 50,
+                  height: 50,
                   borderRadius: 100,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: colors.gray,
+                  backgroundColor: colors.primaryColor,
                   alignSelf: 'center',
                   // marginTop: 25,
                   // marginBottom: 5,
@@ -361,9 +374,9 @@ const Home = () => {
                     resizeMode: 'center',
                     borderRadius: 20,
                   }}
-                  source={require('../../assets/images/HomeImg/HomeCardImg1.png')}
+                  source={require('../../assets/app_icon.png')}
                 />
-              </View>
+              </TouchableOpacity>
             )}
             <View style={{paddingLeft: 10}}>
               <Greetings />
@@ -384,34 +397,30 @@ const Home = () => {
       )}
       {!funeralData ? (
         <OrderNotFound
-          title={'Not Found data'}
-          subtitle={"You don't have any data at this time"}
+          title={t('Not Found data')}
+          subtitle={t("You don't have any data at this time")}
         />
       ) : (
         <>
-          {account_Type === 'customer' ||
-            (account_Type === 'funeral' && (
-              <>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    borderWidth: 1,
-                    borderColor: colors.line,
-                    marginVertical: 10,
-                    borderRadius: 50,
-                    height: 45,
-                    paddingLeft: 14,
-                  }}>
-                  <SearchPic />
-                  <TextInput
-                    placeholder="Buscar"
-                    style={{width: '100%', paddingLeft: 10}}
-                  />
-                </View>
-              </>
-            ))}
-          {account_Type === 'customer' ? <ListOfSearches /> : null}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderWidth: 1,
+              borderColor: colors.line,
+              marginVertical: 10,
+              borderRadius: 50,
+              height: 45,
+              paddingLeft: 14,
+            }}>
+            <SearchPic />
+            <TextInput
+              placeholder="Buscar"
+              style={{width: '100%', paddingLeft: 10}}
+            />
+          </View>
+
+          {/* {account_Type === 'customer' ? <ListOfSearches /> : null} */}
 
           <ScrollView
             style={{width: '100%'}}
@@ -420,8 +429,8 @@ const Home = () => {
             {account_Type === 'customer' ? (
               <>
                 <TextCardView
-                  title={'Funeral Homes'}
-                  subtitle={'View all'}
+                  title={t('Funeral Homes')}
+                  subtitle={t('View all')}
                   onPress={() => navigation.navigate('FuneralDetailed')}
                 />
                 <FlatList
@@ -431,14 +440,22 @@ const Home = () => {
                   showsHorizontalScrollIndicator={false}
                   data={funeralData}
                   renderItem={({item}) => {
+                    // console.log(item.hall_no, 'itemitem');
                     return (
                       // <View style={{backgroundColor: 'red'}}>
+
                       <HomeCard
                         name={item.name}
                         subTitle={item.description}
                         image={item.image}
                         url={item.url}
+                        hallno={item.hall_no}
                         time={item.time}
+                        onPress={() =>
+                          navigation.navigate('FuneralDetailedPage', {
+                            item: item,
+                          })
+                        }
                         // navigation={props.navigation}
                       />
                       // </View>
@@ -449,8 +466,8 @@ const Home = () => {
             ) : null}
 
             <TextCardView
-              title={'Obituaries Near you'}
-              subtitle={account_Type === 'customer' ? 'View all' : null}
+              title={t('Obituaries Near you')}
+              subtitle={account_Type === 'customer' ? t('View all') : null}
               onPress={() =>
                 navigation.navigate('FuneralNearDetailed', {
                   initialRegion: initialRegion,
@@ -492,7 +509,7 @@ const Home = () => {
                   )}
                   data={funeralDataOwn}
                   renderItem={({item}) => {
-                    // console.log(item.id, 'akjska');
+                    // console.log(item, 'akjska');
                     return (
                       <BottomCard
                         title={item.name}

@@ -34,33 +34,34 @@ const NewOrder = () => {
     const store_id = await AsyncStorage.getItem('store_id');
     console.log(store_id, 'store id s');
     console.log(user_id, 'user_id id s');
-
-    try {
-      setRefreshing(true);
-      setLoading(true);
-      const dataForReq = {
-        type: 'get_data',
-        table_name: 'orders',
-        status: 'pending',
-        // store_id: store_id,
-      };
-      if (account_Type === 'customer') {
-        dataForReq.own = 1;
-        dataForReq.user_id = JSON.parse(user_id);
-      } else if (account_Type === 'store') {
-        dataForReq.store_id = JSON.parse(store_id);
+    if (user_id) {
+      try {
+        setRefreshing(true);
+        setLoading(true);
+        const dataForReq = {
+          type: 'get_data',
+          table_name: 'orders',
+          status: 'pending',
+          // store_id: store_id,
+        };
+        if (account_Type === 'customer') {
+          dataForReq.own = 1;
+          dataForReq.user_id = JSON.parse(user_id);
+        } else if (account_Type === 'store') {
+          dataForReq.store_id = JSON.parse(store_id);
+        }
+        setRefreshing(false);
+        setAccountType(account_Type);
+        const res = await ApiRequest(dataForReq);
+        const resp = res.data.data;
+        setRefreshing(false);
+        setOrderData(resp);
+        // console.log(resp, 'resp new order');
+      } catch (err) {
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-      setRefreshing(false);
-      setAccountType(account_Type);
-      const res = await ApiRequest(dataForReq);
-      const resp = res.data.data;
-      setRefreshing(false);
-      setOrderData(resp);
-      // console.log(resp, 'resp new order');
-    } catch (err) {
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
     }
   };
 

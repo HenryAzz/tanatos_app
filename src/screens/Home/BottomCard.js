@@ -4,6 +4,7 @@ import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
 import Edit from '../../assets/Edit.png';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import {useTranslation} from 'react-i18next';
 const BottomCard = ({
   title,
   subtitle,
@@ -13,6 +14,7 @@ const BottomCard = ({
   account_Type,
   gotoDetailePage,
 }) => {
+  const {t} = useTranslation();
   return (
     <TouchableOpacity
       onPress={account_Type === 'customer' ? onPress1 : gotoDetailePage}
@@ -64,8 +66,10 @@ const BottomCard = ({
       <Text
         style={[
           style.font14Re,
+
           {color: colors.textGray, marginVertical: 6, width: 300},
-        ]}>
+        ]}
+        numberOfLines={2}>
         {subtitle}
       </Text>
 
@@ -83,7 +87,7 @@ const BottomCard = ({
           borderRadius: 60,
         }}>
         <Text style={[style.font14Re, {color: colors.primaryColor}]}>
-          {account_Type === 'customer' ? 'see obituary' : 'Learn More'}
+          {account_Type === 'customer' ? t('see obituary') : 'Learn More'}
         </Text>
       </TouchableOpacity>
     </TouchableOpacity>

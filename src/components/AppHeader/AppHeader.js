@@ -26,7 +26,6 @@ const AppHeader = ({title, subTitle, onPress, status, defaultStyle}) => {
           style={{height: 44, width: 44}}
         />
       </TouchableOpacity>
-
       <Text style={[style.font20Re, {fontFamily: fonts.medium}]}>{title}</Text>
       {title === 'Add Obituaries' && status === 'before' ? (
         <TouchableOpacity onPress={onPress}>

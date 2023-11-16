@@ -23,6 +23,7 @@ import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import Toast from 'react-native-root-toast';
 import {ToastMessage} from '../../utils/Toast';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
+import {t} from 'i18next';
 
 const CreateStore = () => {
   const route = useRoute();
@@ -223,16 +224,16 @@ const CreateStore = () => {
         backgroundColor={colors.backgroundColor}
       /> */}
       <AuthHeader
-        title={"Let's Create Store"}
-        subTitle={'Enter Your details below to create a new store'}
+        title={t("Let's Create Store")}
+        subTitle={t('Enter Your details below to create a new store')}
       />
       <ScrollView
         style={{width: '100%'}}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}>
         <AppTextInput
-          titleText={'Shop Name'}
-          placeholder={'Shop Name'}
+          titleText={t('Shop Name')}
+          placeholder={t('Shop Name')}
           value={formData.shopName}
           onChangeText={text => handleInputChange('shopName', text)}
         />
@@ -286,7 +287,7 @@ const CreateStore = () => {
             style.font16Re,
             {fontFamily: fonts.medium, marginTop: 5, marginBottom: 3},
           ]}>
-          Location
+          {t('Location')}
         </Text>
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
@@ -299,7 +300,7 @@ const CreateStore = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text> {area ? area : 'Enter Store Location'}</Text>
+          <Text> {area ? area : t('Enter Store Location')}</Text>
         </TouchableOpacity>
         {/* <Text>{checkStore[0].location}</Text> */}
 
@@ -315,7 +316,7 @@ const CreateStore = () => {
               loading1 ? (
                 <ActivityIndicator color={colors.white} />
               ) : (
-                'Update Store'
+                t('Update Store')
               )
             }
             defaultStyle={{marginVertical: 20}}
@@ -328,7 +329,7 @@ const CreateStore = () => {
               loading1 ? (
                 <ActivityIndicator color={colors.white} />
               ) : (
-                'Add Store'
+                t('Add Store')
               )
             }
             defaultStyle={{marginVertical: 20}}
@@ -368,7 +369,7 @@ const CreateStore = () => {
           </TouchableOpacity> */}
 
           <GooglePlacesAutocomplete
-            placeholder="Search "
+            placeholder={t('SearchD')}
             GooglePlacesDetailsQuery={{fields: 'geometry'}}
             // renderPoweredByGoogle={false}
             enablePoweredByContainer={false}

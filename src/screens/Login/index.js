@@ -23,6 +23,8 @@ import {ToastMessage} from '../../utils/Toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
 import {useTranslation} from 'react-i18next';
+import {userId, userType} from '../../store/reducer/usersSlice';
+import {useDispatch} from 'react-redux';
 const Login = () => {
   const navigation = useNavigation();
   const [formData, setFormData] = useState({
@@ -37,7 +39,7 @@ const Login = () => {
   };
   const [isSecureText, setIsSecureText] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
+  const dispatch = useDispatch();
   // const validateForm = useMemo(() => {
   //   const isEmailValid = validateEmail(formData.email);
   //   const isPasswordValid = formData.password.trim().length > 0;
@@ -94,7 +96,9 @@ const Login = () => {
         const id = res?.data?.user_id;
         const account_Type = res?.data?.user_type;
         await AsyncStorage.setItem('user_id', id);
-        await AsyncStorage.setItem('account_Type', account_Type);
+        dispatch(userType({user_type: account_Type})),
+          dispatch(userId({user_id: id})),
+          await AsyncStorage.setItem('account_Type', account_Type);
         if (store_id) {
           await AsyncStorage.setItem('store_id', store_id);
         }

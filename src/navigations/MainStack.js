@@ -82,7 +82,7 @@ const MainStack = () => {
       <Stack.Screen name="EReceipt" component={EReceipt} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
       <Stack.Screen name="ShippingAddress" component={ShippingAddress} />
-      <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
+
       <Stack.Screen name="PaymentConfirmOtp" component={PaymentConfirmOtp} />
       <Stack.Screen name="ViewOrder" component={ViewOrder} />
       <Stack.Screen name="AddNewss" component={AddNews} />
@@ -305,6 +305,7 @@ const AppStackWithoutBottom = () => {
       <Stack.Screen name="FAQs" component={FAQs} />
       <Stack.Screen name="Balance" component={BallanceScreen} />
       <Stack.Screen name="UploadPhoto" component={UploadPhoto} />
+      <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
     </Stack.Navigator>
   );
 };

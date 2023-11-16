@@ -33,30 +33,32 @@ const Completed = () => {
     const user_id = await AsyncStorage.getItem('user_id');
     const account_Type = await AsyncStorage.getItem('account_Type');
     const store_id = await AsyncStorage.getItem('store_id');
+    if (user_id) {
+      try {
+        setLoading(true);
+        const dataForReq = {
+          type: 'get_data',
+          table_name: 'orders',
+          status: 'completed',
+        };
+        if (account_Type === 'customer') {
+          dataForReq.own = 1;
+          dataForReq.user_id = JSON.parse(user_id);
+        } else if (account_Type === 'store') {
+          dataForReq.store_id = JSON.parse(store_id);
+        }
+        // setRefreshing(false)
+        setAccountType(account_Type);
+        const res = await ApiRequest(dataForReq);
+        const resp = res.data.data;
 
-    try {
-      setLoading(true);
-      const dataForReq = {
-        type: 'get_data',
-        table_name: 'orders',
-        status: 'completed',
-      };
-      if (account_Type === 'customer') {
-        dataForReq.own = 1;
-        dataForReq.user_id = JSON.parse(user_id);
-      } else if (account_Type === 'store') {
-        dataForReq.store_id = JSON.parse(store_id);
+        setOrderData(resp);
+        // console.log(resp, 'resp new order');
+      } catch (err) {
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-      // setRefreshing(false)
-      setAccountType(account_Type);
-      const res = await ApiRequest(dataForReq);
-      const resp = res.data.data;
-
-      setOrderData(resp);
-      // console.log(resp, 'resp new order');
-    } catch (err) {
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -107,6 +109,7 @@ const Completed = () => {
     } finally {
       setLoading(false);
       setBottomLoader(false);
+      setRefreshing(false);
     }
   };
 

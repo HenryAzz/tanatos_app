@@ -8,82 +8,36 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {colors, fonts} from '../../constraints';
+import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
 
 const windowWidth = Dimensions.get('window').width;
 
-const cardData = [
-  {
-    id: 1,
-    title: 'Pink Rose',
-    price: '$19.99',
-    image: require('../../assets/images/fav/fev1.png'),
-  },
-  {
-    id: 2,
-    title: 'Pink Rose',
-    price: '$24.99',
-    image: require('../../assets/images/fav/fav2.png'),
-  },
-
-  {
-    id: 3,
-    title: 'Pink Rose',
-    price: '$24.99',
-    image: require('../../assets/images/fav/fav3.png'),
-  },
-  {
-    id: 4,
-    title: 'Pink Rose',
-    price: '$24.99',
-    image: require('../../assets/images/fav/fav4.png'),
-  },
-  {
-    id: 5,
-    title: 'Pink Rose',
-    price: '$24.99',
-    image: require('../../assets/images/fav/fav3.png'),
-  },
-  {
-    id: 6,
-    title: 'Pink Rose',
-    price: '$24.99',
-    image: require('../../assets/images/fav/fav4.png'),
-  },
-];
-
-const CardList = () => {
-  const renderCard = ({item}) => (
-    <View style={styles.cardContainer}>
-      <Image source={item.image} style={styles.image} />
-      <TouchableOpacity style={styles.favIconContainer}>
-        <Icon name="heart-o" size={20} color={colors.primaryColor} />
-      </TouchableOpacity>
-      <View style={styles.infoContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.price}>{item.price}</Text>
-      </View>
-    </View>
-  );
+const CardList = ({item, images, onPress}) => {
+  const image = JSON.parse(images);
+  console.log(images, 'item/////////');
 
   return (
-    <FlatList
-      data={cardData}
-      renderItem={renderCard}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      keyExtractor={item => item.id.toString()}
-      contentContainerStyle={styles.listContainer}
-      numColumns={2}
-    />
+    <TouchableOpacity onPress={onPress} style={styles.cardContainer}>
+      <View style={{height: 120, width: 160}}>
+        {images ? <ImageSwiper images={image} /> : null}
+      </View>
+      <TouchableOpacity style={styles.favIconContainer}>
+        <Icon name="heart" size={20} color={colors.primaryColor} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={onPress}>
+        <View style={styles.infoContainer}>
+          <Text style={styles.title}>{item?.store?.name}</Text>
+          <Text style={styles.price}>{item.price}$</Text>
+        </View>
+      </TouchableOpacity>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   listContainer: {
-    // paddingHorizontal: 10, // Add horizontal padding for spacing
-    // paddingBottom: 15, // Add bottom padding for spacing
     justifyContent: 'space-between',
     width: '100%',
   },
@@ -96,7 +50,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     marginBottom: 15,
-    width: '47%',
+    width: 161,
     marginHorizontal: 5,
     // paddingHorizontal: 10,
     // width: (windowWidth - 40) / 2, // Divide the available width by 2 for 2 columns

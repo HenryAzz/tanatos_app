@@ -15,122 +15,11 @@ import FuneralCard from './FuneralCard';
 import ApiRequest from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import OrderNotFound from '../MyOrder/OrderNotFound';
+import {useTranslation} from 'react-i18next';
+import {colors} from '../../constraints';
+import {useNavigation} from '@react-navigation/native';
 
 const FuneralDetailed = () => {
-  const FuneralData = [
-    {
-      id: '1',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '2',
-      image: require('../../assets/images/HomeImg/HomeCardImg1.png'),
-      title: 'Zain Korsgaard',
-      subTitle: 'Envía tu apoyo y un mensaje de ánimo a ',
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '3',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '4',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '5',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '6',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '7',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '8',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '9',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '10',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '11',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '12',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '13',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '14',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-  ];
   const [funeralData, setFuneralData] = useState();
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -146,6 +35,7 @@ const FuneralDetailed = () => {
       const resp = res.data.data;
       // console.log(resp, 'resp////////////////////////');
       setFuneralData(resp);
+      setRefreshing(false);
       setShowLoadingModal(false);
     } catch (err) {
     } finally {
@@ -193,9 +83,11 @@ const FuneralDetailed = () => {
     handleGetFuneralData();
   }, []);
 
+  const {t} = useTranslation();
+  const navigation = useNavigation();
   return (
     <Layout>
-      <AppHeader title={'Funeral Homes'} defaultStyle={{marginBottom: 30}} />
+      <AppHeader title={t('Funeral Homes')} defaultStyle={{marginBottom: 30}} />
 
       <View
         style={{
@@ -213,8 +105,8 @@ const FuneralDetailed = () => {
           onEndReached={scrolled ? handleGetFuneralDataMore : null}
           ListEmptyComponent={
             <OrderNotFound
-              title={'Not Found data'}
-              subtitle={"You don't have any at this time"}
+              title={t('Not Found data')}
+              subtitle={t("You don't have any data at this time")}
             />
           }
           ListFooterComponent={
@@ -237,6 +129,11 @@ const FuneralDetailed = () => {
               image={item.image}
               url={item.url}
               time={item.time}
+              onPress={() =>
+                navigation.navigate('FuneralDetailedPage', {
+                  item: item,
+                })
+              }
               // navigation={props.navigation}
             />
           )}

@@ -1,4 +1,4 @@
-import {StyleSheet, Text, Image, View} from 'react-native';
+import {StyleSheet, Text, Image, View, StatusBar} from 'react-native';
 import React, {useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -53,9 +53,10 @@ const Splash = () => {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
+      <StatusBar hidden translucent={true} />
       <Image
-        source={require('../../../bootsplash_logo.png')}
-        style={{width: 300}}
+        source={require('../../../Bootsplash.png')}
+        style={{width: 250}}
         resizeMode="center"
       />
     </View>

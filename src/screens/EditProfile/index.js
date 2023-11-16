@@ -15,6 +15,7 @@ import ApiRequest from '../../Services/ApiRequest';
 import {ToastMessage} from '../../utils/Toast';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import {useTranslation} from 'react-i18next';
+import {useNavigation} from '@react-navigation/native';
 const EditProfile = () => {
   const [formData, setFormData] = useState({
     userName: '',
@@ -41,6 +42,7 @@ const EditProfile = () => {
     path: '',
   });
   const [selectedImage, setSelectedImage] = useState('');
+  const navigation = useNavigation();
   console.log(formData.url + formData.image, 'formData.url + formData.image');
   const pickImage = () => {
     ImagePicker.openPicker({
@@ -58,39 +60,45 @@ const EditProfile = () => {
       });
   };
   const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   const handleGetData = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
-    try {
-      setShowLoadingModal(true);
-      const res = await ApiRequest({
-        type: 'get_data',
-        id: user_id,
-        table_name: 'users',
-      });
-      const resp = res?.data?.data[0];
+    if (user_id) {
+      try {
+        setShowLoadingModal(true);
 
-      setFormData({
-        userName: resp?.name,
-        email: resp?.email,
-        gender: resp?.gender,
-        dob: resp?.dob,
-        city: resp.city,
-        country: resp.country,
-        image: resp?.image,
-        url: resp.url,
-      });
-      setFormData1({
-        userName: resp?.name,
-        email: resp?.email,
-        gender: resp?.gender,
-        dob: resp?.dob,
-        city: resp.city,
-        country: resp.country,
-      });
-      setShowLoadingModal(false);
-    } catch (error) {
-      setShowLoadingModal(false);
-      console.log(error);
+        // console.log(data, 'data profile');
+
+        const res = await ApiRequest({
+          type: 'get_data',
+          id: user_id,
+          table_name: 'users',
+        });
+        const resp = res?.data?.data[0];
+
+        setFormData({
+          userName: resp?.name,
+          email: resp?.email,
+          gender: resp?.gender,
+          dob: resp?.dob,
+          city: resp.city,
+          country: resp.country,
+          image: resp?.image,
+          url: resp.url,
+        });
+        setFormData1({
+          userName: resp?.name,
+          email: resp?.email,
+          gender: resp?.gender,
+          dob: resp?.dob,
+          city: resp.city,
+          country: resp.country,
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setShowLoadingModal(false);
+      }
     }
   };
   const [isLoading1, setIsLoading1] = useState(false);
@@ -128,9 +136,10 @@ const EditProfile = () => {
       // const resp = res?.data;
       setIsLoading1(false);
       setDisabled(false);
-      handleGetData();
+      // alert('ooo');
+      navigation.navigate('Home');
+      // handleGetData();
       ToastMessage(res?.data?.message);
-      // navigation.navigate('Profile');
     } catch (error) {
       setIsLoading1(false);
       setDisabled(false);
@@ -157,6 +166,7 @@ const EditProfile = () => {
     const body = new FormData();
     body.append('type', 'upload_data');
     body.append('file', imageData);
+    setShowLoader(true);
     const res = await ApiRequest(body)
       .then(res => {
         // console.log('uplod');
@@ -166,10 +176,12 @@ const EditProfile = () => {
           image: res.data?.file_name,
           path: res.data?.file_name,
         });
+        setShowLoader(false);
       })
       .catch(err => {
         console.log(err);
         ToastMessage('Upload Again');
+        setShowLoader(false);
       });
   };
 
@@ -184,8 +196,8 @@ const EditProfile = () => {
         <TouchableOpacity
           onPress={pickImage}
           style={{
-            width: 110,
-            height: 110,
+            width: 105,
+            height: 105,
             borderRadius: 100,
             justifyContent: 'center',
             alignItems: 'center',
@@ -195,21 +207,29 @@ const EditProfile = () => {
             marginBottom: 5,
           }}>
           {formData.image ? (
-            <Image
-              source={{
-                uri: selectedImage
-                  ? selectedImage
-                  : formData.url + formData.image,
-              }}
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-              }}
-            />
+            <>
+              <Image
+                source={{
+                  uri: selectedImage
+                    ? selectedImage
+                    : formData.url + formData.image,
+                }}
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                }}
+              />
+            </>
           ) : (
             <Image source={profile} style={{width: 90, height: 90}} />
           )}
+          {showLoader ? (
+            <View style={{position: 'absolute'}}>
+              <ActivityIndicator color={colors.white} />
+            </View>
+          ) : null}
+          {/* <ActivityIndicator color={colors.primaryColor} /> */}
         </TouchableOpacity>
         <View style={{}}>
           <AppTextInput

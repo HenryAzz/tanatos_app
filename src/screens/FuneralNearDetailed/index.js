@@ -15,12 +15,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ApiRequest from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import OrderNotFound from '../MyOrder/OrderNotFound';
+import {useTranslation} from 'react-i18next';
 
 const FuneralNearDetailed = () => {
   const route = useRoute();
   const initialRegion = route?.params?.initialRegion;
 
-  console.log('initialRegion', initialRegion);
   const navigation = useNavigation();
   const data = [
     {
@@ -115,7 +115,7 @@ const FuneralNearDetailed = () => {
   const handleGetFuneralData = async () => {
     try {
       setShowLoadingModal(true);
-      setLoading(true);
+      // setLoading(true);
       const res = await ApiRequest({
         type: 'get_data',
         table_name: 'funerals',
@@ -127,19 +127,21 @@ const FuneralNearDetailed = () => {
       const resp = res.data.data;
       // console.log(resp, 'resp////////////////////////');
       setFuneralData(resp);
+      setRefreshing(false);
       setShowLoadingModal(false);
     } catch (err) {
       setShowLoadingModal(false);
     } finally {
+      setRefreshing(false);
       setShowLoadingModal(false);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {
     setRefreshing(true);
-    handleGetCatData();
+    handleGetFuneralData();
   };
   const [bottomLoader, setBottomLoader] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -160,10 +162,10 @@ const FuneralNearDetailed = () => {
         // lng: '',
       });
       const resp = res.data.data;
-      setBottomLoader(false);
       if (resp && resp != undefined && resp.length > 0) {
         setFuneralData([...funeralData, ...resp]);
       }
+      setBottomLoader(false);
       // setFuneralData(resp);
       // setShowLoadingModal(false);
     } catch (err) {
@@ -177,10 +179,11 @@ const FuneralNearDetailed = () => {
     handleGetFuneralData();
   }, []);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const {t} = useTranslation();
   return (
     <Layout>
       <AppHeader
-        title={'Obituaries Near you'}
+        title={t('Obituaries Near you')}
         defaultStyle={{marginBottom: 30}}
       />
       <FlatList
@@ -191,8 +194,8 @@ const FuneralNearDetailed = () => {
         onEndReached={scrolled ? handleGetFuneralDataMore : null}
         ListEmptyComponent={
           <OrderNotFound
-            title={'Not Found data'}
-            subtitle={"You don't have any at this time"}
+            title={t('Not Found data')}
+            subtitle={t("You don't have any data at this time")}
           />
         }
         ListFooterComponent={
@@ -216,10 +219,6 @@ const FuneralNearDetailed = () => {
             }
           />
         )}
-      />
-      <ModalLoadingTrans
-        showLoadingModal={showLoadingModal}
-        setShowLoadingModal={setShowLoadingModal}
       />
     </Layout>
   );
