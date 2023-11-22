@@ -17,7 +17,7 @@ import {useTranslation} from 'react-i18next';
 import {Provider} from 'react-redux';
 import {store} from './src/store';
 const App = () => {
-  // const {t, i18n} = useTranslation();
+  const {t, i18n} = useTranslation();
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -40,14 +40,14 @@ const App = () => {
   useEffect(() => {
     setTimeout(() => {
       RNBootSplash.hide({fade: true});
-    }, 50);
+    }, 1000);
   }, []);
 
   return (
     <Provider store={store}>
       <RootSiblingParent>
         <I18nextProvider i18n={i18n}>
-          <NavigationContainer onReady={() => RNBootSplash.hide()}>
+          <NavigationContainer>
             <RootNavigation />
           </NavigationContainer>
         </I18nextProvider>

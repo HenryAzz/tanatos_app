@@ -31,7 +31,7 @@ import {ToastMessage} from '../../utils/Toast';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
 const Signup = ({route}) => {
-  const account_Type = route.params.account_Type;
+  const account_Type = route?.params?.account_Type;
   // console.log(account_Type);
   const navigation = useNavigation();
   const [isSecureText, setIsSecureText] = useState(true);
@@ -50,7 +50,7 @@ const Signup = ({route}) => {
     dateOfBirth: '',
     confirmPassword: '',
     phoneNumber: '',
-    gender: '',
+    accountType: '',
     address: '',
     shopName: '',
     category: '',
@@ -114,7 +114,7 @@ const Signup = ({route}) => {
         company_id: '',
       });
       // await AsyncStorage.setItem('acc_type', type);
-      setFormData({...formData, gender: type});
+      setFormData({...formData, accountType: type});
       ref.current.close();
     } catch (e) {
       // saving error
@@ -170,7 +170,7 @@ const Signup = ({route}) => {
 
       navigation.navigate('ShareAddress', {
         formData: formData,
-        account_Type: account_Type,
+        account_Type: account_Type ? account_Type : formData.accountType,
         phone: '',
         city: city,
         state: state,
@@ -198,6 +198,43 @@ const Signup = ({route}) => {
         showsVerticalScrollIndicator={false}>
         {/* {account_Type === 'funeral' || account_Type === 'customer' ? ( */}
         {/* <> */}
+        {!route?.params?.account_Type ? (
+          <>
+            <Text
+              style={[
+                style.font16Re,
+                {fontFamily: fonts.medium, marginVertical: 4},
+              ]}>
+              {t('Account Type')}
+            </Text>
+            <TouchableOpacity
+              style={{
+                height: 50,
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: '#E0E0E0',
+                backgroundColor: '#F5F5F5',
+                marginBottom: 10,
+                justifyContent: 'space-between',
+                padding: 15,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+              onPress={() => {
+                ref.current.open();
+              }}>
+              <Text
+                style={[
+                  style.font16Re,
+                  {color: !formData.accountType ? '#969696' : colors.gray},
+                ]}>
+                {formData.accountType
+                  ? formData.accountType
+                  : t('Account Type')}
+              </Text>
+            </TouchableOpacity>
+          </>
+        ) : null}
         <AppTextInput
           titleText={t('Name')}
           placeholder={t('Name')}
@@ -346,6 +383,89 @@ const Signup = ({route}) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <RBSheet
+        ref={ref}
+        closeOnDragDown={true}
+        closeOnPressMask={true}
+        height={300}
+        openDuration={250}
+        customStyles={{
+          wrapper: {
+            // backgroundColor: 'transparent',
+          },
+          draggableIcon: {
+            backgroundColor: '#000',
+          },
+          container: {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            paddingHorizontal: 20,
+          },
+        }}>
+        <View>
+          <Text style={[style.font16Re, {marginVertical: 15}]}>
+            {t('Account Type')}
+          </Text>
+          <TouchableOpacity
+            style={{
+              height: 50,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: colors.gray5,
+              marginBottom: 10,
+              justifyContent: 'space-between',
+              padding: 15,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              handleSelect('customer');
+            }}>
+            <Text style={style.font16Re}>{t('customer')}</Text>
+            {formData.accountType === 'customer' ? <Tick /> : null}
+            {/* <Tick /> */}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              marginTop: 10,
+              height: 50,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: colors.gray5,
+              marginBottom: 10,
+              justifyContent: 'space-between',
+              padding: 15,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              handleSelect('store');
+            }}>
+            <Text style={style.font16Re}>{t('store')}</Text>
+            {formData.accountType === 'store' ? <Tick /> : null}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              marginTop: 10,
+              height: 50,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: colors.gray5,
+              marginBottom: 10,
+              justifyContent: 'space-between',
+              padding: 15,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              handleSelect('funeral');
+            }}>
+            <Text style={style.font16Re}>{t('funeral')}</Text>
+            {formData.accountType === 'funeral' ? <Tick /> : null}
+          </TouchableOpacity>
+        </View>
+      </RBSheet>
 
       <Modal
         visible={isModalVisible}

@@ -286,13 +286,14 @@ const AddFlowers = props => {
   const handleAddFlower = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
     const store_id = await AsyncStorage.getItem('store_id');
+    console.log(store_id, 'store_id');
 
     setdisabled(true);
     setLoading(true);
     const dataToPost = {
       type: 'add_data',
       table_name: 'stores_gallery',
-      store_id: store_id,
+      store_id: JSON.parse(store_id),
       name: formData.name,
       description: formData.description,
       price: formData.price,

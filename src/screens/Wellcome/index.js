@@ -53,11 +53,25 @@ const Wellcome = () => {
         {t('welcome2')}
       </Text>
       <BaseButton
-        title={t('welcome3')}
+        title={t('Continue as a Guest')}
         onPress={async () => {
-          dispatch(userType({user_type: ''}));
           await AsyncStorage.setItem('account_Type', 'customer');
-          navigation.navigate('Signup', {account_Type: 'customer'});
+          dispatch(userType({user_type: 'Guest'}));
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: 'MainStack',
+                state: {
+                  routes: [
+                    {
+                      name: 'AppStack',
+                    },
+                  ],
+                },
+              },
+            ],
+          });
         }}
         defaultStyle={{
           backgroundColor: colors.white,

@@ -110,7 +110,7 @@ const CreateStore = () => {
       if (res.data.result) {
         // console.log(resp, 'create sore');
         ToastMessage(res?.data?.message);
-        await AsyncStorage.setItem('store_id', JSON.stringify(resp.id));
+        await AsyncStorage.setItem('store_id', JSON.stringify(resp?.id));
         // navigation.navigate('Home', {
         //   id: resp?.id,
         //   account_Type: account_Type,
@@ -237,50 +237,6 @@ const CreateStore = () => {
           value={formData.shopName}
           onChangeText={text => handleInputChange('shopName', text)}
         />
-        {/* <AppTextInput
-          titleText={'Shop Location'}
-          placeholder={'Shop Location'}
-          value={formData.shopLocation}
-          onChangeText={text => handleInputChange('shopLocation', text)}
-        /> */}
-        {/* <AppTextInput
-          titleText={'Category'}
-          placeholder={'Category'}
-          value={formData.category}
-          onChangeText={text => handleInputChange('category', text)}
-        /> */}
-        {/* <Text
-          style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
-          Category
-        </Text>
-        <TouchableOpacity
-          onPress={() => setModalVisibleCat(true)}
-          style={{
-            borderWidth: 1,
-            borderColor: '#E0E0E0',
-            backgroundColor: '#F5F5F5',
-            height: 50,
-            borderRadius: 10,
-            justifyContent: 'center',
-            paddingLeft: 10,
-          }}>
-          <Text> {selectedItem ? selectedItem.name : 'Category'}</Text>
-        </TouchableOpacity> */}
-        {/* <PhoneNumberInput
-          title={'PHONE'}
-          valid={valid}
-          value={formData.phoneNumber}
-          setValid={setValid}
-          setValue={setFormData}
-          formData={formData}
-        /> */}
-
-        {/* <AppTextInput
-          titleText={'Shop Location'}
-          placeholder={'Shop Location'}
-          value={formData.shopLocation}
-          onChangeText={text => handleInputChange('shopLocation', text)}
-        /> */}
 
         <Text
           style={[

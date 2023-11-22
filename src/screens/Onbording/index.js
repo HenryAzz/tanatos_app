@@ -114,10 +114,10 @@ const Onboarding = () => {
           title={imageIndex === 1 ? t('Continue') : t("Let's Started")}
           defaultStyle={{marginVertical: 30, width: '80%', borderRadius: 40}}
           onPress={handleButtonPress}
-          // onPress={() => toggleLanguage()}
         />
       </View>
-      <View
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Signup')}
         style={{
           marginBottom: 10,
           flexDirection: 'row',
@@ -133,9 +133,9 @@ const Onboarding = () => {
               fontFamily: fonts.medium,
             },
           ]}>
-          {t('Continue as')}
+          {t('Create an account')}
         </Text>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{}}
           onPress={async () => {
             await AsyncStorage.setItem('account_Type', 'customer');
@@ -168,8 +168,8 @@ const Onboarding = () => {
             ]}>
             {t('Guest')}
           </Text>
-        </TouchableOpacity>
-      </View>
+        </TouchableOpacity> */}
+      </TouchableOpacity>
     </View>
   );
 };

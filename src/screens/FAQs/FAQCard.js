@@ -34,25 +34,26 @@ const CardFAQS = ({title, subTtle}) => {
       });
 
   return (
-    <View onPress={toggleCollapsibleView} style={{width: '100%'}}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={toggleCollapsibleView}
+      style={{width: '100%'}}>
       <View style={styles.card}>
         <View style={styles.header}>
           <View style={{width: '70%'}}>
             <Text style={styles.title}>{title}</Text>
           </View>
-          <TouchableOpacity
-            style={styles.btnBox}
-            onPress={toggleCollapsibleView}>
+          <View style={styles.btnBox}>
             {isCollapsed ? (
               <Icon name="chevron-down" size={24} />
             ) : (
               <Icon name="chevron-down" size={24} />
             )}
-          </TouchableOpacity>
+          </View>
         </View>
         {!isCollapsed && <Text style={styles.subTtle}>{subTtle}</Text>}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

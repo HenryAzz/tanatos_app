@@ -217,100 +217,94 @@ const ShareAddress = () => {
   };
   return (
     <Layout>
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={{alignSelf: 'flex-start', marginBottom: 10}}>
-        <Image
-          source={require('../../assets/BackButtonp.png')}
-          style={{height: 60, width: 60, left: -12}}
-        />
-      </TouchableOpacity>
-      <View style={{width: '60%'}}>
-        <Text
-          style={[
-            style.font24Re,
-            {fontFamily: fonts.bold, textAlign: 'center'},
-          ]}>
-          {t('share1')}
-        </Text>
-      </View>
-      <View style={{width: '90%', marginTop: 20}}>
-        <Text style={[style.font14Re, {color: '#A2A2A2', textAlign: 'center'}]}>
-          {t('share2')}
-        </Text>
-      </View>
-
-      {initialRegion ? (
-        <MapView
-          style={{height: 300, width: 300, marginVertical: 30}}
-          initialRegion={{
-            latitude: initialRegion?.latitude || 0,
-            longitude: initialRegion?.longitude || 0,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          showsUserLocation={true}
-          onPress={event => {
-            const {latitude, longitude} = event.nativeEvent.coordinate;
-            setInitialRegion({latitude, longitude});
-            setMarkerLocation({latitude, longitude});
-          }}>
-          {markerLocation && (
-            <Marker
-              coordinate={markerLocation}
-              title="Current Location"
-              draggable={true}
-              onDragEnd={e => {
-                setMarkerLocation(e.nativeEvent.coordinate);
-              }}
-            />
-          )}
-          <Circle
-            center={{
-              latitude:
-                markerLocation?.latitude || initialRegion?.latitude || 0,
-              longitude:
-                markerLocation?.longitude || initialRegion?.longitude || 0,
-            }}
-            radius={1000}
-            fillColor="rgba(0, 128, 255, 0.2)"
-            strokeColor="rgba(0, 128, 255, 0.5)"
+      <View style={{alignItems: 'center'}}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{alignSelf: 'flex-start', marginBottom: 10}}>
+          <Image
+            source={require('../../assets/BackButtonp.png')}
+            style={{height: 60, width: 60, left: -12}}
           />
-        </MapView>
-      ) : (
-        <Text
-          style={[
-            style.font18Re,
-            {
-              color: colors.primaryColor,
-              marginVertical: 100,
-              fontFamily: fonts.bold,
-            },
-          ]}>
-          {t('share3')}
-        </Text>
-      )}
-      <BaseButton
-        title={
-          isLoading ? <ActivityIndicator color={colors.white} /> : t('Continue')
-        }
-        defaultStyle={{}}
-        disabled={isLoading || !initialRegion}
-        onPress={handleSignup}
-        // onPress={() => toggleLanguage()}
-      />
-      {/* <BaseButton
-        title={'Skip'}
-        defaultStyle={{
-          backgroundColor: colors.backgroundColor,
-          borderColor: colors.primaryColor,
-          borderWidth: 1,
-          marginVertical: 30,
-        }}
-        textStyle={{
-          color: colors.primaryColor,
-        }}
-      /> */}
+        </TouchableOpacity>
+        <View style={{width: '60%'}}>
+          <Text
+            style={[
+              style.font24Re,
+              {fontFamily: fonts.bold, textAlign: 'center'},
+            ]}>
+            {t('share1')}
+          </Text>
+        </View>
+        <View style={{width: '90%', marginTop: 20}}>
+          <Text
+            style={[style.font14Re, {color: '#A2A2A2', textAlign: 'center'}]}>
+            {t('share2')}
+          </Text>
+        </View>
+
+        {initialRegion ? (
+          <MapView
+            style={{height: 300, width: '100%', marginVertical: 30}}
+            initialRegion={{
+              latitude: initialRegion?.latitude || 0,
+              longitude: initialRegion?.longitude || 0,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            showsUserLocation={true}
+            onPress={event => {
+              const {latitude, longitude} = event.nativeEvent.coordinate;
+              setInitialRegion({latitude, longitude});
+              setMarkerLocation({latitude, longitude});
+            }}>
+            {markerLocation && (
+              <Marker
+                coordinate={markerLocation}
+                title="Current Location"
+                draggable={true}
+                onDragEnd={e => {
+                  setMarkerLocation(e.nativeEvent.coordinate);
+                }}
+              />
+            )}
+            <Circle
+              center={{
+                latitude:
+                  markerLocation?.latitude || initialRegion?.latitude || 0,
+                longitude:
+                  markerLocation?.longitude || initialRegion?.longitude || 0,
+              }}
+              radius={1000}
+              fillColor="rgba(0, 128, 255, 0.2)"
+              strokeColor="rgba(0, 128, 255, 0.5)"
+            />
+          </MapView>
+        ) : (
+          <Text
+            style={[
+              style.font18Re,
+              {
+                color: colors.primaryColor,
+                marginVertical: 100,
+                fontFamily: fonts.bold,
+              },
+            ]}>
+            {t('share3')}
+          </Text>
+        )}
+        <BaseButton
+          title={
+            isLoading ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              t('Continue')
+            )
+          }
+          defaultStyle={{}}
+          disabled={isLoading || !initialRegion}
+          onPress={handleSignup}
+        />
+      </View>
     </Layout>
   );
 };

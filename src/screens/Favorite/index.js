@@ -146,7 +146,7 @@ const Favorite = () => {
         ListEmptyComponent={
           <OrderNotFound
             title={t('Not Found data')}
-            subtitle={t("You don't have any data at this time")}
+            subtitle={t("You don't have favorites at the moment")}
           />
         }
         ListFooterComponent={

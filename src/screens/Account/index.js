@@ -52,12 +52,12 @@ const Account = () => {
       title: 'Payment Method',
       image: require('../../assets/images/AccountImg/Payment.png'),
     },
-    {
-      id: 5,
-      navigate: 'DataProtection',
-      title: 'Data Protection',
-      image: require('../../assets/images/AccountImg/Data.png'),
-    },
+    // {
+    //   id: 5,
+    //   navigate: 'DataProtection',
+    //   title: 'Data Protection',
+    //   image: require('../../assets/images/AccountImg/Data.png'),
+    // },
     {
       id: 6,
       navigate: 'ContactUs',

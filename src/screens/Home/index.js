@@ -380,7 +380,9 @@ const Home = () => {
             )}
             <View style={{paddingLeft: 10}}>
               <Greetings />
-              <Text style={[style.font16Re]}>{formData?.userName}</Text>
+              <Text style={[style.font16Re]}>
+                {formData.userName ? formData?.userName : t('Hello')}
+              </Text>
             </View>
           </View>
 

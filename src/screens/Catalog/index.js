@@ -78,18 +78,20 @@ const Catalog = () => {
       const user_id = await AsyncStorage.getItem('user_id');
       const store_id = await AsyncStorage.getItem('store_id');
       console.log(store_id, 'store_idstore_id');
-      const res = await ApiRequest({
-        type: 'get_data',
-        table_name: 'stores_gallery',
-        // user_id: user_id,
-        store_id: JSON.parse(store_id),
-        // own: 1,
-        // last_id:""
-      });
-      const resp = res.data.data;
-      // console.log(resp, 'resp///');
-      setRefreshing(false);
-      setCatalogData(resp);
+      if (store_id || store_id != undefined || store_id != null) {
+        const res = await ApiRequest({
+          type: 'get_data',
+          table_name: 'stores_gallery',
+          // user_id: user_id,
+          store_id: JSON.parse(store_id),
+          // own: 1,
+          // last_id:""
+        });
+        const resp = res.data.data;
+
+        setRefreshing(false);
+        setCatalogData(resp);
+      }
       // setShowLoadingModal(false);
     } catch (err) {
     } finally {
@@ -157,7 +159,7 @@ const Catalog = () => {
         title={t('Add More Gallery')}
         onPress={() => navigation.navigate('AddFlowers')}
       />
-      <View style={{alignSelf: 'center'}}>
+      <View style={{}}>
         <FlatList
           data={catalogData}
           ListEmptyComponent={
@@ -182,6 +184,10 @@ const Catalog = () => {
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           keyExtractor={item => item.id}
+          columnWrapperStyle={{
+            justifyContent: 'space-between',
+            marginHorizontal: 4,
+          }}
           numColumns={2}
           onScroll={handleScroll}
           onEndReached={scrolled ? handleGetCatDataMore : null}

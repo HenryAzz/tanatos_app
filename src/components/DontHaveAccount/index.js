@@ -43,7 +43,7 @@ const DontHaveAccount = ({visible, closeModal, handleDontHave, message}) => {
               width: '100%',
             }}>
             <BaseButton
-              title={t('Create account')}
+              title={t('Cancel')}
               onPress={closeModal}
               defaultStyle={{
                 width: 130,
@@ -56,7 +56,7 @@ const DontHaveAccount = ({visible, closeModal, handleDontHave, message}) => {
             />
 
             <BaseButton
-              title={t('Login')}
+              title={t('Create account')}
               onPress={() => {
                 return (
                   closeModal,

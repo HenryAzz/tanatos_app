@@ -38,7 +38,7 @@ const Splash = () => {
           ],
         });
       }
-    }, 2000);
+    }, 1500);
   };
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const Splash = () => {
       <StatusBar hidden translucent={true} />
       <Image
         source={require('../../../src/assets/bootsplash_logo_original.png')}
-        style={{width: 250}}
+        style={{width: 180}}
         resizeMode="center"
       />
     </View>
@@ -66,24 +66,3 @@ const Splash = () => {
 export default Splash;
 
 const styles = StyleSheet.create({});
-
-// import React from 'react';
-// import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-
-// const GooglePlacesInput = () => {
-//   return (
-//     <GooglePlacesAutocomplete
-//       placeholder="Search"
-//       onPress={(data, details = null) => {
-//         // 'details' is provided when fetchDetails = true
-//         console.log(data, details);
-//       }}
-//       query={{
-//         key: 'AIzaSyCZLtofoePX_DcD3LIoSYvBg4sKVU-JZR4',
-//         language: 'en',
-//       }}
-//     />
-//   );
-// };
-
-// export default GooglePlacesInput;

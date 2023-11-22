@@ -17,13 +17,13 @@ const FAQs = () => {
       id: 1,
       Question: '1 How can i cancel my order?',
       Answer:
-        'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+        'Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     },
     {
       id: 2,
       Question: '2 How can i cancel my order?',
       Answer:
-        'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+        'Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     },
     {
       id: 3,
