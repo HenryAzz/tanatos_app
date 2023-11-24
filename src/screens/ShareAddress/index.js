@@ -55,20 +55,20 @@ const ShareAddress = () => {
     route?.params;
   const navigation = useNavigation();
 
-  console.log(
-    state,
-    'country',
-    country,
-    'city',
-    city,
-    'area',
-    area,
-    formData,
-    'formdata',
-    account_Type,
-    'accounttyo',
-    ';;;;;;;;;;;',
-  );
+  // console.log(
+  //   state,
+  //   'country',
+  //   country,
+  //   'city',
+  //   city,
+  //   'area',
+  //   area,
+  //   formData,
+  //   'formdata',
+  //   account_Type,
+  //   'accounttyo',
+  //   ';;;;;;;;;;;',
+  // );
   const [mapViewLayout, setMapViewLayout] = useState(null);
 
   // console.log(formData.starting_date, 'starting_date');
@@ -139,14 +139,14 @@ const ShareAddress = () => {
       setIsLoading(true);
       const res = await ApiRequest({
         type: 'register',
-        name: formData.name,
-        email: formData.email,
+        name: formData.name.trim(),
+        email: formData.email.toLowerCase(),
         password: formData.password,
         address: formData.address,
         city: city,
         state: state,
         country: country,
-        zipcode: '123',
+        zipcode: '',
         phone: phone,
         lat: initialRegion.latitude,
         lng: initialRegion.longitude,

@@ -153,7 +153,7 @@ const AddFuneralScreen = () => {
                 style.font12Re,
                 {
                   fontFamily: fonts.bold,
-                  color: colors.white,
+                  color: 'rgba(255, 255, 255, 0.5)',
                 },
               ]}>
               ESQUELAS ONLINE

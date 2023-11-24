@@ -87,7 +87,7 @@ const BottomCard = ({
           borderRadius: 60,
         }}>
         <Text style={[style.font14Re, {color: colors.primaryColor}]}>
-          {account_Type === 'customer' ? t('see obituary') : 'Learn More'}
+          {account_Type === 'customer' ? t('see obituary') : 'See more'}
         </Text>
       </TouchableOpacity>
     </TouchableOpacity>

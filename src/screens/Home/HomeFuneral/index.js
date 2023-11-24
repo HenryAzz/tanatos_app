@@ -38,8 +38,23 @@ const HomeFuneral = () => {
     name: '',
     description: '',
     hallno: '',
+    surname: '',
   });
   //   console.log(formData);
+
+  const maxLength = 1000; // Maximum allowed characters for description
+
+  const handleInputChange = (name, value) => {
+    if (name === 'description' && value.length > maxLength) {
+      // If the description exceeds the character limit, slice the input to the maximum length
+      value = value.slice(0, maxLength);
+    }
+
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
 
   const onDateChange = (event, selectedDate, dateName, modalName) => {
     if (event.type === 'dismissed') {
@@ -92,75 +107,148 @@ const HomeFuneral = () => {
   //   console.log(markerData, '12345', markerData1);
 
   // const [shortMessage, setShortMessage] = useState('');
-  const maxLength = 20;
+  // const maxLength = 20;
 
-  const handleChangeText = inputText => {
-    if (inputText.length <= maxLength) {
-      setShortMessage(inputText);
-    }
-  };
+  // const handleChangeText = inputText => {
+  //   if (inputText.length <= maxLength) {
+  //     setShortMessage(inputText);
+  //   }
+  // };
   // const remainingCharacters = maxLength - shortMessage.length;
   const [images, setImages] = useState([]);
-  const [imagesToSend, setImagesToSend] = useState();
+  // const [imagesToSend, setImagesToSend] = useState();
   const [disabled, setdisabled] = useState(true);
   const [imageLoader, setImageLoader] = useState(false);
+  const [imageLoader1, setImageLoader1] = useState(false);
+  const [imageLoader2, setImageLoader2] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const openGallery = async () => {
+  // const openGallery = async () => {
+  //   ImagePicker.openPicker({
+  //     mediaType: 'photo',
+  //     writeTempFile: true,
+  //     compressImageQuality: 0.4,
+  //   })
+  //     .then(async image => {
+  //       setImages({uri: image.path});
+  //       uploadImg(image);
+  //     })
+  //     .catch(err => {
+  //       console.log(err, 'f=galery');
+  //     });
+  // };
+  // const uploadImg = async image => {
+  //   // console.log(image, 'image');
+  //   setImageLoader(true);
+  //   const imageName = image.path.split('/');
+  //   const imageData = {
+  //     fileCopyUri: null,
+  //     name:
+  //       Platform.OS == 'ios' ? image.filename : imageName[imageName.length - 1],
+  //     size: image.size,
+  //     type: image.mime,
+  //     uri: image.path,
+  //   };
+  //   const body = new FormData();
+  //   body.append('type', 'upload_data');
+  //   body.append('file', imageData);
+  //   try {
+  //     const res = await ApiRequest(body);
+  //     setImageLoader(false);
+  //     if (res.data.result) {
+  //       ToastMessage(res.data?.message);
+  //       // setImagesToSend([...imagesToSend, res.data.file_name]);
+  //       setImagesToSend(res.data.file_name);
+  //     } else {
+  //       setImageLoader(false);
+  //       ToastMessage('Upload Again');
+  //       // removeImage(images.length, true);
+  //     }
+  //   } catch (err) {
+  //     console.log(err, 'img err');
+  //     setImageLoader(false);
+  //     ToastMessage('Upload Again');
+  //     //   removeImage(images.length, true);
+  //   }
+  // };
+
+  // const handleInputChange = (name, value) => {
+  //   setFormData(prevFormData => ({
+  //     ...prevFormData,
+  //     [name]: value,
+  //   }));
+  // };
+
+  const openGallery = async imageType => {
     ImagePicker.openPicker({
       mediaType: 'photo',
       writeTempFile: true,
       compressImageQuality: 0.4,
+      multiple: true, // Enable multiple image selection
     })
-      .then(async image => {
-        setImages({uri: image.path});
-        uploadImg(image);
+      .then(async images => {
+        uploadImages(images, imageType);
       })
       .catch(err => {
-        console.log(err, 'f=galery');
+        console.log(err, 'error in gallery');
       });
   };
-  const uploadImg = async image => {
-    // console.log(image, 'image');
-    setImageLoader(true);
-    const imageName = image.path.split('/');
-    const imageData = {
-      fileCopyUri: null,
-      name:
-        Platform.OS == 'ios' ? image.filename : imageName[imageName.length - 1],
-      size: image.size,
-      type: image.mime,
-      uri: image.path,
-    };
-    const body = new FormData();
-    body.append('type', 'upload_data');
-    body.append('file', imageData);
+  const [imagesToSend, setImagesToSend] = useState('');
+  const [imageToSendFuneral, setImagesToSendFuneral] = useState('');
+  const [imageToSendCharch, setImagesToSendChurch] = useState('');
+  console.log(imagesToSend, 'imagesToSend');
+  console.log(imageToSendFuneral, 'imageToSendFuneral');
+  const uploadImages = async (images, imageType) => {
+    if (imageType === 'funeral') {
+      setImageLoader(true);
+    } else if (imageType === 'charch') {
+      setImageLoader1(true);
+    } else if (imageType === 'imageToSend') {
+      setImageLoader2(true);
+    }
     try {
-      const res = await ApiRequest(body);
-      setImageLoader(false);
-      if (res.data.result) {
-        ToastMessage(res.data?.message);
-        // setImagesToSend([...imagesToSend, res.data.file_name]);
-        setImagesToSend(res.data.file_name);
-      } else {
-        setImageLoader(false);
-        ToastMessage('Upload Again');
-        // removeImage(images.length, true);
-      }
-    } catch (err) {
-      console.log(err, 'img err');
+      const uploadPromises = images.map(async image => {
+        const imageName = image.path.split('/');
+        const imageData = {
+          fileCopyUri: null,
+          name:
+            Platform.OS === 'ios'
+              ? image.filename
+              : imageName[imageName.length - 1],
+          size: image.size,
+          type: image.mime,
+          uri: image.path,
+        };
+        const body = new FormData();
+        body.append('type', 'upload_data');
+        body.append('file', imageData);
+
+        const res = await ApiRequest(body);
+
+        if (res.data.result) {
+          console.log('res.data.file_name', res.data.file_name);
+          if (imageType === 'funeral') {
+            setImagesToSendFuneral(res?.data?.file_name);
+          } else if (imageType === 'charch') {
+            setImagesToSendChurch(res?.data?.file_name);
+          } else if (imageType === 'imageToSend') {
+            setImagesToSend(res?.data?.file_name);
+          }
+        }
+      });
+    } catch (error) {
+      console.log(error, 'error in image upload');
       setImageLoader(false);
       ToastMessage('Upload Again');
-      //   removeImage(images.length, true);
+    } finally {
+      setImageLoader(false);
+      setImageLoader1(false);
+      setImageLoader2(false);
     }
   };
 
-  const handleInputChange = (name, value) => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
+  // ;
+  // openGallery('church');
 
   const [selectedTime, setSelectedTime] = useState(null);
   const [showTimepicker, setShowTimepicker] = useState(false);
@@ -206,6 +294,7 @@ const HomeFuneral = () => {
       table_name: 'funerals',
       user_id: user_id,
       hall_no: formData.hallno,
+      surname: formData.surname,
       image: imagesToSend,
       name: formData.name,
       description: formData.description,
@@ -220,6 +309,8 @@ const HomeFuneral = () => {
       chruch_location: area1,
       chruch_lat: markerData1.latitude,
       chruch_lng: markerData1.longitude,
+      funeral_img: imageToSendFuneral,
+      church_img: imageToSendFuneral,
     };
     console.log(data, 'onj set to beckahen');
     try {
@@ -270,9 +361,22 @@ const HomeFuneral = () => {
       formattedTimeCh &&
       formData.name &&
       area &&
-      area1;
+      area1 &&
+      formData.surname &&
+      imageToSendCharch &&
+      imageToSendFuneral &&
+      imagesToSend;
+
     setValid(!isFormFilled);
-  }, [formData, formattedTimeCh, formattedTimeFun, area && area1]);
+  }, [
+    formData,
+    formattedTimeCh,
+    formattedTimeFun,
+    area && area1,
+    imageToSendCharch,
+    imageToSendFuneral,
+    imagesToSend,
+  ]);
 
   const status = route?.params;
   console.log(status?.status);
@@ -293,6 +397,7 @@ const HomeFuneral = () => {
           })
         }
       />
+
       <ScrollView
         style={{width: '100%'}}
         showsHorizontalScrollIndicator={false}
@@ -304,7 +409,7 @@ const HomeFuneral = () => {
             elevation: 10,
             shadowColor: colors.elev,
           }}
-          onPress={openGallery}>
+          onPress={() => openGallery('imageToSend')}>
           {imagesToSend ? (
             <View
               style={{
@@ -325,7 +430,7 @@ const HomeFuneral = () => {
                   borderRadius: 50,
                 }}
               />
-              {imageLoader && (
+              {imageLoader2 && (
                 <View
                   style={{
                     position: 'absolute',
@@ -362,6 +467,12 @@ const HomeFuneral = () => {
           onChangeText={text => handleInputChange('name', text)}
         />
         <AppTextInput
+          titleText={t('Surname')}
+          placeholder={t('Surname')}
+          value={formData.surname}
+          onChangeText={text => handleInputChange('surname', text)}
+        />
+        <AppTextInput
           titleText={t('Hall')}
           placeholder={t('Hall')}
           value={formData.hallno}
@@ -393,37 +504,9 @@ const HomeFuneral = () => {
             borderRadius: 10,
           }}
         />
-        {/* <AppTextInput titleText={'Location'} placeholder={'Location'} /> */}
-        {/* <Text
-          style={[
-            style.font16Re,
-
-            // {fontFamily: fonts.medium, marginBottom: multiline ? 25 : 2},
-          ]}>
-          {t('funeral3')}
+        <Text>
+          {formData?.description?.length}/{maxLength} characters used
         </Text>
-        <TextInput
-          placeholder={t('funeral3')}
-          multiline={true}
-          textAlignVertical="top"
-          maxLength={maxLength}
-          style={{
-            paddingLeft: 15,
-            paddingTop: 10,
-            borderColor: '#E0E0E0',
-            backgroundColor: '#F5F5F5',
-            borderWidth: 1,
-            marginVertical: 5,
-            width: '100%',
-            height: 70,
-            borderRadius: 10,
-          }}
-          value={shortMessage}
-          onChangeText={handleChangeText}
-        />
-        <Text style={[style.font14Re, {alignSelf: 'flex-end'}]}>
-          Max 20 character / {remainingCharacters}
-        </Text> */}
 
         <Text
           style={[
@@ -438,10 +521,111 @@ const HomeFuneral = () => {
         </Text>
         {/* funeral_location funeral_lat funeral_lng chruch_location chruch_lat
         chruch_lng */}
+        {/* // */}
+        <Text
+          style={[
+            style.font16Re,
+            {
+              fontFamily: fonts.medium,
+              alignSelf: 'flex-start',
+              marginTop: 16,
+            },
+          ]}>
+          {t('Upload funeral pic')}
+        </Text>
+        <TouchableOpacity
+          style={{
+            alignSelf: 'center',
+            // marginVertical: 20,
+            width: '100%',
+            // elevation: 10,
+            // shadowColor: colors.elev,
+          }}
+          onPress={() => openGallery('funeral')}>
+          {imageToSendFuneral ? (
+            <View
+              style={{
+                // backgroundColor: colors.white,
+                // shadowColor: colors.elev,
+                // elevation: 10,
+                // borderRadius: 53,
+                width: '100%',
+                marginTop: 10,
+                // alignItems: 'center',
+              }}>
+              <Image
+                source={{
+                  uri:
+                    'https://locatestudent.com/tanatos/upload/' +
+                    imageToSendFuneral,
+                }}
+                // source={require('../../../assets/profilepic.png')}
+                style={{
+                  width: '95%',
+                  height: 100,
+                  // borderRadius: 50,
+                }}
+              />
+              {imageLoader && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 30,
+                    left: 120,
+                  }}>
+                  <ActivityIndicator color={colors.white} size={30} />
+                </View>
+              )}
+            </View>
+          ) : (
+            <TouchableOpacity
+              onPress={() => openGallery('funeral')}
+              activeOpacity={0.5}
+              style={{
+                width: '100%',
+                borderRadius: 10,
+                borderWidth: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderColor: '#E0E0E0',
+                backgroundColor: '#F5F5F5',
+                height: 75,
+
+                elevation: 10,
+                shadowColor: colors.elev,
+
+                alignSelf: 'center',
+                marginVertical: 14,
+              }}>
+              <TouchableOpacity
+                onPress={() => openGallery('funeral')}
+                style={{
+                  width: '90%',
+                  // backgroundColor: 'red',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Text
+                  style={[
+                    style.font16Re,
+                    {
+                      fontFamily: fonts.medium,
+                      alignSelf: 'center',
+                      marginVertical: 16,
+                    },
+                  ]}>
+                  {t('Upload funeral pic')}
+                </Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          )}
+        </TouchableOpacity>
+        {/* // */}
         <Text
           style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
           {t('funeral5')}
         </Text>
+        {/* /funeral start// */}
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
           style={{
@@ -499,6 +683,107 @@ const HomeFuneral = () => {
           style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
           {t('funeral9')}
         </Text>
+        <Text
+          style={[
+            style.font16Re,
+            {
+              fontFamily: fonts.medium,
+              alignSelf: 'flex-start',
+              marginTop: 16,
+            },
+          ]}>
+          {t('Upload charch pic')}
+        </Text>
+        <TouchableOpacity
+          style={{
+            alignSelf: 'center',
+            // marginVertical: 20,
+            width: '100%',
+            // elevation: 10,
+            // shadowColor: colors.elev,
+          }}
+          onPress={() => openGallery('charch')}>
+          {imageToSendCharch ? (
+            <View
+              style={{
+                // backgroundColor: colors.white,
+                // shadowColor: colors.elev,
+                // elevation: 10,
+                // borderRadius: 53,
+                width: '100%',
+              }}>
+              <Image
+                source={{
+                  uri:
+                    'https://locatestudent.com/tanatos/upload/' +
+                    imageToSendCharch,
+                }}
+                // source={require('../../../assets/profilepic.png')}
+                style={{
+                  width: '95%',
+                  height: 100,
+                  marginVertical: 10,
+                  // borderRadius: 50,
+                }}
+              />
+              {imageLoader && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 30,
+                    left: 40,
+                  }}>
+                  <ActivityIndicator color={colors.primaryColor} size={30} />
+                </View>
+              )}
+            </View>
+          ) : (
+            <TouchableOpacity
+              onPress={() => openGallery('charch')}
+              activeOpacity={0.5}
+              style={{
+                width: '100%',
+                borderRadius: 10,
+                borderWidth: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderColor: '#E0E0E0',
+                backgroundColor: '#F5F5F5',
+                height: 75,
+
+                elevation: 10,
+                shadowColor: colors.elev,
+
+                alignSelf: 'center',
+                marginVertical: 14,
+              }}>
+              <TouchableOpacity
+                onPress={() => openGallery('charch')}
+                style={{
+                  width: '90%',
+                  // backgroundColor: 'red',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Text
+                  style={[
+                    style.font16Re,
+                    {
+                      fontFamily: fonts.medium,
+                      alignSelf: 'center',
+                      marginVertical: 16,
+                    },
+                  ]}>
+                  {t('Upload charch pic')}
+                </Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          )}
+        </TouchableOpacity>
+        <Text
+          style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
+          {t('funeral9')}
+        </Text>
         <TouchableOpacity
           onPress={() => setModalVisible1(true)}
           style={{
@@ -549,7 +834,7 @@ const HomeFuneral = () => {
 
         <BaseButton
           onPress={handleAddObi}
-          disabled={valid}
+          disabled={valid || loading}
           title={
             loading ? (
               <ActivityIndicator color={colors.white} />

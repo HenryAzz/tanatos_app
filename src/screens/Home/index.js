@@ -5,6 +5,7 @@ import {
   Modal,
   PermissionsAndroid,
   ScrollView,
+  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -22,7 +23,12 @@ import TextCardView from './TextCardView';
 import BottomCard from './BottomCard';
 import SearchPic from '../../assets/images/HomeImg/Search.svg';
 import ListOfSearches from './ListOfSearches';
-import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import FuneralCard from './FuneralCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppTextInput from '../../components/FloatingLabelInput';
@@ -36,6 +42,7 @@ import Geolocation from 'react-native-geolocation-service';
 import Greetings from '../../components/Greetings/Greeting';
 import OrderNotFound from '../MyOrder/OrderNotFound';
 import {useTranslation} from 'react-i18next';
+import {useRef} from 'react';
 const requestLocationPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -178,13 +185,17 @@ const Home = () => {
     }
   };
   const isFocused = useIsFocused();
+  const refFlat = useRef(null);
   useEffect(() => {
     handleGetFuneralData();
     handleGetFuneralDataOwner();
     handleGetData();
+    handleGetFuneralDataNear();
+    refFlat.current?.scrollToOffset({animated: true, offset: 0});
   }, [isFocused]);
   useEffect(() => {
-    handleGetFuneralData();
+    // handleGetFuneralData();
+    handleGetFuneralDataMoreNear();
   }, [route?.params?.update]);
 
   // const account_Type = 'Funeral';
@@ -304,10 +315,81 @@ const Home = () => {
     }
   };
 
+  const [funeralDataNear, setFuneralDataNear] = useState();
+
+  const handleGetFuneralDataNear = async () => {
+    try {
+      setShowLoadingModal(true);
+      // setLoading(true);
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'funerals',
+
+        // lat: '',
+        // lng: '',
+      });
+      const resp = res.data.data;
+      // console.log(resp, 'resp////////////////////////');
+      setFuneralDataNear(resp);
+      setRefreshingNear(false);
+      setShowLoadingModal(false);
+    } catch (err) {
+      setShowLoadingModal(false);
+    } finally {
+      setRefreshingNear(false);
+      setShowLoadingModal(false);
+      // setLoading(false);
+    }
+  };
+
+  const handleGetFuneralDataMoreNear = async () => {
+    if (!bottomLoaderNear && funeralDataNear && funeralDataNear.length > 0) {
+      // console.log(funeralDataNear[funeralDataNear.length - 1]?.id, 'last id');
+      try {
+        setBottomLoaderNear(true);
+        const res = await ApiRequest({
+          type: 'get_data',
+          table_name: 'funerals',
+
+          last_id: funeralDataNear[funeralDataNear.length - 1]?.id,
+          // lat: '',
+          // lng: '',
+        });
+        const resp = res.data.data;
+        if (resp && resp != undefined && resp.length > 0) {
+          setFuneralDataNear([...funeralDataNear, ...resp]);
+        }
+        setBottomLoaderNear(false);
+        setScrolled(false);
+        // setFuneralData(resp);
+        // setShowLoadingModal(false);
+      } catch (err) {
+        setBottomLoaderNear(false);
+        // setShowLoadingModal(false);
+      } finally {
+        setBottomLoaderNear(false);
+      }
+    }
+  };
+  useEffect(() => {
+    handleGetFuneralDataNear();
+  }, []);
+
+  const [refreshingNear, setRefreshingNear] = useState(false);
+  const onRefreshNear = () => {
+    setRefreshingNear(true);
+    handleGetFuneralDataNear();
+  };
+  const [bottomLoaderNear, setBottomLoaderNear] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const handleScrollNear = () => {
+    setScrolled(true);
+  };
+
   return (
     <Layout>
       {/* <BaseButton title={'Change'} onPress={() => toggleLanguage()} /> */}
-      {account_Type === 'customer' && (
+      {/* {account_Type === 'customer' || account_Type === 'funeral' ? (
         <View
           style={{
             flexDirection: 'row',
@@ -396,7 +478,7 @@ const Home = () => {
             source={require('../../assets/images/HomeImg/bell.png')}
           />
         </View>
-      )}
+      ) : null} */}
       {!funeralData ? (
         <OrderNotFound
           title={t('Not Found data')}
@@ -422,83 +504,123 @@ const Home = () => {
             />
           </View>
 
-          {/* {account_Type === 'customer' ? <ListOfSearches /> : null} */}
-
-          <ScrollView
-            style={{width: '100%'}}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}>
-            {account_Type === 'customer' ? (
+          <View style={{width: '100%'}}>
+            {/* {account_Type === 'customer' ? (
               <>
                 <TextCardView
                   title={t('Funeral Homes')}
                   subtitle={t('View all')}
                   onPress={() => navigation.navigate('FuneralDetailed')}
                 />
-                <FlatList
-                  horizontal
-                  keyExtractor={item => item.id}
-                  showsVerticalScrollIndicator={false}
-                  showsHorizontalScrollIndicator={false}
-                  data={funeralData}
-                  renderItem={({item}) => {
-                    // console.log(item.hall_no, 'itemitem');
-                    return (
-                      // <View style={{backgroundColor: 'red'}}>
+                <View style={{width: '100%'}}>
+                  <FlatList
+                    horizontal
+                    keyExtractor={item => item.id}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    data={funeralData}
+                    renderItem={({item}) => {
+                      // console.log(item.hall_no, 'itemitem');
+                      return (
+                        // <View style={{backgroundColor: 'red'}}>
 
-                      <HomeCard
-                        name={item.name}
-                        subTitle={item.description}
-                        image={item.image}
-                        url={item.url}
-                        hallno={item.hall_no}
-                        time={item.time}
-                        onPress={() =>
-                          navigation.navigate('FuneralDetailedPage', {
-                            item: item,
-                          })
-                        }
-                        // navigation={props.navigation}
-                      />
-                      // </View>
-                    );
-                  }}
-                />
+                        <HomeCard
+                          name={item.name}
+                          subTitle={item.description}
+                          image={item.image}
+                          url={item.url}
+                          hallno={item.hall_no}
+                          time={item.time}
+                          onPress={() =>
+                            navigation.navigate('FuneralDetailedPage', {
+                              item: item,
+                            })
+                          }
+                          // navigation={props.navigation}
+                        />
+                        // </View>
+                      );
+                    }}
+                  />
+                </View>
               </>
-            ) : null}
+            ) : null} */}
 
             <TextCardView
-              title={t('Obituaries Near you')}
-              subtitle={account_Type === 'customer' ? t('View all') : null}
+              title={t('Obituaries')}
+              // subtitle={account_Type === 'customer' ? t('View all') : null}
               onPress={() =>
                 navigation.navigate('FuneralNearDetailed', {
                   initialRegion: initialRegion,
                 })
               }
             />
-            <View>
+
+            <View style={{marginBottom: 150}}>
               {account_Type === 'customer' ? (
                 <FlatList
+                  ref={refFlat}
                   keyExtractor={item => item.id}
                   showsVerticalScrollIndicator={false}
                   showsHorizontalScrollIndicator={false}
-                  data={funeralData}
-                  renderItem={({item, index}) =>
-                    index < 2 ? (
-                      <BottomCard
-                        title={item.name}
-                        subtitle={item.description}
-                        account_Type={account_Type}
-                        onPress1={() =>
-                          navigation.navigate('FuneralDetailedPage', {
-                            item: item,
-                          })
-                        }
-                      />
-                    ) : null
+                  onScroll={handleScrollNear}
+                  onEndReached={scrolled ? handleGetFuneralDataMoreNear : null}
+                  ListEmptyComponent={
+                    <OrderNotFound
+                      title={t('Not Found data')}
+                      subtitle={t("You don't have any data at this time")}
+                    />
                   }
+                  ListFooterComponent={
+                    bottomLoaderNear && (
+                      <ActivityIndicator size="large" color={'grey'} />
+                    )
+                  }
+                  ListFooterComponentStyle={{
+                    width: '100%',
+                    marginTop: 5,
+                  }}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshingNear}
+                      onRefresh={onRefreshNear}
+                    />
+                  }
+                  data={funeralDataNear}
+                  renderItem={({item}) => (
+                    <BottomCard
+                      title={item.name}
+                      subtitle={item.description}
+                      account_Type={account_Type}
+                      onPress1={() =>
+                        navigation.navigate('FuneralDetailedPage', {item: item})
+                      }
+                    />
+                  )}
                 />
               ) : (
+                // <FlatList
+                //   keyExtractor={item => item.id}
+                //   showsVerticalScrollIndicator={false}
+                //   showsHorizontalScrollIndicator={false}
+                //   data={funeralData}
+                //   renderItem={
+                //     ({item, index}) => (
+                //       // index < 2 ? (
+                //       <BottomCard
+                //         title={item.name}
+                //         subtitle={item.description}
+                //         account_Type={account_Type}
+                //         onPress1={() =>
+                //           navigation.navigate('FuneralDetailedPage', {
+                //             item: item,
+                //           })
+                //         }
+                //       />
+                //     )
+                //     // ) : null
+                //   }
+                // />
                 <FlatList
                   keyExtractor={item => item.id}
                   showsVerticalScrollIndicator={false}
@@ -539,16 +661,8 @@ const Home = () => {
                 />
               )}
             </View>
+          </View>
 
-            {/* <FuneralCard status="home" /> */}
-            {/* <FuneralCard status="home" /> */}
-            {/* )} */}
-            {/* <TextCardView title={'Obituarios cerca de ti'} subtitle={'Ver todos'} /> */}
-          </ScrollView>
-          <ModalLoadingTrans
-            showLoadingModal={showLoadingModal}
-            setShowLoadingModal={setShowLoadingModal}
-          />
           <Modal
             transparent
             visible={showDeleteModal}
@@ -571,7 +685,7 @@ const Home = () => {
                   borderRadius: 10,
                 }}>
                 <Text style={[style.font16Re]}>
-                  Are you sure you want to delete !
+                  {t('Are you sure you want to delete !')}
                 </Text>
                 <View
                   style={{
@@ -580,14 +694,14 @@ const Home = () => {
                     width: '70%',
                   }}>
                   <BaseButton
-                    title={'Cansel'}
+                    title={t('Cancel')}
                     onPress={() => setShowDeletegModal(false)}
                     defaultStyle={{width: 100, height: 35}}
                     textStyle={{fontSize: 12}}
                   />
 
                   <BaseButton
-                    title={'Ok'}
+                    title={t('Yes sure!')}
                     onPress={() => handleDelete()}
                     defaultStyle={{width: 100, height: 35}}
                     textStyle={{fontSize: 12}}

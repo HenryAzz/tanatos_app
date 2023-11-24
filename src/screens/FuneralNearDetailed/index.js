@@ -110,9 +110,9 @@ const FuneralNearDetailed = () => {
     getAccountType();
   }, []);
   const [loading, setLoading] = useState(false);
-  const [funeralData, setFuneralData] = useState();
+  const [funeralDataNear, setFuneralDataNear] = useState();
 
-  const handleGetFuneralData = async () => {
+  const handleGetFuneralDataNear = async () => {
     try {
       setShowLoadingModal(true);
       // setLoading(true);
@@ -126,72 +126,69 @@ const FuneralNearDetailed = () => {
       });
       const resp = res.data.data;
       // console.log(resp, 'resp////////////////////////');
-      setFuneralData(resp);
-      setRefreshing(false);
+      setFuneralDataNear(resp);
+      setRefreshingNear(false);
       setShowLoadingModal(false);
     } catch (err) {
       setShowLoadingModal(false);
     } finally {
-      setRefreshing(false);
+      setRefreshingNear(false);
       setShowLoadingModal(false);
       // setLoading(false);
     }
   };
 
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = () => {
-    setRefreshing(true);
-    handleGetFuneralData();
+  const [refreshingNear, setRefreshingNear] = useState(false);
+  const onRefreshNear = () => {
+    setRefreshingNear(true);
+    handleGetFuneralDataNear();
   };
-  const [bottomLoader, setBottomLoader] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const handleScroll = () => {
-    setScrolled(true);
+  const [bottomLoaderNear, setBottomLoaderNear] = useState(false);
+  const [scrolledMear, setScrolledNEar] = useState(false);
+  const handleScrollNear = () => {
+    setScrolledNEar(true);
   };
 
-  const handleGetFuneralDataMore = async () => {
+  const handleGetFuneralDataMoreNear = async () => {
     try {
-      setBottomLoader(true);
+      setBottomLoaderNear(true);
       const res = await ApiRequest({
         type: 'get_data',
         table_name: 'funerals',
         lat: initialRegion?.latitude,
         lng: initialRegion?.longitude,
-        last_id: funeralData[funeralData.length - 1]?.id,
+        last_id: funeralDataNear[funeralDataNear.length - 1]?.id,
         // lat: '',
         // lng: '',
       });
       const resp = res.data.data;
       if (resp && resp != undefined && resp.length > 0) {
-        setFuneralData([...funeralData, ...resp]);
+        setFuneralDataNear([...funeralDataNear, ...resp]);
       }
-      setBottomLoader(false);
+      setBottomLoaderNear(false);
       // setFuneralData(resp);
       // setShowLoadingModal(false);
     } catch (err) {
-      setBottomLoader(false);
+      setBottomLoaderNear(false);
       // setShowLoadingModal(false);
     } finally {
-      setBottomLoader(false);
+      setBottomLoaderNear(false);
     }
   };
   useEffect(() => {
-    handleGetFuneralData();
+    handleGetFuneralDataNear();
   }, []);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const {t} = useTranslation();
   return (
     <Layout>
-      <AppHeader
-        title={t('Obituaries Near you')}
-        defaultStyle={{marginBottom: 30}}
-      />
+      <AppHeader title={t('Obituaries')} defaultStyle={{marginBottom: 30}} />
       <FlatList
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        onEndReached={scrolled ? handleGetFuneralDataMore : null}
+        onScroll={handleScrollNear}
+        onEndReached={scrolledMear ? handleGetFuneralDataMoreNear : null}
         ListEmptyComponent={
           <OrderNotFound
             title={t('Not Found data')}
@@ -199,16 +196,21 @@ const FuneralNearDetailed = () => {
           />
         }
         ListFooterComponent={
-          bottomLoader && <ActivityIndicator size="large" color={colors.gray} />
+          bottomLoaderNear && (
+            <ActivityIndicator size="large" color={colors.gray} />
+          )
         }
         ListFooterComponentStyle={{
           width: '100%',
           marginTop: 5,
         }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshingNear}
+            onRefresh={onRefreshNear}
+          />
         }
-        data={funeralData}
+        data={funeralDataNear}
         renderItem={({item}) => (
           <BottomCard
             title={item.name}

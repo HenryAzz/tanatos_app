@@ -56,7 +56,7 @@ const DontHaveAccount = ({visible, closeModal, handleDontHave, message}) => {
             />
 
             <BaseButton
-              title={t('Create account')}
+              title={t('exit')}
               onPress={() => {
                 return (
                   closeModal,

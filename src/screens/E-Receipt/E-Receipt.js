@@ -122,7 +122,7 @@ const EReceipt = ({route}) => {
         </View>
 
         <BaseButton
-          title={t('Checkout')}
+          title={t('Continue shopping')}
           defaultStyle={{marginVertical: 30}}
           onPress={() =>
             navigation.navigate('Checkout', {

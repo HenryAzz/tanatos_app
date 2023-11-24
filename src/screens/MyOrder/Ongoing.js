@@ -12,7 +12,7 @@ import Layout from '../../components/Layout';
 import MyOrderCard from './MyOrderCard';
 
 import style from '../../assets/css/style';
-import {fonts} from '../../constraints';
+import {colors, fonts} from '../../constraints';
 import OrderNotFound from './OrderNotFound';
 import {useNavigation} from '@react-navigation/native';
 import ApiRequest from '../../Services/ApiRequest';

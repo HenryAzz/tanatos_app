@@ -75,7 +75,7 @@ const EditProfile = () => {
           table_name: 'users',
         });
         const resp = res?.data?.data[0];
-
+        console.log();
         setFormData({
           userName: resp?.name,
           email: resp?.email,
@@ -85,6 +85,7 @@ const EditProfile = () => {
           country: resp.country,
           image: resp?.image,
           url: resp.url,
+          phoneNumber: resp?.phone,
         });
         setFormData1({
           userName: resp?.name,
@@ -93,6 +94,7 @@ const EditProfile = () => {
           dob: resp?.dob,
           city: resp.city,
           country: resp.country,
+          phone: resp?.phoneNumber,
         });
       } catch (error) {
         console.log(error);
@@ -233,8 +235,8 @@ const EditProfile = () => {
         </TouchableOpacity>
         <View style={{}}>
           <AppTextInput
-            placeholder={t('Name')}
-            titleText={t('Name')}
+            placeholder={t('Funeral home name')}
+            titleText={t('Funeral home name')}
             value={formData.userName}
             onChangeText={text => setFormData({...formData, userName: text})}
           />
@@ -246,13 +248,23 @@ const EditProfile = () => {
             editable={false}
             onChangeText={text => setFormData({...formData, email: text})}
           />
+
           <AppTextInput
-            placeholder={t('Date of Birth')}
-            titleText={t('Date of Birth')}
+            placeholder={t('Phone Number')}
+            titleText={t('Phone Number')}
+            value={formData.phoneNumber}
             editable={false}
-            value={formData.dob}
-            onChangeText={text => setFormData({...formData, dob: text})}
+            onChangeText={text => setFormData({...formData, phoneNumber: text})}
           />
+          {/* {formData.accountType === 'customer' ? (
+            <AppTextInput
+              placeholder={t('Date of Birth')}
+              titleText={t('Date of Birth')}
+              editable={false}
+              value={formData.dob}
+              onChangeText={text => setFormData({...formData, dob: text})}
+            />
+          ) : null} */}
 
           <AppTextInput
             placeholder={t('City')}

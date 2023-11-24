@@ -68,6 +68,7 @@ const CheckoutScreen = () => {
       });
       // console.log('2');
       const resp = res.data;
+      // alert('add');
       if (resp.result) {
         ToastMessage(resp.message);
         setModalVisible(true);
@@ -83,7 +84,7 @@ const CheckoutScreen = () => {
   const {t} = useTranslation();
   return (
     <Layout>
-      <AppHeader title={t('Checkout')} />
+      <AppHeader title={t('Continue shopping')} />
 
       {/* <ScrollView
         showsHorizontalScrollIndicator={false}

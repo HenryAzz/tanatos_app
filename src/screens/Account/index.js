@@ -46,12 +46,12 @@ const Account = () => {
     //   title: 'Order History',
     //   image: require('../../assets/images/AccountImg/Order.png'),
     // },
-    {
-      id: 3,
-      navigate: 'PaymentMethod',
-      title: 'Payment Method',
-      image: require('../../assets/images/AccountImg/Payment.png'),
-    },
+    // {
+    //   id: 3,
+    //   navigate: 'PaymentMethod',
+    //   title: 'Payment Method',
+    //   image: require('../../assets/images/AccountImg/Payment.png'),
+    // },
     // {
     //   id: 5,
     //   navigate: 'DataProtection',

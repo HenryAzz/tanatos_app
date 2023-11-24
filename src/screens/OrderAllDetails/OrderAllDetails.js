@@ -26,6 +26,8 @@ import OrderNotFound from '../MyOrder/OrderNotFound';
 import OrderAllCard from './OrderAllCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ToastMessage} from '../../utils/Toast';
+import AcceptCancel from './AcceptCancel';
+import {useTranslation} from 'react-i18next';
 
 const OrderAllDetails = () => {
   const route = useRoute();
@@ -49,7 +51,7 @@ const OrderAllDetails = () => {
   const cleanedPath = image?.replace(/^"(.*)"$/, '$1');
   // console.log(parseInt('7.6'), 'item.url[0] + cleanedPath rece');
 
-  console.log(orderid, 'orderid');
+  console.log(item, 'orderid');
   // console.log('item.url + cleanedPath', item.url + cleanedPath);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -123,7 +125,6 @@ const OrderAllDetails = () => {
   // }, []);
 
   const handleOrderCancelData = async id => {
-    // console.log(id, 'idddididi');
     const user_id = await AsyncStorage.getItem('user_id');
     try {
       setLoading(true);
@@ -186,6 +187,28 @@ const OrderAllDetails = () => {
     setRefreshing(true);
     handleOrderData();
   };
+
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+
+  const handleAcceptCancel = id => {
+    setShowAcceptModal(true);
+    handleOrderCancelData(id);
+  };
+
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+
+  const handleComplete = id => {
+    setShowCompleteModal(true);
+    handleOrderCancelData(id);
+  };
+
+  const [showAcceeptStoreModal, setShowAcceptStoreModal] = useState(false);
+
+  const handleAcceptStore = id => {
+    setShowAcceptStoreModal(true);
+    handleOrderUpdateDataNewOrder(id);
+  };
+  const {t} = useTranslation();
   return (
     <View style={{flex: 1, width: '100%', backgroundColor: colors.white}}>
       <AppHeader
@@ -218,7 +241,7 @@ const OrderAllDetails = () => {
               <Text
                 style={[
                   style.font24Re,
-                  {fontFamily: fonts.bold, color: colors.white},
+                  {fontFamily: fonts.bold, color: 'rgba(255, 255, 255, 0.5)'},
                 ]}>
                 TANATOS
               </Text>
@@ -229,10 +252,10 @@ const OrderAllDetails = () => {
                 style.font12Re,
                 {
                   fontFamily: fonts.bold,
-                  color: colors.white,
+                  color: 'rgba(255, 255, 255, 0.5)',
                 },
               ]}>
-              {/* ESQUELAS ONLINE */}
+              ESQUELAS ONLINE
             </Text>
             <Text
               style={[
@@ -354,7 +377,7 @@ const OrderAllDetails = () => {
               justifyContent: 'space-between',
             }}>
             <TouchableOpacity
-              onPress={() => handleOrderUpdateDataNewOrder(orderid)}
+              onPress={() => setShowAcceptStoreModal(true)}
               style={{
                 backgroundColor: colors.primaryColor,
                 height: 40,
@@ -370,7 +393,7 @@ const OrderAllDetails = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => handleOrderCancelData(orderid)}
+              onPress={() => setShowAcceptModal(true)}
               style={{
                 backgroundColor: colors.primaryColor,
                 height: 40,
@@ -387,9 +410,17 @@ const OrderAllDetails = () => {
             </TouchableOpacity>
           </View>
         ) : null}
+
+        <AcceptCancel
+          visible={showAcceeptStoreModal}
+          onClose={() => setShowAcceptStoreModal(false)}
+          onConfirm={() => handleAcceptStore(orderid)}
+          title={t('Do you accept flowers ?')}
+        />
+
         {account_Type === 'store' && status === 'accepted' ? (
           <TouchableOpacity
-            onPress={() => handleOrderCancelData(orderid)}
+            onPress={() => setShowCompleteModal(true)}
             style={{
               backgroundColor: colors.primaryColor,
               height: 40,
@@ -411,7 +442,8 @@ const OrderAllDetails = () => {
         {/* ///////// */}
         {account_Type === 'customer' && status === 'pending' ? (
           <TouchableOpacity
-            onPress={() => handleOrderCancelData(orderid)}
+            // onPress={() => handleOrderCancelData(orderid)}
+            onPress={() => setShowAcceptModal(true)}
             style={{
               backgroundColor: colors.primaryColor,
               height: 40,
@@ -427,11 +459,16 @@ const OrderAllDetails = () => {
             <Text style={[style.font12Re, {color: colors.white}]}>cancel</Text>
           </TouchableOpacity>
         ) : null}
-
+        <AcceptCancel
+          visible={showAcceptModal}
+          onClose={() => setShowAcceptModal(false)}
+          onConfirm={() => handleAcceptCancel(orderid)}
+          title={'Are you sure you want to cancel this order ?'}
+        />
         {/* ///////////////////////// */}
         {account_Type === 'customer' && status === 'accepted' ? (
           <TouchableOpacity
-            onPress={() => handleOrderCancelData(orderid)}
+            onPress={() => setShowCompleteModal(true)}
             style={{
               backgroundColor: colors.primaryColor,
               height: 40,
@@ -449,6 +486,12 @@ const OrderAllDetails = () => {
             </Text>
           </TouchableOpacity>
         ) : null}
+        <AcceptCancel
+          visible={showCompleteModal}
+          onClose={() => setShowCompleteModal(false)}
+          onConfirm={() => handleComplete(orderid)}
+          title={'Are you sure order has been completed ?'}
+        />
       </View>
       <Modal
         transparent

@@ -297,7 +297,8 @@ const AddFlowers = props => {
       name: formData.name,
       description: formData.description,
       price: formData.price,
-      category: selectedItem.name,
+      // category: selectedItem.name,
+      category: '',
       images: JSON.stringify(imagesToSend),
     };
 
@@ -352,7 +353,7 @@ const AddFlowers = props => {
       // selectedItem.name &&
       formData.price &&
       formData.description &&
-      selectedItem &&
+      // selectedItem & &
       formData.name;
     setValid(!isFormFilled);
   }, [imagesToSend, formData, selectedItem]);
@@ -528,11 +529,11 @@ const AddFlowers = props => {
             value={formData.price}
             onChangeText={text => handleInputChange('price', text)}
           />
-          <Text
+          {/* <Text
             style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
             {t('addflower5')}
-          </Text>
-          <TouchableOpacity
+          </Text> */}
+          {/* <TouchableOpacity
             onPress={() => setModalVisibleCat(true)}
             style={{
               borderWidth: 1,
@@ -544,7 +545,7 @@ const AddFlowers = props => {
               paddingLeft: 10,
             }}>
             <Text> {selectedItem ? selectedItem.name : t('addflower5')}</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View

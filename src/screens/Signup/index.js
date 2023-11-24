@@ -23,7 +23,7 @@ import {validateEmail, validatePassword} from '../../utils/Validations';
 import {DatePicker} from '../../components/DateComponent';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Tick from '../../assets/Tick.svg';
-import PhoneNumberInput from '../../components/PhoneInput';
+import PhoneNumberInput from '../../components/PhoneInput/PhoneInput';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ApiRequest from '../../Services/ApiRequest';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
@@ -54,17 +54,20 @@ const Signup = ({route}) => {
     address: '',
     shopName: '',
     category: '',
-    // contactNumber: '',
+    contactNumber: '',
     shopLocation: '',
     starting_date: undefined,
     starting_dateModal: undefined,
   });
   console.log(formData);
 
+  const [data, setData] = useState({
+    phoneNumber: '',
+  });
   const validateForm = useMemo(() => {
-    const valueValid = valid && formData.phoneNumber;
+    const valueValid = valid && data.phoneNumber;
     return valueValid;
-  }, [formData]);
+  }, [data]);
 
   const [disable, setDisable] = useState(true);
   useMemo(() => {
@@ -79,8 +82,7 @@ const Signup = ({route}) => {
       formData.confirmPassword.trim().length > 5 &&
       formData.password.trim().length > 5 &&
       formData.password.trim() &&
-      formData.password === formData.confirmPassword &&
-      formData.starting_date;
+      formData.password === formData.confirmPassword;
     setDisable(!isData);
   }, [account_Type, formData]);
 
@@ -92,17 +94,6 @@ const Signup = ({route}) => {
   };
   const [valid, setValid] = useState(true);
 
-  const onDateChange = (event, selectedDate, dateName, modalName) => {
-    if (event.type === 'dismissed') {
-      console.log('user cancelled');
-    } else {
-      setFormData(prevState => ({
-        ...prevState,
-        [modalName]: false,
-        [dateName]: selectedDate?.toDateString(),
-      }));
-    }
-  };
   const ref = useRef(null);
   const openBottomSheet = () => {
     ref.current.open();
@@ -171,7 +162,7 @@ const Signup = ({route}) => {
       navigation.navigate('ShareAddress', {
         formData: formData,
         account_Type: account_Type ? account_Type : formData.accountType,
-        phone: '',
+        phone: data.phoneNumber,
         city: city,
         state: state,
         country: country,
@@ -252,6 +243,14 @@ const Signup = ({route}) => {
             onChangeText={text => handleInputChange('email', text)}
           />
 
+          <PhoneNumberInput
+            title={'Phone Number'}
+            valid={valid}
+            value={data.phoneNumber}
+            setValid={setValid}
+            setValue={setData}
+            formData={data}
+          />
           <Pressable style={{position: 'absolute', right: 10, top: 30}}>
             {iconToShow ? iconToShow : null}
           </Pressable>
@@ -313,7 +312,7 @@ const Signup = ({route}) => {
           <Text> {area ? area : t('singup4')}</Text>
         </TouchableOpacity>
 
-        <DatePicker
+        {/* <DatePicker
           title={t('singup5')}
           date={formData.starting_date}
           show={formData.starting_dateModal}
@@ -333,14 +332,14 @@ const Signup = ({route}) => {
             );
           }}
           maxDate={new Date()}
-        />
+        /> */}
 
         <BaseButton
           title={
             loading ? <ActivityIndicator color={colors.white} /> : t('Continue')
           }
           defaultStyle={{marginVertical: 20}}
-          disabled={disable || loading || !isEmailValid}
+          disabled={disable || loading || !isEmailValid || !valid}
           onPress={handleSignup}
         />
 

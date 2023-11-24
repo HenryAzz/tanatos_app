@@ -30,45 +30,6 @@ const FlowerGalery = () => {
   const FuneralItemData = route?.params?.item;
   // console.log(FuneralItemData, 'item receiver');
   const navigation = useNavigation();
-  const cardData = [
-    {
-      id: 1,
-      title: 'Pink Rose',
-      price: '$19.99',
-      image: require('../../assets/images/fav/fev1.png'),
-    },
-    {
-      id: 2,
-      title: 'Pink Rose',
-      price: '$24.99',
-      image: require('../../assets/images/fav/fav2.png'),
-    },
-
-    {
-      id: 3,
-      title: 'Pink Rose',
-      price: '$34.99',
-      image: require('../../assets/images/fav/fav3.png'),
-    },
-    {
-      id: 4,
-      title: 'Pink Rose',
-      price: '$44.99',
-      image: require('../../assets/images/fav/fav4.png'),
-    },
-    {
-      id: 5,
-      title: 'Pink Rose',
-      price: '$54.99',
-      image: require('../../assets/images/fav/fav3.png'),
-    },
-    {
-      id: 6,
-      title: 'Pink Rose',
-      price: '$64.99',
-      image: require('../../assets/images/fav/fav4.png'),
-    },
-  ];
 
   const [value, setValue] = useState('');
   const [show, setShow] = useState(false);
@@ -79,48 +40,48 @@ const FlowerGalery = () => {
   // const [selectedItem, setSelectedItem] = useState(null);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
 
-  const handleGetLike = async (store_id, like, item) => {
-    const user_id = await AsyncStorage.getItem('user_id');
-    console.log(user_id, 'user id', store_id, 'storeid', like, 'like');
-    try {
-      const res = await ApiRequest({
-        type: 'like_dislike',
-        user_id: user_id,
-        store_id: store_id,
-        status: like === 'like' ? 'dislike' : 'like',
-      });
-      const resp = res.data;
-      if (resp) {
-        handleGetStoreData();
-      }
-      console.log(resp, 'get store likes');
-    } catch (err) {
-    } finally {
-    }
-  };
-  const heartPress = async (store_id, like, item) => {
-    const user_id = await AsyncStorage.getItem('user_id');
-    const sendData = {
-      type: 'like_dislike',
-      user_id: user_id,
-      store_id: store_id,
-      status: like === 'like' ? 'dislike' : 'like',
-    };
-    let data2 = storeData.findIndex(x => x.id === item.id);
-    if (item.favourite == 'like') {
-      storeData[data2].favourite = 'dislike';
-    } else {
-      storeData[data2].favourite = 'like';
-    }
-    setStoreData(storeData);
-    // setRefresh(pre => !pre);
-    try {
-      await ApiRequest(sendData);
-      handleGetStoreData();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handleGetLike = async (store_id, like, item) => {
+  //   const user_id = await AsyncStorage.getItem('user_id');
+  //   console.log(user_id, 'user id', store_id, 'storeid', like, 'like');
+  //   try {
+  //     const res = await ApiRequest({
+  //       type: 'like_dislike',
+  //       user_id: user_id,
+  //       store_id: store_id,
+  //       status: like === 'like' ? 'dislike' : 'like',
+  //     });
+  //     const resp = res.data;
+  //     if (resp) {
+  //       handleGetStoreData();
+  //     }
+  //     console.log(resp, 'get store likes');
+  //   } catch (err) {
+  //   } finally {
+  //   }
+  // };
+  // const heartPress = async (store_id, like, item) => {
+  //   const user_id = await AsyncStorage.getItem('user_id');
+  //   const sendData = {
+  //     type: 'like_dislike',
+  //     user_id: user_id,
+  //     store_id: store_id,
+  //     status: like === 'like' ? 'dislike' : 'like',
+  //   };
+  //   let data2 = storeData.findIndex(x => x.id === item.id);
+  //   if (item.favourite == 'like') {
+  //     storeData[data2].favourite = 'dislike';
+  //   } else {
+  //     storeData[data2].favourite = 'like';
+  //   }
+  //   setStoreData(storeData);
+  //   // setRefresh(pre => !pre);
+  //   try {
+  //     await ApiRequest(sendData);
+  //     handleGetStoreData();
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleGetStoreData = async () => {
     // console.log(1);
@@ -245,9 +206,9 @@ const FlowerGalery = () => {
             <CardListFlowerGalery
               item={item}
               images={item.image}
-              onPressLike={() =>
-                heartPress(item.store_id, item.favourite, item)
-              }
+              // onPressLike={() =>
+              //   heartPress(item.store_id, item.favourite, item)
+              // }
               // onPressLike={() => console.log(item.favourite, 'favourite')}
               onPress={() =>
                 navigation.navigate('SpecificStoreGalery', {

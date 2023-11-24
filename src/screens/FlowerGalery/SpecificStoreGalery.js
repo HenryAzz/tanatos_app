@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   FlatList,
+  ActivityIndicator,
   TouchableOpacity,
   Button,
   RefreshControl,
@@ -33,51 +34,13 @@ const SpecificStoreGalery = ({route}) => {
   const FuneralItemData = route?.params?.item1;
   // console.log(FuneralItemData?.id, 'FuneralItemData item');
   const navigation = useNavigation();
-  const cardData = [
-    {
-      id: 1,
-      title: 'Pink Rose',
-      price: '$19.99',
-      image: require('../../assets/images/fav/fev1.png'),
-    },
-    {
-      id: 2,
-      title: 'Pink Rose',
-      price: '$24.99',
-      image: require('../../assets/images/fav/fav2.png'),
-    },
-
-    {
-      id: 3,
-      title: 'Pink Rose',
-      price: '$34.99',
-      image: require('../../assets/images/fav/fav3.png'),
-    },
-    {
-      id: 4,
-      title: 'Pink Rose',
-      price: '$44.99',
-      image: require('../../assets/images/fav/fav4.png'),
-    },
-    {
-      id: 5,
-      title: 'Pink Rose',
-      price: '$54.99',
-      image: require('../../assets/images/fav/fav3.png'),
-    },
-    {
-      id: 6,
-      title: 'Pink Rose',
-      price: '$64.99',
-      image: require('../../assets/images/fav/fav4.png'),
-    },
-  ];
 
   const [value, setValue] = useState('');
   const [show, setShow] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
 
   const [storeData, setStoreData] = useState();
+  // console.log(storeData.store, 'storeData');
   const [isLoading, setLoading] = useState();
   // const [selectedItem, setSelectedItem] = useState(null);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
@@ -177,7 +140,7 @@ const SpecificStoreGalery = ({route}) => {
     }));
     setSelectedData(extractedData);
   };
-  console.log(SelectedData, 'SelectedData');
+  // console.log(SelectedData, 'SelectedData');
   useEffect(() => {
     extractData(dataTosend);
   }, [dataTosend]);
@@ -235,7 +198,7 @@ const SpecificStoreGalery = ({route}) => {
           }
           ListFooterComponent={
             bottomLoader && (
-              <ActivityIndicatot size="large" color={colors.gray} />
+              <ActivityIndicator size="large" color={colors.gray} />
             )
           }
           ListFooterComponentStyle={{
@@ -248,9 +211,12 @@ const SpecificStoreGalery = ({route}) => {
           contentContainerStyle={styles.listContainer}
           numColumns={2}
           renderItem={({item}) => {
-            //   console.log(item.image, 'jj');
+            // console.log(item.store.name, 'jj');
             return (
-              <View
+              <TouchableOpacity
+                onPress={() => {
+                  handleSelect(item);
+                }}
                 style={[
                   styles.cardContainer,
                   {
@@ -272,14 +238,24 @@ const SpecificStoreGalery = ({route}) => {
                   />
                 </View>
                 <TouchableOpacity
+                  style={styles.infoContainer}
                   onPress={() => {
                     handleSelect(item);
-                  }}
-                  style={styles.infoContainer}>
-                  <Text style={styles.title}>{item.name}</Text>
-                  <Text style={styles.price}>{item.price}</Text>
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={styles.title} numberOfLines={1}>
+                      {item?.name}
+                    </Text>
+                    <Text style={styles.price}>{item?.price}$</Text>
+                  </View>
+                  <Text style={styles.title}>{item?.store?.name}</Text>
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
               // <Text>sdas</Text>
               // <CardListFlowerGalery
               //   item={item}
@@ -308,10 +284,6 @@ const SpecificStoreGalery = ({route}) => {
         setModalVisible={setModalVisible}
         source={require('../../assets/images/fav/fev1.png')}
       />
-      <ModalLoadingTrans
-        showLoadingModal={showLoadingModal}
-        setShowLoadingModal={setShowLoadingModal}
-      />
     </Layout>
   );
 };
@@ -332,14 +304,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   title: {
-    fontSize: 18,
+    fontSize: 14,
     color: colors.black,
     marginBottom: 2,
+    width: 95,
   },
   price: {
     fontSize: 16,
+    width: 40,
     color: colors.primaryColor,
     fontFamily: fonts.bold,
+    // backgroundColor: 'red',
   },
   imageGalleryContainer: {
     // Adjust the height as needed

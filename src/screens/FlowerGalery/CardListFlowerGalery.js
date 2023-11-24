@@ -133,7 +133,7 @@ const CardListFlowerGallery = ({item, onPress, id, onPressLike}) => {
         />
       </View>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={{position: 'absolute', right: 10, top: 10}}
         onPress={onPressLike}>
         <Icon
@@ -141,8 +141,8 @@ const CardListFlowerGallery = ({item, onPress, id, onPressLike}) => {
           color={colors.primaryColor}
           size={30}
         />
-        {/* <Text>{item.id}</Text> */}
-      </TouchableOpacity>
+
+      </TouchableOpacity> */}
 
       <TouchableOpacity onPress={onPress} style={styles.infoContainer}>
         <Text style={styles.title}>{item?.store?.name}</Text>

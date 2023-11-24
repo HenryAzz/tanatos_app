@@ -33,8 +33,8 @@ const FuneralDetailedPage = () => {
 
   const pathFromBackend = item?.image;
 
+  console.log(pathFromBackend, 'data item');
   const cleanedPath = pathFromBackend?.replace(/^"(.*)"$/, '$1');
-  // console.log(cleanedPath, 'data item');
   const navigation = useNavigation();
   // console.log(cleanedPath, 'item.url + cleanedPath');
   // const imageUrl = cleanedPath
@@ -112,10 +112,11 @@ const FuneralDetailedPage = () => {
         backgroundColor="transparent"
         translucent={true}
       />
-      <ImageBackground
-        style={{height: 270, paddingTop: 16}}
-        source={require('../../assets/Sharedbg.jpg')}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{}}>
+      <View
+        style={{height: 300, backgroundColor: colors.primaryColor}}
+        // source={require('../../assets/Sharedbg.jpg')}
+      >
+        {/* <TouchableOpacity onPress={() => navigation.goBack()} style={{}}>
           <Image
             source={require('../../assets/BackButtonp.png')}
             style={{
@@ -126,25 +127,26 @@ const FuneralDetailedPage = () => {
               left: 10,
             }}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View
           style={{
-            flexDirection: 'row',
+            // flexDirection: 'row',
             alignItems: 'center',
             // justifyContent: 'center',
             padding: 4,
             // paddingLeft: 16,
-            marginTop: 30,
+            marginTop: 20,
             width: '96%',
-            alignSelf: 'center',
+            // alignSelf: 'center',
           }}>
-          <View style={{width: '60%', left: 10}}>
+          <View
+            style={{alignSelf: 'flex-start', paddingTop: 10, paddingLeft: 10}}>
             <Text
               style={[
                 style.font24Re,
                 {fontFamily: fonts.bold, color: 'rgba(255, 255, 255, 0.5)'},
               ]}>
-              {t('TANATOS')}
+              TANATOS
             </Text>
 
             <Text
@@ -152,11 +154,36 @@ const FuneralDetailedPage = () => {
                 style.font12Re,
                 {
                   fontFamily: fonts.bold,
-                  color: colors.white,
+                  color: 'rgba(255, 255, 255, 0.5)',
                 },
               ]}>
-              {/* {t('ESQUELAS ONLINE')} */}
+              ESQUELAS ONLINE
             </Text>
+          </View>
+          <View style={{width: '60%', left: 10, alignItems: 'center'}}>
+            {item.image ? (
+              <Image
+                source={{uri: item.url + cleanedPath}}
+                style={{
+                  height: 130,
+                  width: 130,
+                  right: 20,
+                  borderRadius: 80,
+                  // top: 40,
+                }}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/app_icon.png')}
+                style={{
+                  height: 160,
+                  width: 160,
+                  right: 20,
+                  borderRadius: 80,
+                  top: 0,
+                }}
+              />
+            )}
             <Text
               style={[
                 style.font20Re,
@@ -172,31 +199,8 @@ const FuneralDetailedPage = () => {
               {item?.short_message}
             </Text>
           </View>
-          {item.image ? (
-            <Image
-              source={{uri: item.url + cleanedPath}}
-              style={{
-                height: 160,
-                width: 160,
-                right: 20,
-                borderRadius: 80,
-                top: 0,
-              }}
-            />
-          ) : (
-            <Image
-              source={require('../../assets/app_icon.png')}
-              style={{
-                height: 160,
-                width: 160,
-                right: 20,
-                borderRadius: 80,
-                top: 0,
-              }}
-            />
-          )}
         </View>
-      </ImageBackground>
+      </View>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -208,14 +212,15 @@ const FuneralDetailedPage = () => {
             </Text>
           </View>
           <FuneralCardShow
-            heading={'VELATORIO'}
+            heading={'tanatorio'}
             name={item?.name}
             description={item?.description}
             title={item?.chruch_location}
             chruch_lat={item?.chruch_lat}
             chruch_lng={item?.lng}
             date={item?.church_date}
-            time={item?.church_time}
+            // church_img={item.church_img}
+            img={item.funeral_img}
             // hall_no={item.hall_no}
             // subTitle={'Church prayer'}
             img1={require('../../assets/send22.png')}
@@ -228,6 +233,7 @@ const FuneralDetailedPage = () => {
           <FuneralCardShow
             heading={'CEREMONIA'}
             hall_no={item.hall_no}
+            img={item.church_img}
             // name={item?.name}
             // description={item?.description}
             title={item?.funeral_location}

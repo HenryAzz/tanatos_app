@@ -17,8 +17,11 @@ const FuneralCardShow = ({
   description,
   name,
   hall_no,
+  img,
+  church_img,
 }) => {
   const {t} = useTranslation();
+  console.log(img, 'img');
   return (
     <View
       style={{
@@ -178,15 +181,31 @@ const FuneralCardShow = ({
         </View>
       </View>
       <View style={{}}>
-        <Image
-          source={img2}
-          style={{
-            height: 150,
-            width: 120,
-            borderTopRightRadius: 10,
-            borderBottomRightRadius: 10,
-          }}
-        />
+        {!img ? (
+          <Image
+            source={require('../../assets/app_icon.png')}
+            style={{
+              height: 150,
+              width: 120,
+              borderTopRightRadius: 10,
+              borderBottomRightRadius: 10,
+              // borderRadius: 80,
+            }}
+          />
+        ) : (
+          <Image
+            source={{
+              uri: 'https://locatestudent.com/tanatos/upload/' + img,
+            }}
+            // source={img2}
+            style={{
+              height: 150,
+              width: 120,
+              borderTopRightRadius: 10,
+              borderBottomRightRadius: 10,
+            }}
+          />
+        )}
       </View>
     </View>
   );
