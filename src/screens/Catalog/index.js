@@ -4,6 +4,7 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
@@ -68,7 +69,7 @@ const Catalog = () => {
   ];
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
-  const [catalogData, setCatalogData] = useState();
+  const [catalogData, setCatalogData] = useState([]);
 
   const handleGetCatData = async () => {
     try {
@@ -77,7 +78,6 @@ const Catalog = () => {
       // setShowLoadingModal(true);
       const user_id = await AsyncStorage.getItem('user_id');
       const store_id = await AsyncStorage.getItem('store_id');
-      console.log(store_id, 'store_idstore_id');
       if (store_id || store_id != undefined || store_id != null) {
         const res = await ApiRequest({
           type: 'get_data',
@@ -111,11 +111,12 @@ const Catalog = () => {
       setBottomLoader(true);
       // setShowLoadingModal(true);
       const user_id = await AsyncStorage.getItem('user_id');
-      // console.log(user_id);
+      const store_id = await AsyncStorage.getItem('store_id');
       const res = await ApiRequest({
         type: 'get_data',
         table_name: 'stores_gallery',
         user_id: user_id,
+        store_id: JSON.parse(store_id),
         last_id: catalogData[catalogData.length - 1]?.id,
       });
       const resp = res.data.data;
@@ -148,38 +149,29 @@ const Catalog = () => {
   return (
     <Layout>
       <AppHeader title={t('Catalog')} />
-      <BaseButton
-        defaultStyle={{
-          height: 30,
-          width: 120,
-          alignSelf: 'flex-start',
-          marginBottom: 20,
-        }}
-        textStyle={[style.font12Re, {color: colors.white}]}
-        title={t('Add More Gallery')}
-        onPress={() => navigation.navigate('AddFlowers')}
-      />
-      <View style={{}}>
+      <View style={{flex: 1}}>
         <FlatList
           data={catalogData}
           ListEmptyComponent={
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                flex: 1,
-                width: '100%',
-                alignSelf: 'center',
-              }}>
-              <OrderNotFound
-                title={t('Not Found data')}
-                subtitle={t("You don't have any data at this time")}
-              />
-              <BaseButton
-                title={t('Add Gallery')}
-                onPress={() => navigation.navigate('AddFlowers')}
-              />
-            </View>
+            !refreshing && (
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1,
+                  width: '100%',
+                  alignSelf: 'center',
+                }}>
+                <OrderNotFound
+                  title={t('Not Found data')}
+                  subtitle={t("You don't have any data at this time")}
+                />
+                <BaseButton
+                  title={t('Add Gallery')}
+                  onPress={() => navigation.navigate('AddFlowers')}
+                />
+              </View>
+            )
           }
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
@@ -202,13 +194,35 @@ const Catalog = () => {
             marginTop: 5,
           }}
           renderItem={({item}) => (
-            <OrderCardCC item={item} images={item.images} />
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('CatalogDetail', {catalog: item})
+              }>
+              <OrderCardCC item={item} images={item?.images} />
+            </TouchableOpacity>
           )}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         />
       </View>
+      {catalogData?.length > 0 && (
+        <BaseButton
+          defaultStyle={{
+            height: 30,
+            width: 120,
+            alignSelf: 'flex-start',
+            marginBottom: 20,
+            position: 'absolute',
+            bottom: 0,
+            zIndex: 11,
+            alignSelf: 'center',
+          }}
+          textStyle={[style.font12Re, {color: colors.white}]}
+          title={t('Add More Gallery')}
+          onPress={() => navigation.navigate('AddFlowers')}
+        />
+      )}
     </Layout>
   );
 };

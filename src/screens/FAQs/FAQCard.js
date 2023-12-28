@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   subTtle: {
-    color: colors.gray3,
+    color: colors.black,
     fontSize: 14,
     fontFamily: fonts.regular,
     paddingBottom: 10,

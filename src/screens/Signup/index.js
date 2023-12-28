@@ -1,46 +1,48 @@
+import {useNavigation} from '@react-navigation/native';
+import React, {useMemo, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
+  ActivityIndicator,
+  Modal,
+  ScrollView,
   StyleSheet,
   Text,
-  Image,
-  View,
-  ScrollView,
   TouchableOpacity,
-  Pressable,
-  Modal,
-  ActivityIndicator,
+  View,
 } from 'react-native';
-import React, {useState, useMemo, useRef, useEffect} from 'react';
-import Layout from '../../components/Layout';
-import AppTextInput from '../../components/FloatingLabelInput';
-import {BaseButton} from '../../components/BaseButton';
-import style from '../../assets/css/style';
-import {colors, constants, fonts} from '../../constraints';
-import {BakcButton} from '../../assets/images/svg';
-import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
-import AuthHeader from '../../components/AuthHeader';
-import {useNavigation} from '@react-navigation/native';
-import {validateEmail, validatePassword} from '../../utils/Validations';
-import {DatePicker} from '../../components/DateComponent';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import Tick from '../../assets/Tick.svg';
-import PhoneNumberInput from '../../components/PhoneInput/PhoneInput';
-import Icon from 'react-native-vector-icons/Ionicons';
-import ApiRequest from '../../Services/ApiRequest';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import Icon from 'react-native-vector-icons/Feather';
+import AIcon from 'react-native-vector-icons/Ionicons';
+import ApiRequest from '../../Services/ApiRequest';
+import Tick from '../../assets/Tick.svg';
+import style from '../../assets/css/style';
+import AuthHeader from '../../components/AuthHeader';
+import {BaseButton} from '../../components/BaseButton';
+import AppTextInput from '../../components/FloatingLabelInput';
+import Layout from '../../components/Layout';
+import PhoneNumberInput from '../../components/PhoneInput/PhoneInput';
+import {colors, constants, fonts} from '../../constraints';
 import {ToastMessage} from '../../utils/Toast';
-import moment from 'moment';
-import {useTranslation} from 'react-i18next';
+import {validateEmail, validatePassword} from '../../utils/Validations';
+import {useEffect} from 'react';
+
 const Signup = ({route}) => {
   const account_Type = route?.params?.account_Type;
-  // console.log(account_Type);
+
   const navigation = useNavigation();
   const [isSecureText, setIsSecureText] = useState(true);
   const [isSecureTextConfirm, setIsSecureTextConfirm] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [area, setArea] = useState('');
-  const [city, setCity] = useState('');
+  const [area, setArea] = useState('Abc city, country');
+  const [city, setCity] = useState('Faisalabad');
   const [state, setState] = useState('');
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [emailIcon, setEmailIcon] = useState(null);
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [markerData, setMarkerData] = useState({latitude: '', longitude: ''});
   const [country, setCountry] = useState('');
   const [formData, setFormData] = useState({
@@ -59,32 +61,6 @@ const Signup = ({route}) => {
     starting_date: undefined,
     starting_dateModal: undefined,
   });
-  console.log(formData);
-
-  const [data, setData] = useState({
-    phoneNumber: '',
-  });
-  const validateForm = useMemo(() => {
-    const valueValid = valid && data.phoneNumber;
-    return valueValid;
-  }, [data]);
-
-  const [disable, setDisable] = useState(true);
-  useMemo(() => {
-    let isData = false;
-
-    // if (account_Type === 'customer') {
-    isData =
-      validateEmail(formData.email) &&
-      formData.email.trim() &&
-      formData.name.trim() &&
-      formData.confirmPassword.trim() &&
-      formData.confirmPassword.trim().length > 5 &&
-      formData.password.trim().length > 5 &&
-      formData.password.trim() &&
-      formData.password === formData.confirmPassword;
-    setDisable(!isData);
-  }, [account_Type, formData]);
 
   const handleInputChange = (name, value) => {
     setFormData(prevFormData => ({
@@ -92,7 +68,7 @@ const Signup = ({route}) => {
       [name]: value,
     }));
   };
-  const [valid, setValid] = useState(true);
+  const [valid, setValid] = useState(false);
 
   const ref = useRef(null);
   const openBottomSheet = () => {
@@ -113,43 +89,36 @@ const Signup = ({route}) => {
     }
   };
 
-  ////handle check email
-  const [isEmailValid, setIsEmailValid] = useState(true);
-  const checkEmailCheck = async () => {
+  const checkEmail = async email => {
+    if (!email || !validateEmail(email)) {
+      setIsCheckingEmail(false); // Hide loader
+      setEmailIcon(null); // Reset the email icon
+      return;
+    }
+
     try {
-      const res = await ApiRequest({
+      setIsCheckingEmail(true); // Show loader
+      const dataToCheck = {
         type: 'check_email',
-        email: formData.email,
-      });
-
-      if (res.data.result === false && formData?.email?.length > 2) {
-        setIsEmailValid(false);
-
-        ToastMessage(res?.data?.message);
-        return <Icon name="close" size={30} color="red" />;
-      } else if (res.data.result === true && formData?.email?.length > 2) {
-        setIsEmailValid(true);
-        return <Icon name="checkmark" size={30} color="green" />;
+        email: email,
+      };
+      const res = await ApiRequest(dataToCheck);
+      setIsCheckingEmail(false); // Hide loader
+      if (res.data.result) {
+        setEmailIcon(<Icon name="check" color={colors.green} size={25} />);
+        setIsEmailAvailable(true);
       } else {
-        // setIsEmailValid(true);
-        console.log('error');
-        // return <Icon name="checkmark" size={30} color="green" />;
+        setEmailIcon(<AIcon name="close" color={colors.red} size={25} />);
+        ToastMessage(res.data?.message);
+        console.log(res.data?.message);
+        setIsEmailAvailable(false);
       }
     } catch (error) {
+      setIsCheckingEmail(false); // Hide loader on error
       console.log(error);
     }
   };
-  const [iconToShow, setIconToShow] = useState(null);
-  const checkEmail = async () => {
-    const icon = await checkEmailCheck();
-    setIconToShow(icon);
-  };
-  useEffect(() => {
-    if (formData.email.length === 0) {
-      checkEmail();
-    }
-  }, [formData.email]);
-  //////////////////////////
+
   const [loading, setLoading] = useState(false);
   const handleSignup = () => {
     setLoading(true);
@@ -162,7 +131,7 @@ const Signup = ({route}) => {
       navigation.navigate('ShareAddress', {
         formData: formData,
         account_Type: account_Type ? account_Type : formData.accountType,
-        phone: data.phoneNumber,
+        phone: formData.phoneNumber,
         city: city,
         state: state,
         country: country,
@@ -174,6 +143,31 @@ const Signup = ({route}) => {
   };
 
   const {t, i18n} = useTranslation();
+
+  const validateForm = useMemo(() => {
+    const isEmailValid = validateEmail(formData.email);
+    const isPasswordValid = validatePassword(formData.password);
+    setIsEmailValid(isEmailValid);
+    setIsPasswordValid(isPasswordValid);
+
+    return (
+      valid &&
+      isEmailValid &&
+      isPasswordValid &&
+      formData.name.trim() &&
+      formData.email.trim() &&
+      isEmailAvailable &&
+      area &&
+      formData.accountType &&
+      formData.password == formData.confirmPassword
+    );
+  }, [formData, valid, isEmailAvailable, area]);
+
+  useEffect(() => {
+    if (route?.params?.account_Type) {
+      setFormData({...formData, accountType: route.params?.account_Type});
+    }
+  }, [route]);
 
   return (
     <Layout>
@@ -234,32 +228,52 @@ const Signup = ({route}) => {
         />
 
         <View style={{justifyContent: 'center', flex: 1}}>
+          <View
+            style={{
+              position: 'absolute',
+              right: 10,
+              zIndex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              top: 35,
+            }}>
+            {isEmailValid && isCheckingEmail ? (
+              <ActivityIndicator color={colors.textGray} />
+            ) : (
+              isEmailValid && emailIcon
+            )}
+          </View>
           <AppTextInput
             titleText={t('Email')}
             keyboardType="email-address"
             placeholder={t('Email')}
-            onEndEditing={checkEmail}
             value={formData.email}
-            onChangeText={text => handleInputChange('email', text)}
+            onChangeText={text => {
+              handleInputChange('email', text);
+              checkEmail(text); // Call checkEmail on every text change
+            }}
           />
-
-          <PhoneNumberInput
-            title={'Phone Number'}
-            valid={valid}
-            value={data.phoneNumber}
-            setValid={setValid}
-            setValue={setData}
-            formData={data}
-          />
-          <Pressable style={{position: 'absolute', right: 10, top: 30}}>
-            {iconToShow ? iconToShow : null}
-          </Pressable>
-          {!validateEmail(formData.email) && formData.email.length >= 2 && (
+          {!validateEmail(formData.email) && formData.email.length >= 1 && (
             <Text style={{top: -8, color: colors.red}}>
               {' '}
               {t('Enter valid email (abc@gmail.com)')}
             </Text>
           )}
+          <Text
+            style={[
+              style.font16Re,
+              {fontFamily: fonts.medium, marginBottom: 3},
+            ]}>
+            Phone
+          </Text>
+          <PhoneNumberInput
+            title={'Phone Number'}
+            valid={valid}
+            value={formData.phoneNumber}
+            setValid={setValid}
+            setValue={setFormData}
+            formData={formData}
+          />
         </View>
         <AppTextInput
           titleText={t('Password')}
@@ -309,7 +323,7 @@ const Signup = ({route}) => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text> {area ? area : t('singup4')}</Text>
+          <Text style={style.font16Re}> {area ? area : t('singup4')}</Text>
         </TouchableOpacity>
 
         {/* <DatePicker
@@ -339,7 +353,7 @@ const Signup = ({route}) => {
             loading ? <ActivityIndicator color={colors.white} /> : t('Continue')
           }
           defaultStyle={{marginVertical: 20}}
-          disabled={disable || loading || !isEmailValid || !valid}
+          disabled={!validateForm || loading || isCheckingEmail}
           onPress={handleSignup}
         />
 

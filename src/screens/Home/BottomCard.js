@@ -13,6 +13,7 @@ const BottomCard = ({
   onPressDel,
   account_Type,
   gotoDetailePage,
+  funeralImg,
 }) => {
   const {t} = useTranslation();
   return (
@@ -22,24 +23,40 @@ const BottomCard = ({
         alignSelf: 'center',
         backgroundColor: colors.white,
         width: '98%',
-        // marginTop: 10,
         padding: 15,
         margin: 4,
-        // height: 120,
-        // justifyContent: 'space-between',
         borderRadius: 15,
         elevation: 10,
         shadowColor: colors.elev,
-        // backgroundColor: 'red',
+        overflow: 'hidden',
       }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>{title}</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{alignItems: 'flex-start', flexDirection: 'row'}}>
+        <View style={{alignItems: 'center', flexDirection: 'row', flex: 1}}>
+          {account_Type == 'funeral' && funeralImg && (
+            <View>
+              <Image
+                source={{uri: funeralImg}}
+                style={{width: 35, height: 35, borderRadius: 50}}
+              />
+            </View>
+          )}
+          <View style={{marginLeft: 10}}>
+            <Text
+              numberOfLines={1}
+              style={[style.font16Re, {fontFamily: fonts.bold, width: 170}]}>
+              {title}
+            </Text>
+            <Text
+              style={[
+                style.font14Re,
+                {color: colors.textGray, marginVertical: 6, width: 200},
+              ]}
+              numberOfLines={2}>
+              {subtitle}
+            </Text>
+          </View>
+        </View>
+        <View style={{alignItems: 'center', flexDirection: 'row'}}>
           {account_Type === 'funeral' ? (
             <>
               <TouchableOpacity
@@ -63,15 +80,6 @@ const BottomCard = ({
           ) : null}
         </View>
       </View>
-      <Text
-        style={[
-          style.font14Re,
-
-          {color: colors.textGray, marginVertical: 6, width: 300},
-        ]}
-        numberOfLines={2}>
-        {subtitle}
-      </Text>
 
       <TouchableOpacity
         onPress={account_Type === 'customer' ? onPress1 : gotoDetailePage}

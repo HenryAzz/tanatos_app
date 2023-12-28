@@ -186,7 +186,6 @@ const Processing = () => {
         data={orderData}
         renderItem={({item}) => {
           const itemsArray = JSON.parse(item.items);
-          console.log(item.items, 'item item');
           return (
             <MyOrderCard
               // key={index}
@@ -212,7 +211,7 @@ const Processing = () => {
               // cancel={() => handleOrderCancelData(item.id)}
               onPress={() =>
                 navigation.navigate('OrderAllDetails', {
-                  item: orderData,
+                  item: item,
                   // funeral: orderData.funeral,
                   orderid: item.id,
                   total_amount: item.total_amount,
@@ -220,7 +219,7 @@ const Processing = () => {
                   store: item.store,
                   dataToShow: item.items,
                   funeral: item.funeral,
-                  message: item.funeral.short_message,
+                  message: item?.sympathy_text,
                   // status: pending, completed, cancelled, accepted
                   status: 'accepted',
                   account_Type: account_Type,

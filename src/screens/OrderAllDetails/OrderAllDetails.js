@@ -1,7 +1,10 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   FlatList,
   Image,
-  ImageBackground,
   Modal,
   RefreshControl,
   StyleSheet,
@@ -9,28 +12,21 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import Layout from '../../components/Layout';
-import style from '../../assets/css/style';
-import {colors, fonts} from '../../constraints';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import FuneralCard from '../Home/FuneralCard';
-import {ScrollView} from 'react-native';
-import Edit from '../../assets/Edit1.png';
-import {devWidth} from '../../constraints/Dimentions';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import ApiRequest from '../../Services/ApiRequest';
-import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
 import Icon from 'react-native-vector-icons/Entypo';
-import OrderNotFound from '../MyOrder/OrderNotFound';
-import OrderAllCard from './OrderAllCard';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import ApiRequest from '../../Services/ApiRequest';
+import style from '../../assets/css/style';
+import AppHeader from '../../components/AppHeader/AppHeader';
+import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
+import {colors, fonts} from '../../constraints';
 import {ToastMessage} from '../../utils/Toast';
+import OrderNotFound from '../MyOrder/OrderNotFound';
 import AcceptCancel from './AcceptCancel';
-import {useTranslation} from 'react-i18next';
+import OrderAllCard from './OrderAllCard';
 
 const OrderAllDetails = () => {
+  //
   const route = useRoute();
+
   const orderid = route?.params?.orderid;
   const item = route?.params?.item;
   const store = route?.params?.store;
@@ -51,7 +47,6 @@ const OrderAllDetails = () => {
   const cleanedPath = image?.replace(/^"(.*)"$/, '$1');
   // console.log(parseInt('7.6'), 'item.url[0] + cleanedPath rece');
 
-  console.log(item, 'orderid');
   // console.log('item.url + cleanedPath', item.url + cleanedPath);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -212,98 +207,41 @@ const OrderAllDetails = () => {
   return (
     <View style={{flex: 1, width: '100%', backgroundColor: colors.white}}>
       <AppHeader
-        title={'Order Details'}
+        title={t('Order Details')}
         defaultStyle={{marginHorizontal: 10}}
       />
-      <ImageBackground
-        style={{height: 250, paddingTop: 16}}
-        source={require('../../assets/Sharedbg.jpg')}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 4,
-            paddingLeft: 16,
-            width: '96%',
-            alignSelf: 'center',
-          }}>
-          <View style={{width: '66%', left: 10}}>
-            <View
-              style={
-                {
-                  // flexDirection: 'row',
-                  // alignItems: 'center',
-                  // justifyContent: 'space-between',
-                  // width: '100%',
-                }
-              }>
-              <Text
-                style={[
-                  style.font24Re,
-                  {fontFamily: fonts.bold, color: 'rgba(255, 255, 255, 0.5)'},
-                ]}>
-                TANATOS
-              </Text>
-            </View>
-
-            <Text
-              style={[
-                style.font12Re,
-                {
-                  fontFamily: fonts.bold,
-                  color: 'rgba(255, 255, 255, 0.5)',
-                },
-              ]}>
-              ESQUELAS ONLINE
-            </Text>
-            <Text
-              style={[
-                style.font24Re,
-                {
-                  fontFamily: fonts.bold,
-                  color: colors.white,
-                  marginVertical: 10,
-                },
-              ]}>
-              {/* name */}
-              {funeral?.name}
-              {/* {'funeralData[0]?.full_name'} */}
-            </Text>
-            <Text style={[{fontSize: 13, color: colors.white}]}>{message}</Text>
-          </View>
-          {!cleanedPath ? (
-            <Image
-              source={{
-                uri: 'https://locatestudent.com/tanatos/upload/' + cleanedPath,
-              }}
-              style={{
-                height: 160,
-                width: 160,
-                right: 20,
-                borderRadius: 80,
-                top: 30,
-              }}
-            />
-          ) : (
-            <Image
-              source={require('../../assets/Sharedimg.png')}
-              // source={{uri: item.url + cleanedPath}}
-              style={{
-                height: 160,
-                width: 160,
-                right: 20,
-                borderRadius: 80,
-                top: 30,
-              }}
-            />
-          )}
+      <View style={styles.topBox}>
+        <View>
+          <Text style={[styles.txt1, {color: colors.welgrey}]}>TANATOS</Text>
+          <Text style={[style.font10Re, {color: colors.welgrey}]}>
+            ESQUELAS ONLINE
+          </Text>
         </View>
-        {/* <TouchableOpacity style={{position: 'absolute', right: 20, top: 40}}>
-          <Image source={Edit} style={{height: 20, width: 20}} />
-        </TouchableOpacity> */}
-      </ImageBackground>
-
+        <View style={{alignItems: 'center', top: -20}}>
+          <Image
+            source={require('../../assets/Sharedimg.png')}
+            style={styles.avatar}
+          />
+          <Text style={[styles.txt1, {marginTop: 5}]} numberOfLines={1}>
+            {funeral?.name}
+          </Text>
+          <Text style={[styles.txt1, {marginTop: 5}]} numberOfLines={1}>
+            {funeral?.hall_no}
+          </Text>
+          <Text
+            style={[style.font16Re, {marginTop: 5, color: colors.white}]}
+            numberOfLines={2}>
+            {funeral?.funeral_location}
+          </Text>
+        </View>
+      </View>
+      <View style={{paddingHorizontal: 20, marginVertical: 20}}>
+        <View style={[style.justifySpaBtwRow, {marginVertical: 10}]}>
+          <Text style={style.font14Re}>From:</Text>
+          <Text style={style.font16Re}>{item?.user?.name}</Text>
+        </View>
+        <Text style={style.font16Re}>{message}</Text>
+      </View>
       {/* <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}> */}
@@ -316,7 +254,7 @@ const OrderAllDetails = () => {
             alignItems: 'center',
           }}>
           <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
-            Total Amount:
+            {t('Total Amount')}:
           </Text>
           <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
             {' '}
@@ -389,7 +327,7 @@ const OrderAllDetails = () => {
                 marginBottom: 3,
               }}>
               <Text style={[style.font12Re, {color: colors.white}]}>
-                accept
+                {t('Accept')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -405,7 +343,7 @@ const OrderAllDetails = () => {
                 marginBottom: 3,
               }}>
               <Text style={[style.font12Re, {color: colors.white}]}>
-                cancel
+                {t('Cancel')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -435,7 +373,7 @@ const OrderAllDetails = () => {
               marginRight: 15,
             }}>
             <Text style={[style.font12Re, {color: colors.white}]}>
-              Complete Order
+              {t('Complete Order')}
             </Text>
           </TouchableOpacity>
         ) : null}
@@ -456,14 +394,16 @@ const OrderAllDetails = () => {
               marginTop: 10,
               marginRight: 15,
             }}>
-            <Text style={[style.font12Re, {color: colors.white}]}>cancel</Text>
+            <Text style={[style.font12Re, {color: colors.white}]}>
+              {t('Cancel')}
+            </Text>
           </TouchableOpacity>
         ) : null}
         <AcceptCancel
           visible={showAcceptModal}
           onClose={() => setShowAcceptModal(false)}
           onConfirm={() => handleAcceptCancel(orderid)}
-          title={'Are you sure you want to cancel this order ?'}
+          title={t('Are you sure you want to cancel this order?')}
         />
         {/* ///////////////////////// */}
         {account_Type === 'customer' && status === 'accepted' ? (
@@ -535,4 +475,22 @@ const OrderAllDetails = () => {
 
 export default OrderAllDetails;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  topBox: {
+    height: 240,
+    backgroundColor: colors.primaryColor,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  txt1: {
+    color: colors.white,
+    fontFamily: fonts.bold,
+    fontSize: 20,
+  },
+  avatar: {
+    width: 90,
+    height: 90,
+    borderRadius: 100,
+    marginBottom: 5,
+  },
+});

@@ -16,7 +16,7 @@ import React, {useEffect, useState} from 'react';
 import Layout from '../../components/Layout';
 import {ProfileHome} from '../../assets/images/HomeImg';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
-import {colors, fonts} from '../../constraints';
+import {colors, constants, fonts} from '../../constraints';
 import HomeCard from './HomeCard';
 import style from '../../assets/css/style';
 import TextCardView from './TextCardView';
@@ -43,12 +43,14 @@ import Greetings from '../../components/Greetings/Greeting';
 import OrderNotFound from '../MyOrder/OrderNotFound';
 import {useTranslation} from 'react-i18next';
 import {useRef} from 'react';
+import {useDispatch} from 'react-redux';
+import {fetchUser} from '../../store/reducer/usersSlice';
 const requestLocationPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       {
-        title: 'MERI CYCLE Wants to access your location',
+        title: 'Tanatos wants to access your location',
         message: 'Can we access your location?',
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',
@@ -67,6 +69,9 @@ const requestLocationPermission = async () => {
   }
 };
 const Home = () => {
+  //
+  const dispatch = useDispatch();
+
   useEffect(() => {
     getLocation();
   }, []);
@@ -112,7 +117,7 @@ const Home = () => {
 
   const handleGetData = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
-    console.log('useruser_id_id', user_id);
+
     if (user_id) {
       try {
         setShowLoadingModal(true);
@@ -122,14 +127,15 @@ const Home = () => {
           table_name: 'users',
         });
         const resp = res?.data?.data[0];
-
-        setFormData({
-          userName: resp?.name,
-          image: resp?.image,
-          url: resp.url,
-        });
+        if (resp) {
+          setFormData({
+            userName: resp?.name,
+            image: resp?.image,
+            url: resp?.url,
+          });
+        }
       } catch (error) {
-        console.log(error);
+        console.log(error, 'err in getting profile');
       }
     }
   };
@@ -153,11 +159,12 @@ const Home = () => {
           own: 1,
           user_id: user_id,
         });
-        const resp = res.data.data;
+        const resp = res?.data?.data;
         // console.log(resp, 'resp////////////////////////owner');
         setFuneralDataOwn(resp);
         setShowLoadingModal(false);
       } catch (err) {
+        console.log('error in getting owner data', err);
       } finally {
         setShowLoadingModal(false);
         setLoading(false);
@@ -179,6 +186,7 @@ const Home = () => {
       setFuneralData(resp);
       setShowLoadingModal(false);
     } catch (err) {
+      console.log(err, 'err in loading funeral data');
     } finally {
       setShowLoadingModal(false);
       setLoading(false);
@@ -373,6 +381,7 @@ const Home = () => {
   };
   useEffect(() => {
     handleGetFuneralDataNear();
+    fetchUser(dispatch);
   }, []);
 
   const [refreshingNear, setRefreshingNear] = useState(false);
@@ -633,12 +642,12 @@ const Home = () => {
                   )}
                   data={funeralDataOwn}
                   renderItem={({item}) => {
-                    // console.log(item, 'akjska');
                     return (
                       <BottomCard
-                        title={item.name}
+                        title={item?.name}
                         subtitle={item.description}
                         account_Type={account_Type}
+                        funeralImg={constants.baseUrl + item?.funeral_img}
                         gotoDetailePage={() => {
                           navigation.navigate('AddFuneralScreen', {
                             item: item,

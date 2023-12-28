@@ -32,8 +32,7 @@ const NewOrder = () => {
     const user_id = await AsyncStorage.getItem('user_id');
     const account_Type = await AsyncStorage.getItem('account_Type');
     const store_id = await AsyncStorage.getItem('store_id');
-    console.log(store_id, 'store id s');
-    console.log(user_id, 'user_id id s');
+
     if (user_id) {
       try {
         setRefreshing(true);
@@ -80,8 +79,6 @@ const NewOrder = () => {
     const user_id = await AsyncStorage.getItem('user_id');
     const account_Type = await AsyncStorage.getItem('account_Type');
     const store_id = await AsyncStorage.getItem('store_id');
-    console.log(store_id, 'store id s');
-    console.log(user_id, 'user_id id s');
 
     try {
       setBottomLoader(true);
@@ -195,16 +192,15 @@ const NewOrder = () => {
           // console.log(item, 'ite');
           return (
             <MyOrderCard
-              // key={index}
-              // images={item.images}
               name={
-                account_Type === 'store' ? item.funeral.name : item?.store?.name
+                account_Type === 'store'
+                  ? item?.funeral?.name
+                  : item?.funeral?.name
               }
-              // price={item?.store?.price}
               location={
                 account_Type === 'store'
-                  ? item.funeral.funeral_location
-                  : item?.store?.location
+                  ? item?.funeral?.funeral_location
+                  : item?.funeral?.funeral_location
               }
               phone={
                 account_Type === 'store'
@@ -212,22 +208,17 @@ const NewOrder = () => {
                   : item?.store?.phone
               }
               totalPrice={item.total_amount}
-              // address={item.address}
-              // status={item.status}
-              // accept={() => handleOrderUpdateData(item.id)}
-              // cancel={() => handleOrderCancelData(item.id)}
+              address={item?.address}
               onPress={() =>
                 navigation.navigate('OrderAllDetails', {
-                  item: orderData,
-                  // funeral: orderData.funeral,
+                  item: item,
                   orderid: item.id,
                   total_amount: item.total_amount,
                   image: item.funeral.image,
                   store: item.store,
                   dataToShow: item.items,
                   funeral: item.funeral,
-                  message: item.funeral.short_message,
-                  // status: pending, completed, cancelled, accepted
+                  message: item?.sympathy_text,
                   status: 'pending',
                   account_Type: account_Type,
                 })

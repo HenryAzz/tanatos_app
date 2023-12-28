@@ -1,15 +1,12 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import {useTranslation} from 'react-i18next';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
-import {t} from 'i18next';
-import {useTranslation} from 'react-i18next';
 
 const FuneralCardShow = ({
   title,
-  subTitle,
   img1,
-  img2,
   date,
   time,
   onPress,
@@ -18,10 +15,10 @@ const FuneralCardShow = ({
   name,
   hall_no,
   img,
-  church_img,
+  isMap,
 }) => {
   const {t} = useTranslation();
-  console.log(img, 'img');
+
   return (
     <View
       style={{
@@ -153,31 +150,33 @@ const FuneralCardShow = ({
               {time}
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={onPress}
-            style={{
-              height: 24,
-              marginTop: 5,
-              backgroundColor: colors.primaryColor,
-              width: 70,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-evenly',
-              borderRadius: 12,
-              // paddingVertical: 10,
-            }}>
-            <Image
-              source={require('../../assets/Mapshow.png')}
-              style={{height: 12, width: 12}}
-            />
-            <Text
-              style={[
-                style.font12Re,
-                {color: colors.white, fontFamily: fonts.bold},
-              ]}>
-              {t('Map')}
-            </Text>
-          </TouchableOpacity>
+          {!isMap && (
+            <TouchableOpacity
+              onPress={onPress}
+              style={{
+                height: 24,
+                marginTop: 5,
+                backgroundColor: colors.primaryColor,
+                width: 70,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-evenly',
+                borderRadius: 12,
+                // paddingVertical: 10,
+              }}>
+              <Image
+                source={require('../../assets/Mapshow.png')}
+                style={{height: 12, width: 12}}
+              />
+              <Text
+                style={[
+                  style.font12Re,
+                  {color: colors.white, fontFamily: fonts.bold},
+                ]}>
+                {t('Map')}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
       <View style={{}}>

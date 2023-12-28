@@ -61,13 +61,21 @@ export const {
 } = usersSlice.actions;
 
 // Define a thunk that dispatches those action creators
-export const fetchUsers = () => async dispatch => {
+export const fetchUser = async dispatch => {
   const user_id = await AsyncStorage.getItem('user_id');
+
   if (user_id) {
     try {
-      dispatch(usersLoading());
-      const response = await ApiRequest({type: 'profile', user_id: user_id});
-      dispatch(usersReceived(response.data.profile));
-    } catch (error) {}
+      const dataToGet = {
+        type: 'get_data',
+        table_name: 'users',
+        id: user_id,
+      };
+
+      const response = await ApiRequest(dataToGet);
+      dispatch(usersReceived(response.data?.data[0]));
+    } catch (error) {
+      console.log(error);
+    }
   }
 };

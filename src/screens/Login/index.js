@@ -113,6 +113,7 @@ const Login = () => {
       } else {
         ToastMessage(res.data?.message);
         setIsLoading(false);
+        setDisable(false);
         // } else {
         //   setIsLoading(false);
         //   setDisable(false);
@@ -206,7 +207,7 @@ const Login = () => {
                 style={{marginTop: 3}}
                 onPress={() => {
                   // toggleLanguage();
-                  navigation.navigate('Wellcome');
+                  navigation.navigate('Wellcome', {wantCreate: 'yes'});
                 }}>
                 <Text
                   style={[

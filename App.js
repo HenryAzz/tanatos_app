@@ -44,15 +44,15 @@ const App = () => {
   }, []);
 
   return (
-    <Provider store={store}>
-      <RootSiblingParent>
+    <RootSiblingParent>
+      <Provider store={store}>
         <I18nextProvider i18n={i18n}>
           <NavigationContainer>
             <RootNavigation />
           </NavigationContainer>
         </I18nextProvider>
-      </RootSiblingParent>
-    </Provider>
+      </Provider>
+    </RootSiblingParent>
   );
 };
 

@@ -27,9 +27,9 @@ const PhoneNumberInput = ({value, setValue, valid, setValid, formData}) => {
           ref={phoneInput}
           // defaultValue={value}
           value={value}
-          defaultCode="PK"
+          defaultCode="ES"
           layout="second"
-          // placeholder={value}
+          placeholder={t('Phone Number')}
           placeholderTextColor="red"
           containerStyle={{
             borderLeftWidth: 1,
@@ -37,19 +37,19 @@ const PhoneNumberInput = ({value, setValue, valid, setValid, formData}) => {
             borderBottomWidth: 1,
             borderColor: '#DDDDE1',
             borderColor: '#E0E0E0',
-
             backgroundColor: '#F5F5F5',
             width: '100%',
             height: 50,
-            borderRadius: 5,
+            borderRadius: 10,
           }}
           textContainerStyle={{
             borderRightWidth: 1,
             borderColor: '#E0E0E0',
             // color: 'red',
             backgroundColor: '#F5F5F5',
-            borderTopEndRadius: 5,
-            borderBottomEndRadius: 5,
+            borderTopEndRadius: 10,
+            borderBottomEndRadius: 10,
+            borderLeftWidth: 1,
           }}
           textInputStyle={{
             fontFamily: fonts.regular,
@@ -58,6 +58,7 @@ const PhoneNumberInput = ({value, setValue, valid, setValid, formData}) => {
           onChangeText={text => {
             checkPhoneNumber(text);
           }}
+          disableArrowIcon
           onChangeFormattedText={text => {
             setFormattedValue(text);
             setCountryCode(phoneInput.current?.getCountryCode() || '');
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
   container: {},
   wrapper: {
     justifyContent: 'center',
-    marginBottom: 17,
+    marginBottom: 7,
   },
 });
 

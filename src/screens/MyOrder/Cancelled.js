@@ -1,45 +1,51 @@
-import {
-  StyleSheet,
-  FlatList,
-  Text,
-  View,
-  Image,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import Layout from '../../components/Layout';
-import MyOrderCard from './MyOrderCard';
-
-import style from '../../assets/css/style';
-import {colors, fonts} from '../../constraints';
-import OrderNotFound from './OrderNotFound';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import ApiRequest from '../../Services/ApiRequest';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ToastMessage} from '../../utils/Toast';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+} from 'react-native';
+
+import ApiRequest from '../../Services/ApiRequest';
+import Layout from '../../components/Layout';
+import {colors} from '../../constraints';
+import MyOrderCard from './MyOrderCard';
+import OrderNotFound from './OrderNotFound';
 
 const Cancelled = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const [orderData, setOrderData] = useState();
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [loading, setLoading] = useState(false);
-  // const [refreshing, setRefreshing] = useState(false);
+  const [orderData, setOrderData] = useState([]);
+  const [refreshing, setRefreshing] = useState(true);
+  const [bottomLoader, setBottomLoader] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [account_Type, setAccountType] = useState();
 
-  // const [isModalVisibleCat, setModalVisibleCat] = useState(false);
-  const handleOrderData = async () => {
-    const user_id = await AsyncStorage.getItem('user_id');
-    const account_Type = await AsyncStorage.getItem('account_Type');
-    const store_id = await AsyncStorage.getItem('store_id');
-    if (user_id) {
-      try {
-        setLoading(true);
+  const onRefresh = () => {
+    setRefreshing(true);
+    getMyStoreOrders();
+  };
+
+  const handleScroll = () => {
+    setScrolled(true);
+  };
+
+  const getMoreStoreOrders = async () => {
+    try {
+      if (!bottomLoader && orderData.length > 0) {
+        setBottomLoader(true);
+
+        const user_id = await AsyncStorage.getItem('user_id');
+        const account_Type = await AsyncStorage.getItem('account_Type');
+        const store_id = await AsyncStorage.getItem('store_id');
+
         const dataForReq = {
           type: 'get_data',
           table_name: 'orders',
           status: 'cancelled',
+          last_id: orderData[orderData.length - 1]?.id,
         };
         if (account_Type === 'customer') {
           dataForReq.own = 1;
@@ -47,39 +53,30 @@ const Cancelled = () => {
         } else if (account_Type === 'store') {
           dataForReq.store_id = JSON.parse(store_id);
         }
-        // setRefreshing(false)
-        setAccountType(account_Type);
-        const res = await ApiRequest(dataForReq);
-        const resp = res.data.data;
 
-        setOrderData(resp);
-        // console.log(resp, 'resp new order');
-      } catch (err) {
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
+        const res = await ApiRequest(dataForReq);
+        const resp = res?.data?.data;
+        if (resp && resp != undefined && resp.length > 0) {
+          setOrderData([...servicesData, ...resp]);
+        }
+        setBottomLoader(false);
+        setScrolled(false);
       }
+    } catch (error) {
+      console.log(error);
+      setBottomLoader(false);
+      setScrolled(false);
     }
   };
 
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = () => {
-    setRefreshing(true);
-    handleOrderData();
-  };
-  const [bottomLoader, setBottomLoader] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const handleScroll = () => {
-    setScrolled(true);
-  };
-
-  const handleOrderDataMore = async () => {
-    const user_id = await AsyncStorage.getItem('user_id');
-    const account_Type = await AsyncStorage.getItem('account_Type');
-    const store_id = await AsyncStorage.getItem('store_id');
-
+  const getMyStoreOrders = async () => {
     try {
-      setBottomLoader(true);
+      setRefreshing(true);
+
+      const user_id = await AsyncStorage.getItem('user_id');
+      const account_Type = await AsyncStorage.getItem('account_Type');
+      const store_id = await AsyncStorage.getItem('store_id');
+
       const dataForReq = {
         type: 'get_data',
         table_name: 'orders',
@@ -91,79 +88,23 @@ const Cancelled = () => {
       } else if (account_Type === 'store') {
         dataForReq.store_id = JSON.parse(store_id);
       }
-      // setRefreshing(false)
-      setAccountType(account_Type);
       const res = await ApiRequest(dataForReq);
-      const resp = res.data.data;
-      setBottomLoader(false);
-      if (resp && resp != undefined && resp.length > 0) {
-        setOrderData([...orderData, ...resp]);
+      if (res.data?.data) {
+        setRefreshing(false);
+        setOrderData(res.data?.data);
+      } else {
+        setOrderData([]);
+        setRefreshing(false);
       }
-      // setOrderData(resp);
-    } catch (err) {
-      setBottomLoader(false);
-    } finally {
-      setBottomLoader(false);
-    }
-  };
-  const handleOrderCancelData = async id => {
-    // console.log(id, 'idddididi');
-    const user_id = await AsyncStorage.getItem('user_id');
-    try {
-      setLoading(true);
-      const res = await ApiRequest({
-        type: 'update_data',
-        table_name: 'orders',
-        status: 'cancelled',
-        id: id,
-        // status: pending, completed, cancelled, accepted
-      });
-      const resp = res.data;
-      if (resp?.result) {
-        ToastMessage(resp.message);
-        handleOrderData();
-        navigation.navigate('Cancelled');
-      }
-      // console.log(resp, 'kkk');
-      // setOrderData(resp);
-    } catch (err) {
-    } finally {
-      setLoading(false);
-      // setRefreshing(false);
-    }
-  };
-  const handleOrderUpdateData = async id => {
-    // console.log(id, 'idddididi');
-    const user_id = await AsyncStorage.getItem('user_id');
-    try {
-      setLoading(true);
-      const res = await ApiRequest({
-        type: 'update_data',
-        table_name: 'orders',
-        status: 'accepted',
-        id: id,
-        // status: pending, completed, cancelled, accepted
-      });
-      const resp = res.data;
-      if (resp?.result) {
-        ToastMessage(resp.message);
-        handleOrderData();
-        navigation.navigate('Processing');
-      }
-      // console.log(resp, 'kkk');
-      // setOrderData(resp);
-    } catch (err) {
-    } finally {
-      setLoading(false);
-      // setRefreshing(false);
+    } catch (error) {
+      console.log(error);
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
-    handleOrderData();
+    getMyStoreOrders();
   }, [isFocused]);
-
-  // const acceptedOrders = orderData?.filter(item => item?.status === 'pending');
 
   return (
     <Layout>
@@ -173,8 +114,8 @@ const Cancelled = () => {
         keyExtractor={item => item.id}
         data={orderData}
         onScroll={handleScroll}
-        onEndReached={scrolled ? handleOrderDataMore : null}
-        ListEmptyComponent={<OrderNotFound />}
+        onEndReached={scrolled ? getMoreStoreOrders : null}
+        ListEmptyComponent={!refreshing && <OrderNotFound />}
         ListFooterComponent={
           bottomLoader && <ActivityIndicator size="large" color={colors.gray} />
         }
@@ -186,16 +127,11 @@ const Cancelled = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         renderItem={({item}) => {
-          const itemsArray = JSON.parse(item.items);
-          console.log(item.items, 'item item');
           return (
             <MyOrderCard
-              // key={index}
-              // images={item.images}
               name={
                 account_Type === 'store' ? item.funeral.name : item?.store?.name
               }
-              // price={item?.store?.price}
               location={
                 account_Type === 'store'
                   ? item.funeral.funeral_location
@@ -207,22 +143,16 @@ const Cancelled = () => {
                   : item?.store?.phone
               }
               totalPrice={item.total_amount}
-              // address={item.address}
-              // status={item.status}
-              // accept={() => handleOrderUpdateData(item.id)}
-              // cancel={() => handleOrderCancelData(item.id)}
               onPress={() =>
                 navigation.navigate('OrderAllDetails', {
-                  item: orderData,
-                  // funeral: orderData.funeral,
+                  item: item,
                   orderid: item.id,
                   total_amount: item.total_amount,
                   image: item.funeral.image,
                   store: item.store,
                   dataToShow: item.items,
                   funeral: item.funeral,
-                  message: item.funeral.short_message,
-                  // status: pending, completed, cancelled, accepted
+                  message: item?.sympathy_text,
                   status: 'cancelled',
                   account_Type: account_Type,
                 })
@@ -230,9 +160,6 @@ const Cancelled = () => {
             />
           );
         }}
-        // refreshControl={
-        //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        // }
       />
     </Layout>
   );

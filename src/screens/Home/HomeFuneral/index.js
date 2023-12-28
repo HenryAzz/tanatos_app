@@ -1,3 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import moment from 'moment';
+import React, {useMemo, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   ActivityIndicator,
   Image,
@@ -9,27 +14,55 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import Layout from '../../../components/Layout';
-import moment from 'moment';
-import AppTextInput from '../../../components/FloatingLabelInput';
-import style from '../../../assets/css/style';
-import {colors, constants, fonts} from '../../../constraints';
-import {DatePicker} from '../../../components/DateComponent';
-import {TimePicker} from '../../../components/DateComponent/TimeComponent';
-import {BaseButton} from '../../../components/BaseButton';
-import AppHeader from '../../../components/AppHeader/AppHeader';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import ImagePicker from 'react-native-image-crop-picker';
-import {ToastMessage} from '../../../utils/Toast';
+import Icon from 'react-native-vector-icons/AntDesign';
+import {useSelector} from 'react-redux';
 import ApiRequest from '../../../Services/ApiRequest';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {useMemo} from 'react';
-import {useTranslation} from 'react-i18next';
+import style from '../../../assets/css/style';
+import AppHeader from '../../../components/AppHeader/AppHeader';
+import {BaseButton} from '../../../components/BaseButton';
+import {DatePicker} from '../../../components/DateComponent';
+import {TimePicker} from '../../../components/DateComponent/TimeComponent';
+import AppTextInput from '../../../components/FloatingLabelInput';
+import Layout from '../../../components/Layout';
+import {colors, constants, fonts} from '../../../constraints';
+import {ToastMessage} from '../../../utils/Toast';
+import {useEffect} from 'react';
 
 const HomeFuneral = () => {
+  //
+  const navigation = useNavigation();
   const route = useRoute();
+  const store = useSelector(store => store.user);
+  const status = route?.params;
+
+  const {t} = useTranslation();
+
+  const [wantFlowers, setWantFlowers] = useState('yes');
+  const [area, setArea] = useState('Abc city, country');
+  const [valid, setValid] = useState();
+  const [imageLoader, setImageLoader] = useState(false);
+  const [imageLoader2, setImageLoader2] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalVisible1, setModalVisible1] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [showTimepicker, setShowTimepicker] = useState(false);
+  const [selectedTime1, setSelectedTime1] = useState(null);
+  const [showTimepicker1, setShowTimepicker1] = useState(false);
+  const [area1, setArea1] = useState('Abc city, country');
+  const [imagesToSend, setImagesToSend] = useState('');
+  const [imageToSendFuneral, setImagesToSendFuneral] = useState('');
+  const [imageToSendCharch, setImagesToSendChurch] = useState('');
+  const [markerData1, setMarkerData1] = useState({
+    latitude: '',
+    longitude: '',
+  });
+  const [markerData, setMarkerData] = useState({
+    latitude: '',
+    longitude: '',
+  });
   const [formData, setFormData] = useState({
     starting_date: undefined,
     starting_dateModal: undefined,
@@ -40,7 +73,6 @@ const HomeFuneral = () => {
     hallno: '',
     surname: '',
   });
-  //   console.log(formData);
 
   const maxLength = 1000; // Maximum allowed characters for description
 
@@ -62,7 +94,6 @@ const HomeFuneral = () => {
         ...formData,
         [modalName]: false,
       });
-      console.log('user cancelled');
     } else {
       setFormData(prevState => ({
         ...prevState,
@@ -72,112 +103,11 @@ const HomeFuneral = () => {
     }
   };
 
-  // Function to format a date string to AM/PM time
-  const formatTime = dateString => {
-    const options = {hour: 'numeric', minute: '2-digit', hour12: true};
-    return new Date(dateString).toLocaleTimeString([], options);
-  };
   const formatDate = dateString => {
     const formattedDate = moment(dateString).format('YYYY-MM-DD');
     // console.log(formattedDate, 'options');
     return formattedDate;
   };
-  const navigation = useNavigation();
-  const [visible, setVisible] = useState(false);
-  const [area, setArea] = useState('');
-  const [country, setCountry] = useState('');
-  const [city, setCity] = useState('City');
-  const [state, setState] = useState('');
-  const [markerData, setMarkerData] = useState({
-    latitude: '',
-    longitude: '',
-  });
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [isModalVisible1, setModalVisible1] = useState(false);
-
-  const [country1, setCountry1] = useState('');
-  const [visible1, setVisible1] = useState(false);
-  const [area1, setArea1] = useState('');
-  const [city1, setCity1] = useState('City');
-  const [state1, setState1] = useState('');
-  const [markerData1, setMarkerData1] = useState({
-    latitude: '',
-    longitude: '',
-  });
-  //   console.log(markerData, '12345', markerData1);
-
-  // const [shortMessage, setShortMessage] = useState('');
-  // const maxLength = 20;
-
-  // const handleChangeText = inputText => {
-  //   if (inputText.length <= maxLength) {
-  //     setShortMessage(inputText);
-  //   }
-  // };
-  // const remainingCharacters = maxLength - shortMessage.length;
-  const [images, setImages] = useState([]);
-  // const [imagesToSend, setImagesToSend] = useState();
-  const [disabled, setdisabled] = useState(true);
-  const [imageLoader, setImageLoader] = useState(false);
-  const [imageLoader1, setImageLoader1] = useState(false);
-  const [imageLoader2, setImageLoader2] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  // const openGallery = async () => {
-  //   ImagePicker.openPicker({
-  //     mediaType: 'photo',
-  //     writeTempFile: true,
-  //     compressImageQuality: 0.4,
-  //   })
-  //     .then(async image => {
-  //       setImages({uri: image.path});
-  //       uploadImg(image);
-  //     })
-  //     .catch(err => {
-  //       console.log(err, 'f=galery');
-  //     });
-  // };
-  // const uploadImg = async image => {
-  //   // console.log(image, 'image');
-  //   setImageLoader(true);
-  //   const imageName = image.path.split('/');
-  //   const imageData = {
-  //     fileCopyUri: null,
-  //     name:
-  //       Platform.OS == 'ios' ? image.filename : imageName[imageName.length - 1],
-  //     size: image.size,
-  //     type: image.mime,
-  //     uri: image.path,
-  //   };
-  //   const body = new FormData();
-  //   body.append('type', 'upload_data');
-  //   body.append('file', imageData);
-  //   try {
-  //     const res = await ApiRequest(body);
-  //     setImageLoader(false);
-  //     if (res.data.result) {
-  //       ToastMessage(res.data?.message);
-  //       // setImagesToSend([...imagesToSend, res.data.file_name]);
-  //       setImagesToSend(res.data.file_name);
-  //     } else {
-  //       setImageLoader(false);
-  //       ToastMessage('Upload Again');
-  //       // removeImage(images.length, true);
-  //     }
-  //   } catch (err) {
-  //     console.log(err, 'img err');
-  //     setImageLoader(false);
-  //     ToastMessage('Upload Again');
-  //     //   removeImage(images.length, true);
-  //   }
-  // };
-
-  // const handleInputChange = (name, value) => {
-  //   setFormData(prevFormData => ({
-  //     ...prevFormData,
-  //     [name]: value,
-  //   }));
-  // };
 
   const openGallery = async imageType => {
     ImagePicker.openPicker({
@@ -193,16 +123,11 @@ const HomeFuneral = () => {
         console.log(err, 'error in gallery');
       });
   };
-  const [imagesToSend, setImagesToSend] = useState('');
-  const [imageToSendFuneral, setImagesToSendFuneral] = useState('');
-  const [imageToSendCharch, setImagesToSendChurch] = useState('');
-  console.log(imagesToSend, 'imagesToSend');
-  console.log(imageToSendFuneral, 'imageToSendFuneral');
+
   const uploadImages = async (images, imageType) => {
     if (imageType === 'funeral') {
       setImageLoader(true);
     } else if (imageType === 'charch') {
-      setImageLoader1(true);
     } else if (imageType === 'imageToSend') {
       setImageLoader2(true);
     }
@@ -242,16 +167,9 @@ const HomeFuneral = () => {
       ToastMessage('Upload Again');
     } finally {
       setImageLoader(false);
-      setImageLoader1(false);
       setImageLoader2(false);
     }
   };
-
-  // ;
-  // openGallery('church');
-
-  const [selectedTime, setSelectedTime] = useState(null);
-  const [showTimepicker, setShowTimepicker] = useState(false);
 
   const handleTimeChange = (event, selectedDate) => {
     if (selectedDate) {
@@ -259,8 +177,6 @@ const HomeFuneral = () => {
       setSelectedTime(selectedDate);
     }
   };
-  const [selectedTime1, setSelectedTime1] = useState(null);
-  const [showTimepicker1, setShowTimepicker1] = useState(false);
 
   const handleTimeChange1 = (event, selectedDate) => {
     if (selectedDate) {
@@ -285,7 +201,6 @@ const HomeFuneral = () => {
     });
 
   const handleAddObi = async () => {
-    setdisabled(true);
     setLoading(true);
     const user_id = await AsyncStorage.getItem('user_id');
 
@@ -311,18 +226,14 @@ const HomeFuneral = () => {
       chruch_lng: markerData1.longitude,
       funeral_img: imageToSendFuneral,
       church_img: imageToSendFuneral,
+      flower_accept: wantFlowers,
     };
-    console.log(data, 'onj set to beckahen');
+
     try {
       setLoading(true);
       const res = await ApiRequest(data);
       if (res?.data?.result) {
-        // console.log(res.data, 'image uplod');
         ToastMessage(res?.data?.message);
-        // if (route?.params?.account_Type === 'funeral') {
-        //   navigation.navigate('MainStack', {screen: 'HomeFuneral'});
-        // }
-        // else {
         navigation.reset({
           index: 0,
           routes: [
@@ -331,11 +242,7 @@ const HomeFuneral = () => {
             },
           ],
         });
-        // }
         setFormData({});
-        // setArea('');
-        // setArea1('');
-        // navigation.navigate('MainStack', {screen: 'AppStack'});
         setLoading(false);
       } else {
         ToastMessage(res?.data?.message);
@@ -348,7 +255,6 @@ const HomeFuneral = () => {
     }
   };
 
-  const [valid, setValid] = useState();
   useMemo(() => {
     const isFormFilled =
       // selectedItem.name &&
@@ -378,9 +284,11 @@ const HomeFuneral = () => {
     imagesToSend,
   ]);
 
-  const status = route?.params;
-  console.log(status?.status);
-  const {t} = useTranslation();
+  useEffect(() => {
+    if (store?.users?.city || store?.users?.country) {
+      setArea(store.users?.city + ',' + store.users?.country);
+    }
+  }, []);
   return (
     <Layout>
       <AppHeader
@@ -478,14 +386,7 @@ const HomeFuneral = () => {
           value={formData.hallno}
           onChangeText={text => handleInputChange('hallno', text)}
         />
-        <Text
-          style={[
-            style.font16Re,
-
-            // {fontFamily: fonts.medium, marginBottom: multiline ? 25 : 2},
-          ]}>
-          {t('addflower3')}
-        </Text>
+        <Text style={[style.font16Re]}>{t('addflower3')}</Text>
         <TextInput
           placeholder={t('addflower3')}
           multiline={true}
@@ -502,9 +403,12 @@ const HomeFuneral = () => {
             width: '100%',
             height: 100,
             borderRadius: 10,
+            fontFamily: fonts.regular,
+            color: colors.black,
+            fontSize: 16,
           }}
         />
-        <Text>
+        <Text style={style.font14Re}>
           {formData?.description?.length}/{maxLength} characters used
         </Text>
 
@@ -519,9 +423,6 @@ const HomeFuneral = () => {
           ]}>
           {t('funeral4')}
         </Text>
-        {/* funeral_location funeral_lat funeral_lng chruch_location chruch_lat
-        chruch_lng */}
-        {/* // */}
         <Text
           style={[
             style.font16Re,
@@ -536,22 +437,14 @@ const HomeFuneral = () => {
         <TouchableOpacity
           style={{
             alignSelf: 'center',
-            // marginVertical: 20,
             width: '100%',
-            // elevation: 10,
-            // shadowColor: colors.elev,
           }}
           onPress={() => openGallery('funeral')}>
           {imageToSendFuneral ? (
             <View
               style={{
-                // backgroundColor: colors.white,
-                // shadowColor: colors.elev,
-                // elevation: 10,
-                // borderRadius: 53,
                 width: '100%',
                 marginTop: 10,
-                // alignItems: 'center',
               }}>
               <Image
                 source={{
@@ -559,11 +452,9 @@ const HomeFuneral = () => {
                     'https://locatestudent.com/tanatos/upload/' +
                     imageToSendFuneral,
                 }}
-                // source={require('../../../assets/profilepic.png')}
                 style={{
                   width: '95%',
                   height: 100,
-                  // borderRadius: 50,
                 }}
               />
               {imageLoader && (
@@ -590,10 +481,8 @@ const HomeFuneral = () => {
                 borderColor: '#E0E0E0',
                 backgroundColor: '#F5F5F5',
                 height: 75,
-
                 elevation: 10,
                 shadowColor: colors.elev,
-
                 alignSelf: 'center',
                 marginVertical: 14,
               }}>
@@ -601,7 +490,6 @@ const HomeFuneral = () => {
                 onPress={() => openGallery('funeral')}
                 style={{
                   width: '90%',
-                  // backgroundColor: 'red',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
@@ -620,12 +508,10 @@ const HomeFuneral = () => {
             </TouchableOpacity>
           )}
         </TouchableOpacity>
-        {/* // */}
         <Text
           style={[style.font16Re, {fontFamily: fonts.medium, marginTop: 5}]}>
           {t('funeral5')}
         </Text>
-        {/* /funeral start// */}
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
           style={{
@@ -637,7 +523,7 @@ const HomeFuneral = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text> {area ? area : t('funeral6')}</Text>
+          <Text style={style.font16Re}>{area ? area : t('funeral6')}</Text>
         </TouchableOpacity>
         <TimePicker
           time={selectedTime}
@@ -650,7 +536,6 @@ const HomeFuneral = () => {
           title={t('funeral8')}
           date={formData.starting_date}
           show={formData.starting_dateModal}
-          // disable={route.params?.user === 'owner' ? false : true}
           showDatepicker={() => {
             setFormData(prevState => ({
               ...prevState,
@@ -658,6 +543,19 @@ const HomeFuneral = () => {
             }));
           }}
           onChange={(event, selectedDate) => {
+            const currentDate = new Date();
+
+            const threeDaysAgo = new Date();
+            threeDaysAgo.setDate(currentDate.getDate() - 4);
+
+            if (new Date(selectedDate) < threeDaysAgo) {
+              setFormData({
+                ...formData,
+                starting_dateModal: false,
+              });
+              ToastMessage(t('dateMessage'));
+              return false;
+            }
             onDateChange(
               event,
               selectedDate,
@@ -706,10 +604,6 @@ const HomeFuneral = () => {
           {imageToSendCharch ? (
             <View
               style={{
-                // backgroundColor: colors.white,
-                // shadowColor: colors.elev,
-                // elevation: 10,
-                // borderRadius: 53,
                 width: '100%',
               }}>
               <Image
@@ -718,12 +612,10 @@ const HomeFuneral = () => {
                     'https://locatestudent.com/tanatos/upload/' +
                     imageToSendCharch,
                 }}
-                // source={require('../../../assets/profilepic.png')}
                 style={{
                   width: '95%',
                   height: 100,
                   marginVertical: 10,
-                  // borderRadius: 50,
                 }}
               />
               {imageLoader && (
@@ -795,11 +687,9 @@ const HomeFuneral = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text> {area1 ? area1 : t('funeral0')}</Text>
+          <Text style={style.font16Re}> {area1 ? area1 : t('funeral0')}</Text>
         </TouchableOpacity>
         <TimePicker
-          // initialTime={formData.timeCherch}
-          // timeFuneral={formData.timeFuneral}
           time={selectedTime1}
           show={showTimepicker1}
           showTimepicker={() => setShowTimepicker1(true)}
@@ -810,7 +700,6 @@ const HomeFuneral = () => {
           title={'Date'}
           date={formData.starting_date1}
           show={formData.starting_dateModal1}
-          // disable={route.params?.user === 'owner' ? false : true}
           showDatepicker={() => {
             setFormData(prevState => ({
               ...prevState,
@@ -827,11 +716,22 @@ const HomeFuneral = () => {
           }}
           minDate={new Date()}
         />
-        {/* <Text>
-                Selected Time:{' '}
-                {selectedTime ? formatTime(selectedTime) : 'None'}
-              </Text> */}
-
+        <View style={[style.justifySpaBtwRow, {marginTop: 10}]}>
+          <Text style={style.font16Re}>{t('funeral13')}</Text>
+          <View>
+            {wantFlowers == 'yes' ? (
+              <TouchableOpacity
+                style={styles.checkBox}
+                onPress={() => setWantFlowers('no')}>
+                <Icon name="check" size={17} color={colors.white} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[styles.checkBox, {backgroundColor: colors.white}]}
+                onPress={() => setWantFlowers('yes')}></TouchableOpacity>
+            )}
+          </View>
+        </View>
         <BaseButton
           onPress={handleAddObi}
           disabled={valid || loading}
@@ -849,13 +749,6 @@ const HomeFuneral = () => {
         visible={isModalVisible}
         animationType="slide"
         transparent={true}
-        defaultStyle={{}}
-        // style={{
-        //   width: '90%',
-        //   justifyContent: 'center',
-        //   alignItems: 'center',
-        //   backgroundColor: 'red', // Add an overlay background color if desired
-        // }}
         onRequestClose={() => setModalVisible(false)}>
         <View
           style={{
@@ -867,55 +760,28 @@ const HomeFuneral = () => {
             alignItems: 'center',
             backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
           }}>
-          {/* <TouchableOpacity onPress={() => setModalVisible(false)}>
-            <Text>Close</Text>
-          </TouchableOpacity> */}
-
           <GooglePlacesAutocomplete
             placeholder={t('SearchD')}
             GooglePlacesDetailsQuery={{fields: 'geometry'}}
-            // renderPoweredByGoogle={false}
             enablePoweredByContainer={false}
             styles={{
               container: {
-                // height: 10,
-                //   flex: 1,
-                //   zIndex: 2,
-                // height: '70%',
                 width: '100%',
                 alignSelf: 'center',
-                // borderWidth: 1,
-                // borderColor: '#E0E0E0',
-                // backgroundColor: '#F5F5F5',
-                // backgroundColor: 'red',
-                // marginTop: 10,
-                // borderRadius: 10,
               },
               textInput: {
                 height: '110%',
-                // borderRadius: 10,
-                //   borderWidth: 1,
-                //   borderColor: '#E0E0E0',
                 backgroundColor: 'white',
-                //   borderBottomColor: '#d4d4d4',
-                //   borderBottomWidth: 0.5,
                 color: 'black',
               },
             }}
             fetchDetails={true}
             onPress={(data, details = null) => {
-              // console.log(data, details);
-
-              setCountry(data.terms[data.terms.length - 1].value);
-              setCity(data?.terms[data.terms.length - 2]?.value);
-              // 'details' is provided when fetchDetails = true
               setMarkerData({
                 latitude: details?.geometry?.location.lat,
                 longitude: details?.geometry?.location.lng,
               });
               setArea(data.description);
-              setState(data.structured_formatting.secondary_text);
-              // hideModal();
               setModalVisible(false);
             }}
             query={{
@@ -930,12 +796,6 @@ const HomeFuneral = () => {
         animationType="slide"
         transparent={true}
         defaultStyle={{}}
-        // style={{
-        //   width: '90%',
-        //   justifyContent: 'center',
-        //   alignItems: 'center',
-        //   backgroundColor: 'red', // Add an overlay background color if desired
-        // }}
         onRequestClose={() => setModalVisible1(false)}>
         <View
           style={{
@@ -947,54 +807,28 @@ const HomeFuneral = () => {
             alignItems: 'center',
             backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
           }}>
-          {/* <TouchableOpacity onPress={() => setModalVisible(false)}>
-            <Text>Close</Text>
-          </TouchableOpacity> */}
-
           <GooglePlacesAutocomplete
             placeholder={t('SearchD')}
             GooglePlacesDetailsQuery={{fields: 'geometry'}}
-            // renderPoweredByGoogle={false}
             enablePoweredByContainer={false}
             styles={{
               container: {
-                // height: 10,
-                //   flex: 1,
-                //   zIndex: 2,
-                // height: '70%',
                 width: '100%',
                 alignSelf: 'center',
-                // borderWidth: 1,
-                // borderColor: '#E0E0E0',
-                // backgroundColor: '#F5F5F5',
-                // backgroundColor: 'red',
-                // marginTop: 10,
-                // borderRadius: 10,
               },
               textInput: {
                 height: '110%',
-                // borderRadius: 10,
-                //   borderWidth: 1,
-                //   borderColor: '#E0E0E0',
                 backgroundColor: 'white',
-                //   borderBottomColor: '#d4d4d4',
-                //   borderBottomWidth: 0.5,
                 color: 'black',
               },
             }}
             fetchDetails={true}
             onPress={(data, details = null) => {
-              // console.log(data, details);
-
-              setCountry1(data.terms[data.terms.length - 1].value);
-              setCity1(data?.terms[data.terms.length - 2]?.value);
-              // 'details' is provided when fetchDetails = true
               setMarkerData1({
                 latitude: details?.geometry?.location.lat,
                 longitude: details?.geometry?.location.lng,
               });
               setArea1(data.description);
-              setState1(data.structured_formatting.secondary_text);
               // hideModal();
               setModalVisible1(false);
             }}
@@ -1011,4 +845,15 @@ const HomeFuneral = () => {
 
 export default HomeFuneral;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  checkBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    backgroundColor: colors.primaryColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.primaryColor,
+  },
+});

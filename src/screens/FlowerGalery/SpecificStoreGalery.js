@@ -114,6 +114,9 @@ const SpecificStoreGalery = ({route}) => {
   // console.log(selectedItem, 'selected itm');
   const [selectedIds, setSelectedIds] = useState([]);
   const [dataTosend, setDataToSend] = useState([]);
+
+  const [seletedFLower, setSeletedFlower] = useState(null);
+
   const handleSelect = list => {
     const isExists = dataTosend.some(storedItem => storedItem.id == list.id);
     if (isExists) {
@@ -209,22 +212,23 @@ const SpecificStoreGalery = ({route}) => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           contentContainerStyle={styles.listContainer}
+          columnWrapperStyle={{justifyContent: 'space-between'}}
           numColumns={2}
           renderItem={({item}) => {
             // console.log(item.store.name, 'jj');
             return (
               <TouchableOpacity
                 onPress={() => {
-                  handleSelect(item);
+                  // handleSelect(item);
+                  setSeletedFlower({...item, quanitity: 1});
                 }}
                 style={[
                   styles.cardContainer,
                   {
                     // backgroundColor: 'red',
-                    width: 150,
-                    borderColor: selectedIds.includes(item.id)
-                      ? '#663399'
-                      : 'white',
+                    width: '45%',
+                    borderColor:
+                      seletedFLower?.id == item?.id ? '#663399' : 'white',
                     borderWidth: 1,
                   },
                 ]}>
@@ -240,7 +244,8 @@ const SpecificStoreGalery = ({route}) => {
                 <TouchableOpacity
                   style={styles.infoContainer}
                   onPress={() => {
-                    handleSelect(item);
+                    // handleSelect(item);
+                    setSeletedFlower({...item, quanitity: 1});
                   }}>
                   <View
                     style={{
@@ -270,11 +275,11 @@ const SpecificStoreGalery = ({route}) => {
       <BaseButton
         title={t('Continue')}
         defaultStyle={{marginVertical: 20}}
-        disabled={SelectedData.length === 0}
+        disabled={!seletedFLower}
         onPress={() =>
           navigation.navigate('EReceipt', {
             item: item,
-            dataTosend: SelectedData,
+            dataTosend: [seletedFLower],
             FuneralItemData: FuneralItemData,
           })
         }

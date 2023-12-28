@@ -10,7 +10,7 @@ import Layout from '../../components/Layout';
 import {BaseButton} from '../../components/BaseButton';
 import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTranslation} from 'react-i18next';
@@ -19,6 +19,8 @@ import {useDispatch} from 'react-redux';
 import {userType} from '../../store/reducer/usersSlice';
 
 const Wellcome = () => {
+  //
+  const route = useRoute();
   const navigation = useNavigation();
   const {t, i18n} = useTranslation();
   const dispatch = useDispatch();
@@ -37,7 +39,6 @@ const Wellcome = () => {
         backgroundColor="transparent"
         translucent={true}
       />
-
       <Text
         style={[
           style.font30Re,
@@ -53,25 +54,35 @@ const Wellcome = () => {
         {t('welcome2')}
       </Text>
       <BaseButton
-        title={t('Continue as a Guest')}
+        title={
+          route.params?.wantCreate == 'yes'
+            ? t('customer1')
+            : t('Continue as a Guest')
+        }
         onPress={async () => {
-          await AsyncStorage.setItem('account_Type', 'customer');
-          dispatch(userType({user_type: 'Guest'}));
-          navigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: 'MainStack',
-                state: {
-                  routes: [
-                    {
-                      name: 'AppStack',
-                    },
-                  ],
+          if (route.params?.wantCreate == 'yes') {
+            dispatch(userType({user_type: 'customer'}));
+            await AsyncStorage.setItem('account_Type', 'customer');
+            navigation.navigate('Signup', {account_Type: 'customer'});
+          } else {
+            await AsyncStorage.setItem('account_Type', 'customer');
+            dispatch(userType({user_type: 'Guest'}));
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'MainStack',
+                  state: {
+                    routes: [
+                      {
+                        name: 'AppStack',
+                      },
+                    ],
+                  },
                 },
-              },
-            ],
-          });
+              ],
+            });
+          }
         }}
         defaultStyle={{
           backgroundColor: colors.white,

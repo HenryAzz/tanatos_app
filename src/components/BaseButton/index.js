@@ -2,14 +2,12 @@
 import React from 'react';
 import {
   ActivityIndicator,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
-import {StyleSheet} from 'react-native';
 import style from '../../assets/css/style';
 import {colors} from '../../constraints';
-import {devWidth} from '../../constraints/Dimentions';
 
 export const BaseButton = ({
   title,

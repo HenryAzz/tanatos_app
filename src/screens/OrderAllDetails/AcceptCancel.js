@@ -28,7 +28,9 @@ const AcceptCancel = ({visible, onClose, onConfirm, title, subtitle}) => {
             justifyContent: 'space-evenly',
             borderRadius: 10,
           }}>
-          <Text style={style.font16Re}>{t(title)}</Text>
+          <Text style={[style.font16Re, {textAlign: 'center'}]}>
+            {t(title)}
+          </Text>
           <View
             style={{
               flexDirection: 'row',

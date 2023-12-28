@@ -1,42 +1,56 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   ActivityIndicator,
-  ScrollView,
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
+  TextInput,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
-import Layout from '../../components/Layout';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import style from '../../assets/css/style';
-import {colors, fonts} from '../../constraints';
-import {BaseButton} from '../../components/BaseButton';
-import Cardpic from '../../assets/images/svg/Card.svg';
-import Cardpic1 from '../../assets/images/svg/Card1.svg';
-import Icon from 'react-native-vector-icons/Ionicons';
-import TextCard from './TextCard';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {devWidth} from '../../constraints/Dimentions';
-import BalanceModal from '../PaymentMethod/BallanceModal';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import ApiRequest from '../../Services/ApiRequest';
+import style from '../../assets/css/style';
+import AppHeader from '../../components/AppHeader/AppHeader';
+import {BaseButton} from '../../components/BaseButton';
+import Layout from '../../components/Layout';
+import {colors, fonts} from '../../constraints';
 import {ToastMessage} from '../../utils/Toast';
-import {useTranslation} from 'react-i18next';
+import BalanceModal from '../PaymentMethod/BallanceModal';
+import TextCard from './TextCard';
+import {useSelector} from 'react-redux';
+
 const CheckoutScreen = () => {
+  //
   const navigation = useNavigation();
   const route = useRoute();
+  const store = useSelector(store => store.user);
+
   const total_amount = route?.params?.basicPrice;
   const dataTosend = route?.params?.dataTosend;
   const FuneralItemData = route?.params?.FuneralItemData;
-  console.log(dataTosend, 'dataTosend');
+  const sympathyText = route?.params?.sympathyText;
+
   const [value, setValue] = useState('');
   const [show, setShow] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
-  // console.log(FuneralItemData.id, 'fueraid');
+
+  const [editMode, setEditMode] = useState(false);
+  const [newPhoneNumber, setNewPhoneNumber] = useState(store?.users?.phone);
+
+  const handleEditPress = () => {
+    setEditMode(true);
+  };
+
+  const handleSavePress = () => {
+    setEditMode(false);
+  };
 
   const [catData, setCatData] = useState();
 
   const [loading, setLoading] = useState(false);
+
   const handleOrderData = async () => {
     // console.log(' dataTosend[0].store_id', dataTosend[0]?.store_id);
     const user_id = await AsyncStorage.getItem('user_id');
@@ -47,7 +61,6 @@ const CheckoutScreen = () => {
       const res = await ApiRequest({
         type: 'add_data',
         table_name: 'orders',
-        id: '',
         user_id: user_id,
         store_id: dataTosend[0]?.store_id,
         store_gallery_id: dataTosend[0].id,
@@ -63,7 +76,7 @@ const CheckoutScreen = () => {
         lat: FuneralItemData.funeral_lat,
         lng: FuneralItemData.funeral_lng,
         funeral_id: FuneralItemData.id,
-        sympathy_text: 'Rest in piece',
+        sympathy_text: sympathyText,
         total_amount: total_amount,
       });
       // console.log('2');
@@ -132,7 +145,7 @@ const CheckoutScreen = () => {
               alignItems: 'center',
             }}>
             <Text style={[style.font14Re, {marginBottom: 10}]}>
-              {FuneralItemData.user.name}
+              {FuneralItemData?.user?.name}
             </Text>
             <Text
               style={[
@@ -147,8 +160,77 @@ const CheckoutScreen = () => {
             </Text>
           </View>
           <Text style={[style.font14Re, {width: 200}]}>
-            {FuneralItemData.funeral_location}
+            {FuneralItemData?.funeral_location}
           </Text>
+        </View>
+        <View
+          style={{
+            backgroundColor: colors.white,
+            elevation: 4,
+            shadowColor: colors.elev,
+            padding: 20,
+            borderRadius: 10,
+            marginTop: 20,
+            marginBottom: 5,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '100%',
+              alignItems: 'center',
+            }}>
+            <Text style={[style.font14Re, {marginBottom: 10}]}>
+              {t('Phone Number')}
+            </Text>
+            {editMode ? (
+              <TouchableOpacity onPress={handleSavePress}>
+                <Text
+                  style={[
+                    style.font14Re,
+                    {
+                      color: '#DB3022',
+                      alignItems: 'flex-end',
+                    },
+                  ]}>
+                  {t('Save')}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={handleEditPress}>
+                <Text
+                  style={[
+                    style.font14Re,
+                    {
+                      color: '#DB3022',
+                      alignItems: 'flex-end',
+                    },
+                  ]}>
+                  {t('Change')}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {editMode ? (
+            <TextInput
+              style={[
+                style.font14Re,
+                {
+                  width: 200,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.black,
+                  paddingBottom: -10,
+                },
+              ]}
+              value={newPhoneNumber}
+              onChangeText={text => setNewPhoneNumber(text)}
+            />
+          ) : (
+            <Text style={[style.font14Re, {width: 200}]}>
+              {newPhoneNumber || store?.users?.phone}
+            </Text>
+          )}
         </View>
         <Text
           style={[style.font14Re, {alignSelf: 'flex-end', marginVertical: 4}]}>

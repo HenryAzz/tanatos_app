@@ -99,7 +99,7 @@ const FAQs = () => {
         <TextInput placeholder="Search" style={{width: '90%'}} />
         <Icon name="search" color={colors.primaryColor} size={24} />
       </View>
-      <View style={{width: '100%', marginBottom: 75}}>
+      <View style={{width: '100%', flex: 1}}>
         <FlatList
           showsVerticalScrollIndicator={false}
           data={data}

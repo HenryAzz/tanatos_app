@@ -61,7 +61,10 @@ const DontHaveAccount = ({visible, closeModal, handleDontHave, message}) => {
                 return (
                   closeModal,
                   dispatch(userType({user_type: ''})),
-                  navigation.replace('AuthStack', {screen: 'Wellcome'})
+                  navigation.replace('AuthStack', {
+                    screen: 'Wellcome',
+                    wantCreate: 'yes',
+                  })
                 );
               }}
               textStyle={[style.font14Re, {color: colors.white}]}

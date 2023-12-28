@@ -22,7 +22,7 @@ const getFcmToken = async () => {
   // const token = await firestore().collection('Users').get();
   let token = await AsyncStorage.getItem('token');
   // AsyncStorage.removeItem("token")
-  console.log('old fcm token from data base', token);
+
   if (!token) {
     console.log('no token found Generate new token');
     try {

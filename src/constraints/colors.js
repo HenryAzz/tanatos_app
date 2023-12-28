@@ -20,6 +20,7 @@ const ButtonColor = '#111C30';
 const backgroundColor = '#f6f7f9';
 const textGray = '#A2A2A2';
 const red = '#DA3955';
+const green = '#1CA212';
 
 export default {
   textGray,
@@ -34,6 +35,7 @@ export default {
   borderColr,
   softGray,
   welgrey,
+  green,
   gd1,
   gd2,
   white,

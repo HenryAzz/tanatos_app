@@ -102,15 +102,10 @@ const Account = () => {
   const handleNavigate = async item => {
     if (item.title === 'Logout') {
       openBottomSheet();
-      // navigation.replace('AuthStack', {screen: 'login'});
     } else
       navigation.navigate('AppStackWithoutBottom', {
         screen: item.navigate,
       });
-    item.title === 'Logout'
-      ? (await AsyncStorage.removeItem('user_id'),
-        await AsyncStorage.removeItem('store_id'))
-      : null;
   };
 
   const bottomSheetRef = useRef(null);
@@ -184,7 +179,6 @@ const Account = () => {
         barStyle={'dark-content'}
         backgroundColor={colors.white}
       />
-      {/* <Button title="OTU" onPress={() => openBottomSheet()} /> */}
       <AppHeader title={t('Account')} />
       <View style={{width: '100%'}}>
         <FlatList

@@ -157,7 +157,7 @@ const FuneralUpdate = () => {
   };
   const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
-  const [area, setArea] = useState('');
+  const [area, setArea] = useState('Abc city, country');
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('City');
   const [state, setState] = useState('');
@@ -170,7 +170,7 @@ const FuneralUpdate = () => {
 
   const [country1, setCountry1] = useState('');
   const [visible1, setVisible1] = useState(false);
-  const [area1, setArea1] = useState('');
+  const [area1, setArea1] = useState('Abc city, country');
   const [city1, setCity1] = useState('City');
   const [state1, setState1] = useState('');
   const [markerData1, setMarkerData1] = useState({
@@ -434,7 +434,10 @@ const FuneralUpdate = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text> {area ? area : 'Enter Funeral Location'}</Text>
+          <Text style={style.font16Re}>
+            {' '}
+            {area ? area : 'Enter Funeral Location'}
+          </Text>
         </TouchableOpacity>
         <View style={styles.container}>
           {/* <Text style={styles.title}>Select a Time</Text> */}
@@ -496,7 +499,10 @@ const FuneralUpdate = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text> {area1 ? area1 : 'Enter Church Location'}</Text>
+          <Text style={style.font16Re}>
+            {' '}
+            {area1 ? area1 : 'Enter Church Location'}
+          </Text>
         </TouchableOpacity>
         <TimePicker
           // initialTime={formData.timeCherch}

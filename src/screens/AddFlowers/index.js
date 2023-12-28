@@ -139,30 +139,19 @@ const AddFlowers = props => {
   const [imagesToSend, setImagesToSend] = useState([]);
   const [disabled, setdisabled] = useState(true);
   const [imageLoader, setImageLoader] = useState(false);
+  const [img, setImg] = useState('');
+  const [imgToSend, setImgToSend] = useState('');
   const [loading, setLoading] = useState(false);
   const isUpdate = route.params?.update || false;
   const buttonText = isUpdate ? 'Update' : 'Continue';
-  useEffect(() => {
-    if (route.params?.property) {
-      const {property} = route.params;
-      const images =
-        property?.images.length > 0 && JSON.parse(property?.images);
-      if (images) {
-        setImagesToSend(images);
-        const imagesToShow = images.map(image => ({
-          uri: constants.imageLink + image,
-        }));
-        setImages(imagesToShow);
-      }
-    }
-  }, [route]);
-  useEffect(() => {
-    if (images.length > 0 && imagesToSend.length > 0) {
-      setdisabled(false);
-    } else {
-      setdisabled(true);
-    }
-  }, [images, imagesToSend]);
+
+  // useEffect(() => {
+  //   if (images.length > 0 && imagesToSend.length > 0) {
+  //     setdisabled(false);
+  //   } else {
+  //     setdisabled(true);
+  //   }
+  // }, [images, imagesToSend]);
   const uploadImg = async image => {
     setImageLoader(true);
     const imageName = image.path.split('/');
@@ -181,18 +170,22 @@ const AddFlowers = props => {
       const res = await ApiRequest(body);
       setImageLoader(false);
       if (res.data.result) {
-        ToastMessage(res.data?.message);
-        setImagesToSend([...imagesToSend, res.data.file_name]);
+        // ToastMessage(res.data?.message);
+        // setImagesToSend([...imagesToSend, res.data.file_name]);
+        setImg(constants.baseUrl + res.data.file_name);
+        setImgToSend(res.data.file_name);
       } else {
         setImageLoader(false);
         ToastMessage('Upload Again');
-        removeImage(images.length, true);
+        setImg('');
+        // removeImage(images.length, true);
       }
     } catch (err) {
       console.log(err);
       setImageLoader(false);
       ToastMessage('Upload Again');
-      removeImage(images.length, true);
+      setImg('');
+      // removeImage(images.length, true);
     }
   };
   const openGallery = async () => {
@@ -202,7 +195,8 @@ const AddFlowers = props => {
       compressImageQuality: 0.4,
     })
       .then(async image => {
-        setImages(prevImages => [...prevImages, {uri: image.path}]);
+        // setImages(prevImages => [...prevImages, {uri: image.path}]);
+        setImg(image.path);
         uploadImg(image);
       })
       .catch(err => {
@@ -250,6 +244,7 @@ const AddFlowers = props => {
       });
       const resp = res.data.data;
       setCatData(resp);
+
       // console.log(resp, 'resp');
     } catch (err) {
     } finally {
@@ -279,9 +274,9 @@ const AddFlowers = props => {
       // setLoading(false);
     }
   };
-  useEffect(() => {
-    handleGetCatData();
-  }, []);
+  // useEffect(() => {
+  //   handleGetCatData();
+  // }, []);
 
   const handleAddFlower = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
@@ -291,16 +286,22 @@ const AddFlowers = props => {
     setdisabled(true);
     setLoading(true);
     const dataToPost = {
-      type: 'add_data',
       table_name: 'stores_gallery',
       store_id: JSON.parse(store_id),
-      name: formData.name,
-      description: formData.description,
+      name: formData.name?.trim(),
+      description: formData.description?.trim(),
       price: formData.price,
       // category: selectedItem.name,
       category: '',
-      images: JSON.stringify(imagesToSend),
+      images: JSON.stringify([imgToSend]),
     };
+
+    if (route.params?.flower) {
+      dataToPost.type = 'update_data';
+      dataToPost.id = route.params?.flower?.id;
+    } else {
+      dataToPost.type = 'add_data';
+    }
 
     try {
       const res = await ApiRequest(dataToPost);
@@ -314,6 +315,8 @@ const AddFlowers = props => {
           price: '',
         });
         setImages([]);
+        setImg('');
+        setImgToSend('');
         setSelectedItem(null);
         // navigation.navigate('MainStack', {screen: 'AddFlowers'});
         // if (route?.params?.account_Type === 'funeral') {
@@ -329,7 +332,7 @@ const AddFlowers = props => {
         //     ],
         //   });
         // }
-        // navigation.navigate('MainStack', {screen: 'AppStack'});
+        navigation.navigate('AddNews');
         setLoading(false);
         setdisabled(false);
       } else {
@@ -349,14 +352,15 @@ const AddFlowers = props => {
 
   useMemo(() => {
     const isFormFilled =
-      imagesToSend?.length > 0 &&
+      imgToSend &&
+      img &&
       // selectedItem.name &&
       formData.price &&
-      formData.description &&
+      formData.description?.trim() &&
       // selectedItem & &
-      formData.name;
+      formData.name?.trim();
     setValid(!isFormFilled);
-  }, [imagesToSend, formData, selectedItem]);
+  }, [imgToSend, formData, selectedItem, img]);
 
   // last_id: catalogData[catalogData.length - 1]?.id,
   //   if (resp && resp != undefined && resp.length > 0) {
@@ -372,10 +376,28 @@ const AddFlowers = props => {
   const handleScroll = () => {
     setScrolled(true);
   };
+
+  useEffect(() => {
+    if (route.params?.flower) {
+      const {flower} = route.params;
+      const image = flower?.images.length > 0 && flower?.images[0];
+      setImg(constants.baseUrl + image);
+      setImgToSend(image);
+      setFormData({
+        ...formData,
+        name: flower?.name,
+        description: flower?.description,
+        price: flower?.price,
+      });
+    }
+  }, [route]);
+
   return (
     <Layout>
       <ScrollView style={{width: '100%'}}>
-        <AppHeader title={t('addflower1')} />
+        <AppHeader
+          title={route.params?.flower ? t('Update') : t('addflower1')}
+        />
         <View>
           <AppTextInput
             titleText={t('addflower2')}
@@ -391,7 +413,7 @@ const AddFlowers = props => {
             ]}>
             {t('Upload Photo')}
           </Text>
-          <View
+          <TouchableOpacity
             style={{
               width: '100%',
               marginVertical: 10,
@@ -401,14 +423,25 @@ const AddFlowers = props => {
               justifyContent: 'center',
               borderWidth: 1.5,
               borderStyle: 'dashed',
-            }}>
-            <BaseButton
-              title={t('Upload Photo')}
-              onPress={openGallery}
-              defaultStyle={{width: '60%'}}
-            />
-          </View>
-          <FlatList
+            }}
+            onPress={openGallery}>
+            {imageLoader && (
+              <View style={[styles.loaderBox]}>
+                <ActivityIndicator size={30} color={colors.white} />
+              </View>
+            )}
+            {img ? (
+              <Image source={{uri: img}} style={styles.image} />
+            ) : (
+              <BaseButton
+                title={t('Upload Photo')}
+                onPress={openGallery}
+                defaultStyle={{width: '60%'}}
+              />
+            )}
+          </TouchableOpacity>
+
+          {/* <FlatList
             data={images}
             // horizontal
             numColumns={2}
@@ -494,7 +527,7 @@ const AddFlowers = props => {
                 </View>
               );
             }}
-          />
+          /> */}
           <Text
             style={[
               style.font16Re,
@@ -506,6 +539,7 @@ const AddFlowers = props => {
           <TextInput
             placeholder={t('addflower3')}
             multiline={true}
+            placeholderTextColor={colors.gray}
             textAlignVertical="top"
             value={formData.description}
             onChangeText={text => handleInputChange('description', text)}
@@ -519,6 +553,9 @@ const AddFlowers = props => {
               width: '100%',
               height: 100,
               borderRadius: 10,
+              color: colors.black,
+              fontFamily: fonts.regular,
+              fontSize: 16,
             }}
           />
           <AppTextInput
@@ -554,13 +591,13 @@ const AddFlowers = props => {
             marginVertical: 30,
           }}>
           <BaseButton
-            title={'Add Flower'}
+            title={route.params?.flower ? t('Update') : t('addflower1')}
             disabled={valid || loading}
             loading={loading}
             onPress={handleAddFlower}
           />
         </View>
-        <View
+        {/* <View
           style={{
             width: '100%',
             marginBottom: 30,
@@ -581,7 +618,7 @@ const AddFlowers = props => {
             // }}
             onPress={() => navigation.navigate('AppStack', {screen: 'Home'})}
           />
-        </View>
+        </View> */}
       </ScrollView>
       <Modal
         visible={isModalVisibleCat}
@@ -667,5 +704,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
+  },
+  image: {
+    width: 360,
+    height: 110,
+  },
+  loaderBox: {
+    width: 360,
+    height: 110,
+    backgroundColor: '#0000009E',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+    position: 'absolute',
   },
 });

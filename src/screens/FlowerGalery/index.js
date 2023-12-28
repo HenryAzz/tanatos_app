@@ -142,7 +142,7 @@ const FlowerGalery = () => {
         title={t('Westside Florist')}
         defaultStyle={{marginBottom: 30}}
       />
-      <View style={{alignSelf: 'flex-start'}}>
+      {/* <View style={{alignSelf: 'flex-start'}}>
         <Text style={[style.font24Re, {fontFamily: fonts.bold}]}>
           {t('List of Stores')}
         </Text>
@@ -154,9 +154,9 @@ const FlowerGalery = () => {
           }}>
           {t('Choose the store')}
         </Text>
-      </View>
+      </View> */}
       {/* <Button title="click" onPress={() => handleGetStoreData()} /> */}
-      <View
+      {/* <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -175,7 +175,7 @@ const FlowerGalery = () => {
         }}>
         <Icon name="search" size={24} color="#8C8C8C" />
         <TextInput placeholder={t('Search')} style={{width: '95%'}} />
-      </View>
+      </View> */}
       {/* <ScrollView> */}
       <FlatList
         data={storeData}

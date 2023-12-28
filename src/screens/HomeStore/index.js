@@ -29,10 +29,14 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {BaseButton} from '../../components/BaseButton';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import {useTranslation} from 'react-i18next';
+import {fetchUser} from '../../store/reducer/usersSlice';
+import {useDispatch} from 'react-redux';
 
 const HomeStore = () => {
   const Top = createMaterialTopTabNavigator();
   const isFocused = useIsFocused();
+
+  const dispatch = useDispatch();
   const dataCheck = [
     {
       id: '1',
@@ -118,7 +122,7 @@ const HomeStore = () => {
         table_name: 'users',
       });
       const resp = res?.data?.data[0];
-      console.log(resp, 'respresprespresprespresp');
+
       setFormData({
         userName: resp?.name,
         image: resp?.image,
@@ -181,6 +185,7 @@ const HomeStore = () => {
     handleGetData();
     handleCheckStore();
     handleGetCatData();
+    fetchUser(dispatch);
   }, [isFocused]);
   // console.log(checkStore, 'checkStore');
 

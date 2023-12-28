@@ -1,70 +1,21 @@
-import {
-  FlatList,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import Layout from '../../components/Layout';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import ListOfRoses from './ListOfRoses';
-import CardList from './CardList';
-import ApiRequest from '../../Services/ApiRequest';
-import {useTranslation} from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {FlatList, RefreshControl, StyleSheet} from 'react-native';
+import ApiRequest from '../../Services/ApiRequest';
+import AppHeader from '../../components/AppHeader/AppHeader';
+import Layout from '../../components/Layout';
 import OrderNotFound from '../MyOrder/OrderNotFound';
-import ModalLoadingTrans from '../../components/ModalLoadingTrans';
+import CardList from './CardList';
 
 const Favorite = () => {
+  //
   const navigation = useNavigation();
+
   const [storeData, setStoreData] = useState();
-  console.log('storeData', storeData);
+
   const [loading, setLoading] = useState();
-
-  const cardData = [
-    {
-      id: 1,
-      title: 'Pink Rose',
-      price: '$19.99',
-      image: require('../../assets/images/fav/fev1.png'),
-    },
-    {
-      id: 2,
-      title: 'Pink Rose',
-      price: '$24.99',
-      image: require('../../assets/images/fav/fav2.png'),
-    },
-
-    {
-      id: 3,
-      title: 'Pink Rose',
-      price: '$24.99',
-      image: require('../../assets/images/fav/fav3.png'),
-    },
-    {
-      id: 4,
-      title: 'Pink Rose',
-      price: '$24.99',
-      image: require('../../assets/images/fav/fav4.png'),
-    },
-    {
-      id: 5,
-      title: 'Pink Rose',
-      price: '$24.99',
-      image: require('../../assets/images/fav/fav3.png'),
-    },
-    {
-      id: 6,
-      title: 'Pink Rose',
-      price: '$24.99',
-      image: require('../../assets/images/fav/fav4.png'),
-    },
-  ];
-
-  const [selectedItem, setSelectedItem] = useState(null);
 
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {
@@ -130,10 +81,7 @@ const Favorite = () => {
 
   return (
     <Layout>
-      <AppHeader
-        title={t('Westside Florists')}
-        defaultStyle={{marginBottom: 30}}
-      />
+      <AppHeader title={t('Memories')} defaultStyle={{marginBottom: 30}} />
 
       <FlatList
         data={storeData}

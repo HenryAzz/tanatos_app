@@ -1,6 +1,9 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
+import {t} from 'i18next';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   Modal,
   ScrollView,
   StyleSheet,
@@ -8,28 +11,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState, useMemo} from 'react';
-import Layout from '../../components/Layout';
-import AuthHeader from '../../components/AuthHeader';
-import AppTextInput from '../../components/FloatingLabelInput';
-import PhoneNumberInput from '../../components/PhoneInput';
-import {BaseButton} from '../../components/BaseButton';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-import {colors, constants, fonts} from '../../constraints';
-import style from '../../assets/css/style';
 import ApiRequest from '../../Services/ApiRequest';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
-import Toast from 'react-native-root-toast';
-import {ToastMessage} from '../../utils/Toast';
+import style from '../../assets/css/style';
+import AuthHeader from '../../components/AuthHeader';
+import {BaseButton} from '../../components/BaseButton';
+import AppTextInput from '../../components/FloatingLabelInput';
+import Layout from '../../components/Layout';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
-import {t} from 'i18next';
+import {colors, constants, fonts} from '../../constraints';
+import {ToastMessage} from '../../utils/Toast';
 
 const CreateStore = () => {
   const route = useRoute();
   const phone = route?.params?.phone;
   const account_Type = route?.params?.account_Type;
-  // console.log(phone, 'phone//');
+
   const [formData, setFormData] = useState({
     shopName: '',
     category: '',
@@ -37,19 +34,13 @@ const CreateStore = () => {
     shopLocation: '',
   });
 
-  const [visible, setVisible] = useState(false);
-  const [area, setArea] = useState('');
+  const [area, setArea] = useState('Abc city, country');
   const [name, setNAme] = useState('');
   const [city, setCity] = useState('City');
   const [state, setState] = useState('');
   const [markerData, setMarkerData] = useState({latitude: '', longitude: ''});
   // console.log(markerData.latitude);
   const [country, setCountry] = useState('');
-  // console.log(country, 'country');
-  // console.log(markerData, 'markerData');
-  // console.log(state, 'state');
-  // console.log(city, 'city');
-  // console.log(area, 'area');
 
   const handleInputChange = (name, value) => {
     setFormData(prevFormData => ({
@@ -57,19 +48,17 @@ const CreateStore = () => {
       [name]: value,
     }));
   };
-  const [valid, setValid] = useState(true);
+
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
 
   const [catData, setCatData] = useState();
-  const [selectedItem, setSelectedItem] = useState(null);
+
   const isFocused = useIsFocused();
-  // console.log(catData, 'cat');
-  // console.log(selectedItem, 'selectedItemcat');
 
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
-  const [isModalVisibleCat, setModalVisibleCat] = useState(false);
+
   const handleGetCatData = async () => {
     try {
       setLoading(true);
@@ -79,7 +68,6 @@ const CreateStore = () => {
       });
       const resp = res.data.data;
       setCatData(resp);
-      // console.log(resp, 'resp');
     } catch (err) {
     } finally {
       setLoading(false);
@@ -98,23 +86,17 @@ const CreateStore = () => {
         type: 'add_data',
         table_name: 'stores',
         user_id: user_id,
-        // cat_id: selectedItem.id,
         phone: phone,
         location: area,
         lat: markerData.latitude,
         lng: markerData.longitude,
-        // category: selectedItem?.name,
         name: formData.shopName,
       });
       const resp = res.data;
       if (res.data.result) {
-        // console.log(resp, 'create sore');
         ToastMessage(res?.data?.message);
         await AsyncStorage.setItem('store_id', JSON.stringify(resp?.id));
-        // navigation.navigate('Home', {
-        //   id: resp?.id,
-        //   account_Type: account_Type,
-        // });
+
         navigation.navigate('UploadPhoto', {id: resp?.id});
         setLoading1(false);
       } else {
@@ -129,7 +111,6 @@ const CreateStore = () => {
   };
   const handleUpdateStore = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
-    // console.log(user_id, 'user_id');
     try {
       setLoading1(true);
       const res = await ApiRequest({
@@ -147,11 +128,6 @@ const CreateStore = () => {
         ToastMessage(res?.data?.message);
         console.log(resp?.id, 'resp?.id');
         await AsyncStorage.setItem('store_id', JSON.stringify(resp.id));
-        // navigation.navigate('HomeStore', {
-        //   id: resp?.id,
-        //   account_Type: account_Type,
-        // });
-        // navigation.navigate('AppStackWithoutBottom', {screen: 'UploadPhoto'});
         navigation.navigate('MainStack', {
           screen: 'UploadPhoto',
           params: {
@@ -256,7 +232,10 @@ const CreateStore = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text> {area ? area : t('Enter Store Location')}</Text>
+          <Text style={style.font16Re}>
+            {' '}
+            {area ? area : t('Enter Store Location')}
+          </Text>
         </TouchableOpacity>
         {/* <Text>{checkStore[0].location}</Text> */}
 

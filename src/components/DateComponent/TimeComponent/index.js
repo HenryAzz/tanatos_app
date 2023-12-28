@@ -1,17 +1,17 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, {useState} from 'react';
+import React from 'react';
 import {
+  Dimensions,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  Dimensions,
+  View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import {t} from 'i18next';
 import style from '../../../assets/css/style';
 import {colors, fonts} from '../../../constraints';
-import {t} from 'i18next';
 
 const phoneScreen = {
   height: Dimensions.get('window').height,
@@ -60,6 +60,7 @@ export const TimePicker = ({
           mode="time"
           is24Hour={true} // Use 12-hour format
           onChange={onChange}
+          display="spinner"
         />
       )}
     </View>

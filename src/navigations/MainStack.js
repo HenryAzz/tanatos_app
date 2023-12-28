@@ -50,6 +50,8 @@ import OrderAllDetails from '../screens/OrderAllDetails/OrderAllDetails';
 import CreateStore from '../screens/CreateStore';
 import {useTranslation} from 'react-i18next';
 import UploadPhoto from '../screens/AddNews/UploadPhoto';
+import CatalogDetail from '../screens/CatalogDetail/index.js';
+import MemorialNote from '../screens/MemorialNote/index.js';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -80,9 +82,9 @@ const MainStack = () => {
       />
       <Stack.Screen name="FlowerGalery" component={FlowerGalery} />
       <Stack.Screen name="EReceipt" component={EReceipt} />
+      <Stack.Screen name="MemorialNote" component={MemorialNote} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
       <Stack.Screen name="ShippingAddress" component={ShippingAddress} />
-
       <Stack.Screen name="PaymentConfirmOtp" component={PaymentConfirmOtp} />
       <Stack.Screen name="ViewOrder" component={ViewOrder} />
       <Stack.Screen name="AddNewss" component={AddNews} />
@@ -91,6 +93,7 @@ const MainStack = () => {
       <Stack.Screen name="FuneralUpdate" component={FuneralUpdate} />
       <Stack.Screen name="Map" component={Map} />
       <Stack.Screen name="AddFlowers" component={AddFlowers} />
+      <Stack.Screen name="CatalogDetail" component={CatalogDetail} />
       <Stack.Screen name="AddFuneralScreen" component={AddFuneralScreen} />
       <Stack.Screen name="OrderAllDetails" component={OrderAllDetails} />
       <Stack.Screen
@@ -148,7 +151,7 @@ const AppStack = () => {
                 color: focused ? colors.primaryColor : colors.gray,
                 fontFamily: focused ? fonts.medium : fonts.regular,
               }}>
-              {account_Type === 'funeral' ? t('Add Obituaries') : t('Home')}
+              {account_Type === 'funeral' ? t('Obituaries1') : t('Home')}
             </Text>
           ),
         }}
