@@ -47,15 +47,34 @@ const Headers = {
     'Content-Type': 'multipart/form-data',
   },
 };
+
+
 const ApiRequest = async data => {
   // This will remove authorization and store id
   const result = await axios.post(
-    'https://locatestudent.com/tanatos/api.php',
-    // 'https://locatestudent.com/calculator_app/api.php',
-    // 'https://7tracking.com/circle_charge/api.php',
-    data,
+    `http://192.168.0.236:3000${data.type}`,
+    data.data,
     {
-      headers: Headers.Header2,
+      headers: Headers.Header,
+    },
+  );
+  return result;
+};
+
+export const ApiRequestGet = async data => {
+  // This will remove authorization and store id
+  const result = await axios.get(
+    `http://192.168.0.236:3000${data.type}`
+  );
+  return result;
+};
+
+export const ApiRequestPatch = async data => {
+  // This will remove authorization and store id
+  const result = await axios.patch(
+    `http://192.168.0.236:3000${data.type}`,data.data ,
+    {
+      headers: Headers.Header,
     },
   );
   return result;

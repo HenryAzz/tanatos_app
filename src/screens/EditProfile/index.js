@@ -11,7 +11,11 @@ import {colors, fonts} from '../../constraints';
 import ImagePicker from 'react-native-image-crop-picker';
 import profile from '../../assets/profile.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ApiRequest from '../../Services/ApiRequest';
+import ApiRequest, {
+  ApiRequestGet,
+  ApiRequestPatch,
+  ApiRequestPut,
+} from '../../Services/ApiRequest';
 import {ToastMessage} from '../../utils/Toast';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import {useTranslation} from 'react-i18next';
@@ -43,7 +47,7 @@ const EditProfile = () => {
   });
   const [selectedImage, setSelectedImage] = useState('');
   const navigation = useNavigation();
-  console.log(formData.url + formData.image, 'formData.url + formData.image');
+  console.log(formData.url, formData.image, 'formData.url + formData.image');
   const pickImage = () => {
     ImagePicker.openPicker({
       mediaType: 'photo',
@@ -69,15 +73,13 @@ const EditProfile = () => {
 
         // console.log(data, 'data profile');
 
-        const res = await ApiRequest({
-          type: 'get_data',
-          id: user_id,
-          table_name: 'users',
+        const res = await ApiRequestGet({
+          type: `/usuarios/${user_id}`,
         });
-        const resp = res?.data?.data[0];
-        console.log();
+        const resp = res?.data;
+        console.log(resp, 'readsajkfnaskfjsn');
         setFormData({
-          userName: resp?.name,
+          userName: resp?.username,
           email: resp?.email,
           gender: resp?.gender,
           dob: resp?.dob,
@@ -110,17 +112,19 @@ const EditProfile = () => {
     try {
       setIsLoading1(true);
       setDisabled(true);
-      const res = await ApiRequest({
-        type: 'update_data',
-        id: parseInt(user_id),
-        table_name: 'users',
-        userName: formData?.name,
-        email: formData?.email,
-        gender: formData?.gender,
-        dob: formData?.dob,
-        city: formData.city,
-        country: formData.country,
-        image: formData.image,
+      const res = await ApiRequestPatch({
+        type: `/usuarios/${user_id}`,
+        data: {
+          id: parseInt(user_id),
+          table_name: 'users',
+          username: formData?.userName,
+          email: formData?.email,
+          gender: formData?.gender,
+          dob: formData?.dob,
+          city: formData.city,
+          country: formData.country,
+          image: formData.image,
+        },
       });
       // const obj = {
       //   type: 'update_data',
@@ -163,7 +167,8 @@ const EditProfile = () => {
       type: image.mime,
       uri: image.path,
     };
-
+    console.log(image.path, 'wdadsakfjnaskjfnksajfnskajf');
+    setSelectedImage(image.path);
     // console.log('start to uplod');
     const body = new FormData();
     body.append('type', 'upload_data');
@@ -207,6 +212,7 @@ const EditProfile = () => {
             alignSelf: 'center',
             marginTop: 25,
             marginBottom: 5,
+            overflow: 'hidden',
           }}>
           {formData.image ? (
             <>
@@ -224,7 +230,10 @@ const EditProfile = () => {
               />
             </>
           ) : (
-            <Image source={profile} style={{width: 90, height: 90}} />
+            <Image
+              source={selectedImage ? {uri: selectedImage} : profile}
+              style={{width: 105, height: 105}}
+            />
           )}
           {showLoader ? (
             <View style={{position: 'absolute'}}>
@@ -235,8 +244,8 @@ const EditProfile = () => {
         </TouchableOpacity>
         <View style={{}}>
           <AppTextInput
-            placeholder={t('Funeral home name')}
-            titleText={t('Funeral home name')}
+            placeholder={t('User home name')}
+            titleText={t('User home name')}
             value={formData.userName}
             onChangeText={text => setFormData({...formData, userName: text})}
           />

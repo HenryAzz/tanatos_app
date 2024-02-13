@@ -7,6 +7,7 @@ import {
   PermissionsAndroid,
   TouchableOpacity,
   Platform,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Layout from '../../components/Layout';
@@ -138,28 +139,30 @@ const ShareAddress = () => {
     try {
       setIsLoading(true);
       const res = await ApiRequest({
-        type: 'register',
-        name: formData.name.trim(),
-        email: formData.email.toLowerCase(),
-        password: formData.password,
-        address: formData.address,
-        city: city,
-        state: state,
-        country: country,
-        zipcode: '',
-        phone: phone,
-        lat: initialRegion.latitude,
-        lng: initialRegion.longitude,
-        dob: formatDate(formData.starting_date),
-        gender: '',
-        user_type: account_Type,
+        type: '/usuarios',
+        data: {
+          city: city,
+          username: formData.name.trim(),
+          email: formData.email.toLowerCase(),
+          password: formData.password,
+          address: formData.address,
+          state: state,
+          country: country,
+          zipcode: '',
+          phone: phone,
+          lat: initialRegion.latitude,
+          lng: initialRegion.longitude,
+          dob: formatDate(formData.starting_date),
+          gender: '',
+          user_type: account_Type,
+        },
       });
-      const resp = res?.data.result;
-
-      const userIdString = JSON.stringify(res?.data?.user_id);
+      const resp = res?.status;
+      console.log(res);
+      const userIdString = JSON.stringify(res?.data?.id);
 
       // let user_Id = JSON.stringify(id);
-      if (resp) {
+      if (resp === 201) {
         handleFcm(userIdString);
         await AsyncStorage.setItem('user_id', userIdString);
         await AsyncStorage.setItem('account_Type', account_Type);
@@ -216,7 +219,7 @@ const ShareAddress = () => {
     }
   };
   return (
-    <Layout>
+    <ScrollView>
       <View style={{alignItems: 'center'}}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -305,7 +308,7 @@ const ShareAddress = () => {
           onPress={handleSignup}
         />
       </View>
-    </Layout>
+    </ScrollView>
   );
 };
 

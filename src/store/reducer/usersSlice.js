@@ -11,6 +11,7 @@ export const usersSlice = createSlice({
     user_id: '',
     user_type: '',
     business_type: '',
+    store: {},
   },
   reducers: {
     usersLoading(state, action) {
@@ -25,6 +26,10 @@ export const usersSlice = createSlice({
     usersReceived(state, action) {
       state.loading = false;
       state.users = action.payload;
+    },
+
+    userStore(state, action) {
+      state.store = action.payload;
     },
 
     userLogin(state, action) {
@@ -48,8 +53,6 @@ export const usersSlice = createSlice({
   },
 });
 
-// // Action creators are generated for each case reducer function
-// Destructure and export the plain action creators
 export const {
   usersLoading,
   usersReceived,
@@ -58,6 +61,7 @@ export const {
   usersLoadingEnd,
   userType,
   userId,
+  userStore,
 } = usersSlice.actions;
 
 // Define a thunk that dispatches those action creators

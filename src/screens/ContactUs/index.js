@@ -73,7 +73,6 @@ const ContactUs = () => {
       <AppHeader title={t('account3')} defaultStyle={{marginBottom: 30}} />
       <AppTextInput
         titleText={t('Title')}
-        keyboardType="email-address"
         placeholder={t('Title')}
         value={formData.title}
         onChangeText={text => handleInputChange('title', text)}

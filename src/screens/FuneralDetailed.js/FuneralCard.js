@@ -76,7 +76,7 @@ const HomeCard = ({
         ) : (
           <Image
             // accessibilityLabel="No"
-            source={{uri: url + cleanedPath}}
+            source={{uri: url }}
             style={{
               width: 160,
               height: 100,

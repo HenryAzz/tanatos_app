@@ -268,8 +268,8 @@ const EReceipt = () => {
         />
 
         <View style={{width: '100%'}}>
-          <TextCard title={t('Amount')} price={`$${totalPricee}`} />
-          <TextCard title={t('Subtotal')} price={`$${totalPricee}`} />
+          <TextCard title={t('Amount')} price={`€${totalPricee}`} />
+          <TextCard title={t('Subtotal')} price={`€${totalPricee}`} />
           <TextCard title={t('Shipping')} price={'Free'} />
         </View>
 

@@ -19,7 +19,7 @@ import {store} from './src/store';
 const App = () => {
   const {t, i18n} = useTranslation();
 
-  useEffect(() => {
+  useEffect( () => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('message ....', JSON.stringify(remoteMessage));
       alert(

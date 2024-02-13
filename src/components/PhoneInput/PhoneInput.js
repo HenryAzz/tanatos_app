@@ -5,15 +5,14 @@ import {colors, fonts} from '../../constraints';
 import {useTranslation} from 'react-i18next';
 
 const PhoneNumberInput = ({value, setValue, valid, setValid, formData}) => {
-  const [countryCode, setCountryCode] = useState('');
-  const [formattedValue, setFormattedValue] = useState('');
+  //
   const phoneInput = useRef(null);
   const {t} = useTranslation();
   const checkPhoneNumber = text => {
     const sanitizedText = text.replace(/[^0-9\+]/g, '');
     const checkValid = phoneInput.current?.isValidNumber(sanitizedText);
     setValid(checkValid);
-    setCountryCode(phoneInput.current?.getCountryCode() || '');
+
     phoneInput.current?.setState({
       number: sanitizedText,
     });
@@ -30,7 +29,6 @@ const PhoneNumberInput = ({value, setValue, valid, setValid, formData}) => {
           defaultCode="ES"
           layout="second"
           placeholder={t('Phone Number')}
-          placeholderTextColor="red"
           containerStyle={{
             borderLeftWidth: 1,
             borderTopWidth: 1,
@@ -60,8 +58,6 @@ const PhoneNumberInput = ({value, setValue, valid, setValid, formData}) => {
           }}
           disableArrowIcon
           onChangeFormattedText={text => {
-            setFormattedValue(text);
-            setCountryCode(phoneInput.current?.getCountryCode() || '');
             const sanitizedText = text.replace(/[^0-9\+]/g, '');
             setValue({...formData, phoneNumber: sanitizedText});
           }}

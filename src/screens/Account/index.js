@@ -1,31 +1,23 @@
-import {
-  Button,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Switch,
-} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
-import ProfileCard from './ProfileCard';
-import Layout from '../../components/Layout';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {colors, fonts} from '../../constraints';
-import style from '../../assets/css/style';
-import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import LogoutBottomSheet from '../../components/Logout/LogoutBottomSheet';
+import {FlatList, StyleSheet, Switch, Text, View} from 'react-native';
+import style from '../../assets/css/style';
+import AppHeader from '../../components/AppHeader/AppHeader';
 import DontHaveAccount from '../../components/DontHaveAccount';
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
+import Layout from '../../components/Layout';
+import LogoutBottomSheet from '../../components/Logout/LogoutBottomSheet';
+import {colors} from '../../constraints';
+import ProfileCard from './ProfileCard';
+import {useSelector} from 'react-redux';
 
 const Account = () => {
   const navigation = useNavigation();
 
   const {t, i18n} = useTranslation();
+  const store = useSelector(store => store.user);
 
   const data = [
     {
@@ -39,6 +31,12 @@ const Account = () => {
       navigate: 'ChangePassword',
       title: 'Change Password',
       image: require('../../assets/images/AccountImg/Change.png'),
+    },
+    {
+      id: 3,
+      navigate: 'CreateStoreapp',
+      title: 'Edit Store',
+      image: require('../../assets/images/AccountImg/edit1.png'),
     },
     // {
     //   id: 3,
@@ -163,12 +161,12 @@ const Account = () => {
   };
 
   const checkGuest = async () => {
-    // const user_type = await AsyncStorage.getItem('account_type');
     const user_id = await AsyncStorage.getItem('user_id');
     if (!user_id || null) {
       setShowDontHaveModal(true);
     }
   };
+
   useEffect(() => {
     checkGuest();
   }, []);
@@ -185,14 +183,28 @@ const Account = () => {
           keyExtractor={item => item.id}
           showsHorizontalScrollIndicator={false}
           data={filteredData}
-          renderItem={({item}) => (
-            <ProfileCard
-              title={item.title}
-              source={item.image}
-              type={account_Type}
-              onPress={() => handleNavigate(item)}
-            />
-          )}
+          renderItem={({item}) => {
+            if (
+              item.navigate === 'CreateStoreapp' &&
+              account_Type !== 'store' &&
+              Object.keys(store?.store)?.length !== 0
+            ) {
+              return null;
+            } else if (
+              item.navigate === 'CreateStoreapp' &&
+              Object.keys(store?.store)?.length === 0
+            ) {
+              return null;
+            }
+            return (
+              <ProfileCard
+                title={item.title}
+                source={item.image}
+                type={account_Type}
+                onPress={() => handleNavigate(item)}
+              />
+            );
+          }}
         />
       </View>
       <View

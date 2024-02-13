@@ -11,7 +11,7 @@
   "welcome5": "Tanatorio",
   "welcome6": "¿Ya tienes una cuenta? ",
 
-  "Create Store": "Crear tenda",
+  "Create Store": "Crear tienda",
   "Store": "Tienda",
   "New Orders": "nuevos pedidos",
   "You Don't have store, Please create store": "No hay creada una tienda, creala para empezar",
@@ -30,9 +30,9 @@
   "Yes sure!": "Si seguro",
   "Map": "mapa",
   "Surname": "Apellidos",
-  "Obituaries": "Esquelas cerca de ti",
+  "Obituaries": "Esquelas",
   "Obituaries1": "Esquelas",
-  "Funeral Homes": "Tanatorios",
+  "Funeral Homes": "Busquedas recientes",
   "Select Date": "Seleccione Fecha",
   "Login": "Entra en tanatos",
   "Let's Started": "Continuar",
@@ -45,7 +45,7 @@
   "Change Password": "Cambiar contraseña",
   "Old Password": "Contraseña anterior",
   "Confirm Password": "Confirmar contraseña",
-  "Phone Number": "Número de teléfono",
+  "Phone Number": "TELÉFONO",
   "State": "Estado",
   "Full Name": "Nombre completo",
   "Enter a valid phone number": "Introduce un número de teléfono válido",
@@ -53,6 +53,7 @@
   "Can we access your location?": "¿Podemos acceder a su ubicación?",
 
   "dateMessage": "No se puede seleccionar la fecha con más de 3 días de antelación",
+  "dateMessage1": "No puedes seleccionar la fecha más de 3 días futuros.",
 
   "Continue": "Continuar",
   "Reset Password": "Reiniciar contraseña",
@@ -160,10 +161,10 @@
   "County": "País",
   "Memories": "Recuerdos",
 
-  "Home": "Tanatos",
+  "Home": "Esquelas",
   "Catalog": "Catálogo",
-  "My Order": "Mis pedidos",
-  "Favorite": "Favorito",
+  "My Order": "Pedidos",
+  "Favorite": "Recuerdos",
 
   "View all": "Ver todo",
   "Funeral Gome": "Tanatorio",
@@ -205,6 +206,7 @@
   "Continue as a": "Continuar como un",
   "Guest": "Invitado",
   "Funeral home name": "Nombre de la funeraria",
+  "User home name": "Nombre de usuario",
 
   "Hey there! It looks like you're not logged in. Log in to proceed further.": "Hola, parece que aun no tienes cuenta en Tanatos, ¿Quieres crearla? ",
   "funeral///": ".....",
@@ -229,7 +231,7 @@
   "Share": "Compartir",
   "List of Stores": "Lista de tiendas",
   "Choose the store": "Elige la tienda",
-  "Westside Florist": "Floristería del lado oeste",
+  "Westside Florist": "Elegir flores",
   "Flowers Gallery": "Galería de flores",
   "Choose the best bouquet": "Elige el mejor ramo",
   "E-Receipt": "Recibo electrónico",

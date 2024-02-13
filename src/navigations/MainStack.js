@@ -1,57 +1,54 @@
-import React, {useState, useEffect} from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useEffect, useState} from 'react';
 
-import {Text, Image} from 'react-native';
+import {Text} from 'react-native';
+import {colors, fonts} from '../constraints';
 import Home from '../screens/Home';
 import MyOrder from '../screens/MyOrder';
-import {colors, fonts} from '../constraints';
-import HomeImg from '../assets/Home.png';
 
-import Favorite from '../screens/Favorite';
-import Account from '../screens/Account';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useTranslation} from 'react-i18next';
+import AccountIcon from '../assets/images/svg/AccountIcon';
+import AddFuneral from '../assets/images/svg/AddFuneral';
+import AddNewsIcon from '../assets/images/svg/AddNewsIcon';
+import FavouriteIcon from '../assets/images/svg/FavouriteIcon';
 import HomeIcon from '../assets/images/svg/HomeIcon';
 import MyOrderIcon from '../assets/images/svg/MyOrderIcon';
-import AccountIcon from '../assets/images/svg/AccountIcon';
-import FavouriteIcon from '../assets/images/svg/FavouriteIcon';
-import FAQs from '../screens/FAQs';
-import EditProfile from '../screens/EditProfile';
-import ChangePassword from '../screens/ChangePassword';
-import OrderHistory from '../screens/OrderHistory';
-import ContactUs from '../screens/ContactUs';
-import DataProtection from '../screens/DataProtection';
-import PaymentMethod from '../screens/PaymentMethod';
-import OngoingOrder from '../screens/MyOrder/Ongoing';
-import Completed from '../screens/MyOrder/Completed';
-import OrderTrack from '../screens/OrderTrack/OrderTrack';
-import FuneralDetailed from '../screens/FuneralDetailed.js';
-import FuneralNearDetailed from '../screens/FuneralNearDetailed';
-import FuneralDetailedPage from '../screens/FuneralDetailedPage';
-import FlowerGalery from '../screens/FlowerGalery';
-import EReceipt from '../screens/E-Receipt/E-Receipt';
-import CheckoutScreen from '../screens/Checkout';
-import ShippingAddress from '../screens/ShippingAddress';
-import PaymentConfirmOtp from '../screens/PaymentConfirmOtp';
-import ViewOrder from '../screens/ViewOrder';
-import AddFuneral from '../assets/images/svg/AddFuneral';
-import AddFuneralScreen from '../screens/AddFuneral';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import AddNews from '../screens/AddNews';
-import AddNewsIcon from '../assets/images/svg/AddNewsIcon';
-import HomeStore from '../screens/HomeStore';
-import BallanceScreen from '../screens/Ballance';
-import HomeFuneral from '../screens/Home/HomeFuneral';
-import FuneralUpdate from '../screens/FuneralUpdate';
-import Map from '../screens/Map';
+import Account from '../screens/Account';
 import AddFlowers from '../screens/AddFlowers';
-import Catalog from '../screens/Catalog';
-import SpecificStoreGalery from '../screens/FlowerGalery/SpecificStoreGalery';
-import OrderAllDetails from '../screens/OrderAllDetails/OrderAllDetails';
-import CreateStore from '../screens/CreateStore';
-import {useTranslation} from 'react-i18next';
+import AddFuneralScreen from '../screens/AddFuneral';
+import AddNews from '../screens/AddNews';
 import UploadPhoto from '../screens/AddNews/UploadPhoto';
+import BallanceScreen from '../screens/Ballance';
+import Catalog from '../screens/Catalog';
 import CatalogDetail from '../screens/CatalogDetail/index.js';
+import ChangePassword from '../screens/ChangePassword';
+import CheckoutScreen from '../screens/Checkout';
+import ContactUs from '../screens/ContactUs';
+import CreateStore from '../screens/CreateStore';
+import DataProtection from '../screens/DataProtection';
+import EReceipt from '../screens/E-Receipt/E-Receipt';
+import EditProfile from '../screens/EditProfile';
+import FAQs from '../screens/FAQs';
+import Favorite from '../screens/Favorite';
+import FlowerGalery from '../screens/FlowerGalery';
+import SpecificStoreGalery from '../screens/FlowerGalery/SpecificStoreGalery';
+import FuneralDetailed from '../screens/FuneralDetailed.js';
+import FuneralDetailedPage from '../screens/FuneralDetailedPage';
+import FuneralNearDetailed from '../screens/FuneralNearDetailed';
+import FuneralUpdate from '../screens/FuneralUpdate';
+import HomeFuneral from '../screens/Home/HomeFuneral';
+import HomeStore from '../screens/HomeStore';
+import Map from '../screens/Map';
 import MemorialNote from '../screens/MemorialNote/index.js';
+import OrderAllDetails from '../screens/OrderAllDetails/OrderAllDetails';
+import OrderHistory from '../screens/OrderHistory';
+import OrderTrack from '../screens/OrderTrack/OrderTrack';
+import PaymentConfirmOtp from '../screens/PaymentConfirmOtp';
+import PaymentMethod from '../screens/PaymentMethod';
+import ShippingAddress from '../screens/ShippingAddress';
+import ViewOrder from '../screens/ViewOrder';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -247,7 +244,7 @@ const AppStack = () => {
         />
       )}
 
-      {account_Type === 'store' && (
+      {/* {account_Type === 'store' && (
         <Tab.Screen
           name="CreateStoreapp"
           // component={AddNews}
@@ -268,7 +265,7 @@ const AppStack = () => {
             ),
           }}
         />
-      )}
+      )} */}
 
       <Tab.Screen
         name="Account"
@@ -309,6 +306,7 @@ const AppStackWithoutBottom = () => {
       <Stack.Screen name="Balance" component={BallanceScreen} />
       <Stack.Screen name="UploadPhoto" component={UploadPhoto} />
       <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
+      <Stack.Screen name="CreateStoreapp" component={CreateStore} />
     </Stack.Navigator>
   );
 };

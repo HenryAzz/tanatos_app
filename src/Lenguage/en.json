@@ -67,6 +67,7 @@
   "Can we access your location?": "Can we access your location?",
 
   "dateMessage": "You can not select the date more than 3 previous days",
+  "dateMessage1": "You can not select the date more than 3 future days",
 
   "Enter valid email (abc@gmail.com)": "Enter valid email (abc@gmail.com)",
   "Password must be 8 digits (Aa1234*/)": "Password must be 8 digits (Aa1234*/)",

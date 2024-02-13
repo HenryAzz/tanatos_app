@@ -154,17 +154,14 @@ const PhoneNumberInput = ({
           ref={phoneInput}
           defaultValue={value}
           value={value}
-          defaultCode="PK"
           layout="second"
+          defaultCode="ES"
+          placeholder={t('Phone Number')}
           containerStyle={{
-            // backgroundColor: '#fff',
-            // borderWidth: 1,
-            // borderColor: '#D7D7D7',
             borderWidth: 1,
             borderColor: '#E0E0E0',
             backgroundColor: '#F5F5F5',
             width: '100%',
-            // height: 50,
             borderRadius: 5,
           }}
           textContainerStyle={{

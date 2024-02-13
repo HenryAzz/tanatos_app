@@ -25,7 +25,7 @@ const HomeCard = ({
   hallno,
   navigation,
 }) => {
-  console.log(hallno, '==>hallnohallno');
+  console.log(hallno, '==>hallnohalln22222o');
   const cleanedPath = image.replace(/^"(.*)"$/, '$1');
 
   const [account_Type, setAccountType] = useState();
@@ -76,7 +76,7 @@ const HomeCard = ({
         ) : (
           <Image
             // accessibilityLabel="No"
-            source={{uri: url + cleanedPath}}
+            source={{uri: url }}
             style={{
               height: 120,
               width: 180,

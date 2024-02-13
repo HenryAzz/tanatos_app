@@ -35,7 +35,7 @@ import AppTextInput from '../../components/FloatingLabelInput';
 import {DatePicker} from '../../components/DateComponent';
 import {TimePicker} from '../../components/DateComponent/TimeComponent';
 import {BaseButton} from '../../components/BaseButton';
-import ApiRequest from '../../Services/ApiRequest';
+import ApiRequest, { ApiRequestGet } from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import {ToastMessage} from '../../utils/Toast';
 import Geolocation from 'react-native-geolocation-service';
@@ -45,6 +45,7 @@ import {useTranslation} from 'react-i18next';
 import {useRef} from 'react';
 import {useDispatch} from 'react-redux';
 import {fetchUser} from '../../store/reducer/usersSlice';
+import axios from 'axios';
 const requestLocationPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -115,26 +116,38 @@ const Home = () => {
     url: '',
   });
 
+  const [bottomLoaderNear, setBottomLoaderNear] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const handleScrollNear = () => {
+    setScrolled(true);
+  };
+
   const handleGetData = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
 
     if (user_id) {
       try {
         setShowLoadingModal(true);
-        const res = await ApiRequest({
-          type: 'get_data',
-          id: user_id,
-          table_name: 'users',
-        });
-        const resp = res?.data?.data[0];
+        // const res = await ApiRequest({
+        //   type: `/usuarios/${user_id}`,
+        //   id: user_id,
+        //   table_name: 'users',
+        // });
+        const res = await ApiRequestGet({
+          type: `/usuarios/${user_id}`,
+        })
+        console.log(res, 'res in getting profile');
+        const resp = res?.data.id;
         if (resp) {
           setFormData({
-            userName: resp?.name,
-            image: resp?.image,
-            url: resp?.url,
+            userName: res?.data.username,
+            image: res?.data.image,
+            url: res?.data.url,
           });
         }
       } catch (error) {
+        setShowLoadingModal(false);
+
         console.log(error, 'err in getting profile');
       }
     }
@@ -149,18 +162,20 @@ const Home = () => {
   // console.log(funeralData, 'duen');
   const handleGetFuneralDataOwner = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
+
     if (user_id) {
       try {
         setLoading(true);
         setShowLoadingModal(true);
-        const res = await ApiRequest({
-          type: 'get_data',
+        const res = await ApiRequestGet({
+          type: '/funerals',
           table_name: 'funerals',
           own: 1,
           user_id: user_id,
         });
-        const resp = res?.data?.data;
-        // console.log(resp, 'resp////////////////////////owner');
+        const resp = res?.data;
+        
+        console.log(resp, 'resp////////////////////////owner');
         setFuneralDataOwn(resp);
         setShowLoadingModal(false);
       } catch (err) {
@@ -172,17 +187,28 @@ const Home = () => {
     }
   };
   const handleGetFuneralData = async () => {
+    const user_id = await AsyncStorage.getItem('user_id');
+
     try {
       setLoading(true);
       setShowLoadingModal(true);
-      const res = await ApiRequest({
-        type: 'get_data',
-        table_name: 'funerals',
-        lat: initialRegion?.latitude,
-        lng: initialRegion?.longitude,
-      });
-      const resp = res.data.data;
+      // const res = await ApiRequest({
+      //   type: 'get_data',
+      //   table_name: 'funerals',
+      //   lat: initialRegion?.latitude,
+      //   lng: initialRegion?.longitude,
+      // });
+      // const resp = res.data.data;
       // console.log(resp, 'resp////////////////////////');
+      const res = await ApiRequestGet({
+        type: '/funerals',
+        table_name: 'funerals',
+        own: 1,
+        user_id: user_id,
+      });
+      const resp = res?.data;
+      
+      console.log(resp, 'resp////////////////////////owner');
       setFuneralData(resp);
       setShowLoadingModal(false);
     } catch (err) {
@@ -194,87 +220,12 @@ const Home = () => {
   };
   const isFocused = useIsFocused();
   const refFlat = useRef(null);
-  useEffect(() => {
-    handleGetFuneralData();
-    handleGetFuneralDataOwner();
-    handleGetData();
-    handleGetFuneralDataNear();
-    refFlat.current?.scrollToOffset({animated: true, offset: 0});
-  }, [isFocused]);
+
   useEffect(() => {
     // handleGetFuneralData();
     handleGetFuneralDataMoreNear();
   }, [route?.params?.update]);
 
-  // const account_Type = 'Funeral';
-  const FuneralData = [
-    {
-      id: '1',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '2',
-      image: require('../../assets/images/HomeImg/HomeCardImg1.png'),
-      title: 'Zain Korsgaard',
-      subTitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-    {
-      id: '3',
-      image: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      title: 'Matt Villano',
-      subTitle: "5 things to know about the 'conundrum' of lupus",
-      profile: require('../../assets/images/HomeImg/HomeCardImg.png'),
-      time: '9 Hours ago',
-    },
-  ];
-  const data = [
-    {
-      id: 1,
-      title: 'casarse con phillips',
-      subtitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
-    },
-    {
-      id: 2,
-      title: 'casarse con phillips',
-      subtitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
-    },
-    {
-      id: 3,
-      title: 'casarse con phillips',
-      subtitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
-    },
-    {
-      id: 4,
-      title: 'casarse con phillips',
-      subtitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
-    },
-    {
-      id: 5,
-      title: 'casarse con phillips',
-      subtitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
-    },
-    {
-      id: 6,
-      title: 'casarse con phillips',
-      subtitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
-    },
-    {
-      id: 7,
-      title: 'casarse con phillips',
-      subtitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
-    },
-    {
-      id: 8,
-      title: 'casarse con phillips',
-      subtitle: 'Envía tu apoyo y un mensaje de ánimo a familiares y amigos',
-    },
-  ];
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [showDeleteModal, setShowDeletegModal] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState();
@@ -291,7 +242,7 @@ const Home = () => {
       });
       const resp = res.data.data;
       ToastMessage(res?.data?.message);
-      // console.log(resp, 'resp////////////////////////owner');
+      console.log(resp, 'resp////////////////////////ownerfunarel');
       setShowDeletegModal(false);
       handleGetFuneralData();
       handleGetFuneralDataOwner();
@@ -304,15 +255,6 @@ const Home = () => {
     }
   };
 
-  //  {
-  //    account_Type === 'customer' ? (
-  //      <Text>Data 1</Text>
-  //    ) : funeralDataOwn.length > 0 ? (
-  //      <Text>Data found</Text>
-  //    ) : (
-  //      <Text>Data not found</Text>
-  //    );
-  //  }
   const {t, i18n} = useTranslation();
 
   const toggleLanguage = async () => {
@@ -323,21 +265,19 @@ const Home = () => {
     }
   };
 
-  const [funeralDataNear, setFuneralDataNear] = useState();
+  const [funeralDataNear, setFuneralDataNear] = useState([]);
 
   const handleGetFuneralDataNear = async () => {
     try {
       setShowLoadingModal(true);
-      // setLoading(true);
-      const res = await ApiRequest({
-        type: 'get_data',
+      const user_id = await AsyncStorage.getItem('user_id');
+      const res = await ApiRequestGet({
+        type: '/funerals',
         table_name: 'funerals',
-
-        // lat: '',
-        // lng: '',
+        own: '',
+        user_id: user_id,
       });
-      const resp = res.data.data;
-      // console.log(resp, 'resp////////////////////////');
+      const resp = res.data;
       setFuneralDataNear(resp);
       setRefreshingNear(false);
       setShowLoadingModal(false);
@@ -352,16 +292,16 @@ const Home = () => {
 
   const handleGetFuneralDataMoreNear = async () => {
     if (!bottomLoaderNear && funeralDataNear && funeralDataNear.length > 0) {
-      // console.log(funeralDataNear[funeralDataNear.length - 1]?.id, 'last id');
       try {
         setBottomLoaderNear(true);
+        const user_id = await AsyncStorage.getItem('user_id');
+
         const res = await ApiRequest({
           type: 'get_data',
           table_name: 'funerals',
-
           last_id: funeralDataNear[funeralDataNear.length - 1]?.id,
-          // lat: '',
-          // lng: '',
+          own: '',
+          user_id: user_id,
         });
         const resp = res.data.data;
         if (resp && resp != undefined && resp.length > 0) {
@@ -369,16 +309,43 @@ const Home = () => {
         }
         setBottomLoaderNear(false);
         setScrolled(false);
-        // setFuneralData(resp);
-        // setShowLoadingModal(false);
       } catch (err) {
         setBottomLoaderNear(false);
-        // setShowLoadingModal(false);
+        setScrolled(false);
       } finally {
         setBottomLoaderNear(false);
+        setScrolled(false);
       }
     }
   };
+
+  const heartPress = async item => {
+    const user_id = await AsyncStorage.getItem('user_id');
+    const sendData = {
+      type: 'like_dislike',
+      user_id: user_id,
+      status: item?.favourite === 'like' ? 'dislike' : 'like',
+      funeral_id: item?.id,
+    };
+
+    const foundedIndex = funeralDataNear.findIndex(x => x.id === item.id);
+
+    funeralDataNear[foundedIndex].favourite =
+      item?.favourite === 'dislike' ? 'like' : 'dislike';
+
+    setFuneralDataNear([...funeralDataNear]);
+
+    try {
+      const res = await ApiRequest(sendData);
+      if (res.data.result === true) {
+        handleGetFuneralDataNear();
+      }
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     handleGetFuneralDataNear();
     fetchUser(dispatch);
@@ -389,11 +356,14 @@ const Home = () => {
     setRefreshingNear(true);
     handleGetFuneralDataNear();
   };
-  const [bottomLoaderNear, setBottomLoaderNear] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const handleScrollNear = () => {
-    setScrolled(true);
-  };
+
+  useEffect(() => {
+    handleGetFuneralData();
+    handleGetFuneralDataOwner();
+    handleGetData();
+    handleGetFuneralDataNear();
+    refFlat.current?.scrollToOffset({animated: true, offset: 0});
+  }, [isFocused]);
 
   return (
     <Layout>
@@ -514,15 +484,14 @@ const Home = () => {
           </View>
 
           <View style={{width: '100%'}}>
-            {/* {account_Type === 'customer' ? (
+            {account_Type === 'customer' ? (
               <>
                 <TextCardView
                   title={t('Funeral Homes')}
-                  subtitle={t('View all')}
                   onPress={() => navigation.navigate('FuneralDetailed')}
                 />
                 <View style={{width: '100%'}}>
-                  <FlatList
+                  {/* <FlatList
                     horizontal
                     keyExtractor={item => item.id}
                     showsVerticalScrollIndicator={false}
@@ -537,7 +506,7 @@ const Home = () => {
                           name={item.name}
                           subTitle={item.description}
                           image={item.image}
-                          url={item.url}
+                          url={'https://innovafuneraria.es/wp-content/uploads/2020/12/organizarunfuneral.jpg'}
                           hallno={item.hall_no}
                           time={item.time}
                           onPress={() =>
@@ -550,10 +519,10 @@ const Home = () => {
                         // </View>
                       );
                     }}
-                  />
+                  /> */}
                 </View>
               </>
-            ) : null} */}
+            ) : null}
 
             <TextCardView
               title={t('Obituaries')}
@@ -596,16 +565,24 @@ const Home = () => {
                     />
                   }
                   data={funeralDataNear}
-                  renderItem={({item}) => (
-                    <BottomCard
-                      title={item.name}
-                      subtitle={item.description}
-                      account_Type={account_Type}
-                      onPress1={() =>
-                        navigation.navigate('FuneralDetailedPage', {item: item})
-                      }
-                    />
-                  )}
+                  renderItem={({item}) => {
+                    // console.log(item.favourite);
+                    return (
+                      <BottomCard
+                        title={item.name}
+                        subtitle={item.description}
+                        funeralImg={'https://innovafuneraria.es/wp-content/uploads/2020/12/organizarunfuneral.jpg'}
+                        account_Type={account_Type}
+                        isLiked={item?.favourite}
+                        onPress1={() =>
+                          navigation.navigate('FuneralDetailedPage', {
+                            item: item,
+                          })
+                        }
+                        onHeartPress={() => heartPress(item)}
+                      />
+                    );
+                  }}
                 />
               ) : (
                 // <FlatList
@@ -647,7 +624,10 @@ const Home = () => {
                         title={item?.name}
                         subtitle={item.description}
                         account_Type={account_Type}
-                        funeralImg={constants.baseUrl + item?.funeral_img}
+                        funeralImg={
+                          item?.funeral_img &&
+                          constants.baseUrl + item?.funeral_img
+                        }
                         gotoDetailePage={() => {
                           navigation.navigate('AddFuneralScreen', {
                             item: item,

@@ -157,9 +157,9 @@ const FuneralUpdate = () => {
   };
   const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
-  const [area, setArea] = useState('Abc city, country');
+  const [area, setArea] = useState('');
   const [country, setCountry] = useState('');
-  const [city, setCity] = useState('City');
+  const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [markerData, setMarkerData] = useState({
     latitude: '',
@@ -170,7 +170,7 @@ const FuneralUpdate = () => {
 
   const [country1, setCountry1] = useState('');
   const [visible1, setVisible1] = useState(false);
-  const [area1, setArea1] = useState('Abc city, country');
+  const [area1, setArea1] = useState('');
   const [city1, setCity1] = useState('City');
   const [state1, setState1] = useState('');
   const [markerData1, setMarkerData1] = useState({
@@ -434,7 +434,12 @@ const FuneralUpdate = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text style={style.font16Re}>
+          <Text
+            numberOfLines={1}
+            style={[
+              style.font16Re,
+              {color: area ? colors.black : colors.gray},
+            ]}>
             {' '}
             {area ? area : 'Enter Funeral Location'}
           </Text>
@@ -499,7 +504,12 @@ const FuneralUpdate = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text style={style.font16Re}>
+          <Text
+            numberOfLines={1}
+            style={[
+              style.font16Re,
+              {color: area ? colors.black : colors.gray},
+            ]}>
             {' '}
             {area1 ? area1 : 'Enter Church Location'}
           </Text>
@@ -581,28 +591,25 @@ const FuneralUpdate = () => {
             enablePoweredByContainer={false}
             styles={{
               container: {
-                // height: 10,
-                //   flex: 1,
-                //   zIndex: 2,
-                // height: '70%',
+                flex: 1,
+                zIndex: 2,
+                height: '100%',
                 width: '100%',
                 alignSelf: 'center',
-                // borderWidth: 1,
-                // borderColor: '#E0E0E0',
-                // backgroundColor: '#F5F5F5',
-                // backgroundColor: 'red',
-                // marginTop: 10,
-                // borderRadius: 10,
+                marginTop: 10,
               },
               textInput: {
-                height: '110%',
-                // borderRadius: 10,
-                //   borderWidth: 1,
-                //   borderColor: '#E0E0E0',
-                backgroundColor: 'white',
-                //   borderBottomColor: '#d4d4d4',
-                //   borderBottomWidth: 0.5,
+                borderBottomColor: '#d4d4d4',
+                borderBottomWidth: 1,
                 color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+              },
+              description: {
+                color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+                lineHeight: 22,
               },
             }}
             fetchDetails={true}
@@ -661,28 +668,25 @@ const FuneralUpdate = () => {
             enablePoweredByContainer={false}
             styles={{
               container: {
-                // height: 10,
-                //   flex: 1,
-                //   zIndex: 2,
-                // height: '70%',
+                flex: 1,
+                zIndex: 2,
+                height: '100%',
                 width: '100%',
                 alignSelf: 'center',
-                // borderWidth: 1,
-                // borderColor: '#E0E0E0',
-                // backgroundColor: '#F5F5F5',
-                // backgroundColor: 'red',
-                // marginTop: 10,
-                // borderRadius: 10,
+                marginTop: 10,
               },
               textInput: {
-                height: '110%',
-                // borderRadius: 10,
-                //   borderWidth: 1,
-                //   borderColor: '#E0E0E0',
-                backgroundColor: 'white',
-                //   borderBottomColor: '#d4d4d4',
-                //   borderBottomWidth: 0.5,
+                borderBottomColor: '#d4d4d4',
+                borderBottomWidth: 1,
                 color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+              },
+              description: {
+                color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+                lineHeight: 22,
               },
             }}
             fetchDetails={true}

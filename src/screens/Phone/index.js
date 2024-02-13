@@ -1,24 +1,14 @@
-import {
-  StyleSheet,
-  Text,
-  Image,
-  View,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
-import React, {useMemo, useReducer, useState} from 'react';
-import Layout from '../../components/Layout';
-import AppTextInput from '../../components/FloatingLabelInput';
-import {BaseButton} from '../../components/BaseButton';
-import style from '../../assets/css/style';
-import {colors, fonts} from '../../constraints';
-import {BakcButton} from '../../assets/images/svg';
-import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
-import AuthHeader from '../../components/AuthHeader';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import PhoneNumberInput from '../../components/PhoneInput';
-import ApiRequest from '../../Services/ApiRequest';
+import React, {useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
+import {ActivityIndicator, ScrollView, StyleSheet} from 'react-native';
+import ApiRequest from '../../Services/ApiRequest';
+import AuthHeader from '../../components/AuthHeader';
+import {BaseButton} from '../../components/BaseButton';
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
+import Layout from '../../components/Layout';
+import PhoneNumberInput from '../../components/PhoneInput';
+import {colors} from '../../constraints';
 
 const Phone = () => {
   const route = useRoute();

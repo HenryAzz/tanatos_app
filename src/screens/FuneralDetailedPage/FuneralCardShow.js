@@ -22,6 +22,7 @@ const FuneralCardShow = ({
   return (
     <View
       style={{
+            borderRadius: 10,
         backgroundColor: '#F5F5F5',
         width: '100%',
         marginVertical: 10,
@@ -33,7 +34,7 @@ const FuneralCardShow = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingVertical: 6,
+          paddingVertical: 0,
         }}>
         <View
           style={{
@@ -47,6 +48,7 @@ const FuneralCardShow = ({
             marginTop: 10,
             // marginLeft: 6,
             marginHorizontal: 7,
+          
           }}>
           <Image
             source={img1}
@@ -56,16 +58,16 @@ const FuneralCardShow = ({
             }}
           />
         </View>
-        <View style={{width: 160, justifyContent: 'space-evenly', height: 150}}>
+        <View style={{width: 160, justifyContent: 'space-evenly', height: 120}}>
           <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
             {heading}
           </Text>
-          {hall_no && (
+         
             <Text
               style={[
                 style.font12Re,
                 {
-                  color: colors.primaryColor,
+                  color: colors.black,
                   fontFamily: fonts.bold,
                   marginVertical: 2,
                   // width: '100%',
@@ -74,7 +76,7 @@ const FuneralCardShow = ({
               numberOfLines={1}>
               {hall_no}
             </Text>
-          )}
+      
           {name && description ? (
             <>
               <Text
@@ -163,15 +165,16 @@ const FuneralCardShow = ({
                 justifyContent: 'space-evenly',
                 borderRadius: 12,
                 // paddingVertical: 10,
+                right: -100,
               }}>
-              <Image
+              {/* <Image
                 source={require('../../assets/Mapshow.png')}
                 style={{height: 12, width: 12}}
-              />
+              /> */}
               <Text
                 style={[
                   style.font12Re,
-                  {color: colors.white, fontFamily: fonts.bold},
+                  {color: colors.white, fontFamily: fonts.bold , textTransform: 'capitalize'},
                 ]}>
                 {t('Map')}
               </Text>

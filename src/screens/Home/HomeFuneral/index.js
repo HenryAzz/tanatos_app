@@ -40,7 +40,7 @@ const HomeFuneral = () => {
   const {t} = useTranslation();
 
   const [wantFlowers, setWantFlowers] = useState('yes');
-  const [area, setArea] = useState('Abc city, country');
+  const [area, setArea] = useState('');
   const [valid, setValid] = useState();
   const [imageLoader, setImageLoader] = useState(false);
   const [imageLoader2, setImageLoader2] = useState(false);
@@ -51,7 +51,7 @@ const HomeFuneral = () => {
   const [showTimepicker, setShowTimepicker] = useState(false);
   const [selectedTime1, setSelectedTime1] = useState(null);
   const [showTimepicker1, setShowTimepicker1] = useState(false);
-  const [area1, setArea1] = useState('Abc city, country');
+  const [area1, setArea1] = useState('');
   const [imagesToSend, setImagesToSend] = useState('');
   const [imageToSendFuneral, setImagesToSendFuneral] = useState('');
   const [imageToSendCharch, setImagesToSendChurch] = useState('');
@@ -257,7 +257,6 @@ const HomeFuneral = () => {
 
   useMemo(() => {
     const isFormFilled =
-      // selectedItem.name &&
       formData.name &&
       formData.description &&
       formData.hallno &&
@@ -270,7 +269,7 @@ const HomeFuneral = () => {
       area1 &&
       formData.surname &&
       imageToSendCharch &&
-      imageToSendFuneral &&
+      // imageToSendFuneral &&
       imagesToSend;
 
     setValid(!isFormFilled);
@@ -278,9 +277,10 @@ const HomeFuneral = () => {
     formData,
     formattedTimeCh,
     formattedTimeFun,
-    area && area1,
+    area,
+    area1,
     imageToSendCharch,
-    imageToSendFuneral,
+    // imageToSendFuneral,
     imagesToSend,
   ]);
 
@@ -288,7 +288,9 @@ const HomeFuneral = () => {
     if (store?.users?.city || store?.users?.country) {
       setArea(store.users?.city + ',' + store.users?.country);
     }
+    setImagesToSend(store.users?.image);
   }, []);
+
   return (
     <Layout>
       <AppHeader
@@ -358,7 +360,11 @@ const HomeFuneral = () => {
                 borderRadius: 53,
               }}>
               <Image
-                source={require('../../../assets/profilepic.png')}
+                source={{
+                  uri:
+                    'https://locatestudent.com/tanatos/upload/' +
+                    store?.users?.image,
+                }}
                 style={{
                   width: 100,
                   height: 100,
@@ -523,7 +529,14 @@ const HomeFuneral = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text style={style.font16Re}>{area ? area : t('funeral6')}</Text>
+          <Text
+            numberOfLines={1}
+            style={[
+              style.font16Re,
+              {color: area ? colors.black : colors.gray},
+            ]}>
+            {area ? area : t('funeral6')}
+          </Text>
         </TouchableOpacity>
         <TimePicker
           time={selectedTime}
@@ -548,6 +561,9 @@ const HomeFuneral = () => {
             const threeDaysAgo = new Date();
             threeDaysAgo.setDate(currentDate.getDate() - 4);
 
+            const threeDaysAfter = new Date();
+            threeDaysAfter.setDate(currentDate.getDate() + 3);
+
             if (new Date(selectedDate) < threeDaysAgo) {
               setFormData({
                 ...formData,
@@ -555,15 +571,21 @@ const HomeFuneral = () => {
               });
               ToastMessage(t('dateMessage'));
               return false;
+            } else if (new Date(selectedDate) > threeDaysAfter) {
+              setFormData({
+                ...formData,
+                starting_dateModal: false,
+              });
+              return ToastMessage(t('dateMessage1'));
+            } else {
+              onDateChange(
+                event,
+                selectedDate,
+                'starting_date',
+                'starting_dateModal',
+              );
             }
-            onDateChange(
-              event,
-              selectedDate,
-              'starting_date',
-              'starting_dateModal',
-            );
           }}
-          maxDate={new Date()}
         />
 
         <Text
@@ -687,7 +709,15 @@ const HomeFuneral = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text style={style.font16Re}> {area1 ? area1 : t('funeral0')}</Text>
+          <Text
+            numberOfLines={1}
+            style={[
+              style.font16Re,
+              {color: area ? colors.black : colors.gray},
+            ]}>
+            {' '}
+            {area1 ? area1 : t('funeral0')}
+          </Text>
         </TouchableOpacity>
         <TimePicker
           time={selectedTime1}
@@ -707,14 +737,36 @@ const HomeFuneral = () => {
             }));
           }}
           onChange={(event, selectedDate) => {
-            onDateChange(
-              event,
-              selectedDate,
-              'starting_date1',
-              'starting_dateModal1',
-            );
+            const currentDate = new Date();
+
+            const threeDaysAgo = new Date();
+            threeDaysAgo.setDate(currentDate.getDate() - 4);
+
+            const threeDaysAfter = new Date();
+            threeDaysAfter.setDate(currentDate.getDate() + 3);
+
+            if (new Date(selectedDate) < threeDaysAgo) {
+              setFormData({
+                ...formData,
+                starting_dateModal1: false,
+              });
+              ToastMessage(t('dateMessage'));
+              return false;
+            } else if (new Date(selectedDate) > threeDaysAfter) {
+              setFormData({
+                ...formData,
+                starting_dateModal1: false,
+              });
+              return ToastMessage(t('dateMessage1'));
+            } else {
+              onDateChange(
+                event,
+                selectedDate,
+                'starting_date1',
+                'starting_dateModal1',
+              );
+            }
           }}
-          minDate={new Date()}
         />
         <View style={[style.justifySpaBtwRow, {marginTop: 10}]}>
           <Text style={style.font16Re}>{t('funeral13')}</Text>
@@ -766,13 +818,25 @@ const HomeFuneral = () => {
             enablePoweredByContainer={false}
             styles={{
               container: {
+                flex: 1,
+                zIndex: 2,
+                height: '100%',
                 width: '100%',
                 alignSelf: 'center',
+                marginTop: 10,
               },
               textInput: {
-                height: '110%',
-                backgroundColor: 'white',
+                borderBottomColor: '#d4d4d4',
+                borderBottomWidth: 1,
                 color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+              },
+              description: {
+                color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+                lineHeight: 22,
               },
             }}
             fetchDetails={true}
@@ -813,13 +877,25 @@ const HomeFuneral = () => {
             enablePoweredByContainer={false}
             styles={{
               container: {
+                flex: 1,
+                zIndex: 2,
+                height: '100%',
                 width: '100%',
                 alignSelf: 'center',
+                marginTop: 10,
               },
               textInput: {
-                height: '110%',
-                backgroundColor: 'white',
+                borderBottomColor: '#d4d4d4',
+                borderBottomWidth: 1,
                 color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+              },
+              description: {
+                color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+                lineHeight: 22,
               },
             }}
             fetchDetails={true}

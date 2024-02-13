@@ -258,7 +258,7 @@ const OrderAllDetails = () => {
           </Text>
           <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
             {' '}
-            {total_amount}$
+            {total_amount}€
           </Text>
         </View>
         <FlatList

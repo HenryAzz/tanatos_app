@@ -1,29 +1,20 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import style from '../../assets/css/style';
-import {colors, fonts} from '../../constraints';
 import ImageSwiper from '../../components/ImageSwiper/ImageSwiper';
+import {colors, fonts} from '../../constraints';
 
 const OrderCardCC = ({item, images}) => {
   return (
     <View
       style={{
-        // width: 158,
         backgroundColor: colors.white,
         elevation: 5,
         shadowColor: colors.elev,
         borderRadius: 10,
         marginBottom: 14,
-        // width: '45%',
       }}>
-      <View style={{height: 120, width: 155}}>
+      <View style={{height: 120, width: 170}}>
         <ImageSwiper images={images} />
       </View>
 
@@ -35,11 +26,10 @@ const OrderCardCC = ({item, images}) => {
           alignItems: 'center',
           paddingBottom: 10,
           paddingLeft: 10,
-          //   paddingVertical: 10,
           justifyContent: 'space-between',
         }}>
         <Text style={[style.font16Re, {fontFamily: fonts.bold}]}>
-          {item.price}$
+          {item.price}€
         </Text>
         {item.status ? (
           <TouchableOpacity
@@ -51,6 +41,7 @@ const OrderCardCC = ({item, images}) => {
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: 6,
+              backgroundColor: 'white',
             }}>
             <Text style={[style.font14Re, {color: colors.primaryColor}]}>
               {item.status}
@@ -63,18 +54,3 @@ const OrderCardCC = ({item, images}) => {
 };
 
 export default OrderCardCC;
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  image: {
-    height: 120,
-    width: 158,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    // margin: 10,
-    marginVertical: 10,
-  },
-});

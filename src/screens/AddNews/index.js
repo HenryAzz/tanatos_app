@@ -1,36 +1,34 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator,
-  ScrollView,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import style from '../../assets/css/style';
 
-import Icon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Layout from '../../components/Layout';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import {BaseButton} from '../../components/BaseButton';
-import {colors, constants, fonts} from '../../constraints';
-import {ToastMessage} from '../../utils/Toast';
-import ApiRequest from '../../Services/ApiRequest';
 import {useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
+import Icon from 'react-native-vector-icons/AntDesign';
+import ApiRequest from '../../Services/ApiRequest';
+import AppHeader from '../../components/AppHeader/AppHeader';
+import {BaseButton} from '../../components/BaseButton';
+import Layout from '../../components/Layout';
+import {colors, constants, fonts} from '../../constraints';
+import {ToastMessage} from '../../utils/Toast';
 const AddNews = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const id = route?.params?.id;
   const account_Type = route?.params?.account_Type;
-  console.log(id, '', account_Type);
 
   const [images, setImages] = useState([]);
   const [imagesToSend, setImagesToSend] = useState([]);

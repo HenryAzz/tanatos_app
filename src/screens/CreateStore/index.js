@@ -21,11 +21,13 @@ import Layout from '../../components/Layout';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import {colors, constants, fonts} from '../../constraints';
 import {ToastMessage} from '../../utils/Toast';
+import {useDispatch, useSelector} from 'react-redux';
+import {userStore} from '../../store/reducer/usersSlice';
 
 const CreateStore = () => {
   const route = useRoute();
   const phone = route?.params?.phone;
-  const account_Type = route?.params?.account_Type;
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     shopName: '',
@@ -34,12 +36,13 @@ const CreateStore = () => {
     shopLocation: '',
   });
 
-  const [area, setArea] = useState('Abc city, country');
-  const [name, setNAme] = useState('');
-  const [city, setCity] = useState('City');
+  const [area, setArea] = useState('');
+
+  const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [markerData, setMarkerData] = useState({latitude: '', longitude: ''});
-  // console.log(markerData.latitude);
+  const store = useSelector(store => store.user);
+
   const [country, setCountry] = useState('');
 
   const handleInputChange = (name, value) => {
@@ -79,7 +82,7 @@ const CreateStore = () => {
 
   const handleAddStore = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
-    // console.log(user_id, 'user_id');
+
     try {
       setLoading1(true);
       const res = await ApiRequest({
@@ -93,7 +96,9 @@ const CreateStore = () => {
         name: formData.shopName,
       });
       const resp = res.data;
+
       if (res.data.result) {
+        dispatch(userStore(res?.data?.store));
         ToastMessage(res?.data?.message);
         await AsyncStorage.setItem('store_id', JSON.stringify(resp?.id));
 
@@ -113,25 +118,21 @@ const CreateStore = () => {
     const user_id = await AsyncStorage.getItem('user_id');
     try {
       setLoading1(true);
+
       const res = await ApiRequest({
         type: 'update_data',
         table_name: 'stores',
-        id: user_id,
-
+        id: store?.store?.id,
         location: area,
-
         name: formData.shopName,
       });
-      const resp = res.data;
+
       if (res.data.result) {
-        // console.log(resp, 'create sore');
         ToastMessage(res?.data?.message);
-        console.log(resp?.id, 'resp?.id');
-        await AsyncStorage.setItem('store_id', JSON.stringify(resp.id));
         navigation.navigate('MainStack', {
           screen: 'UploadPhoto',
           params: {
-            id: resp?.id,
+            type: 'update',
           },
         });
         setLoading1(false);
@@ -146,8 +147,8 @@ const CreateStore = () => {
     }
   };
   const [showLoadingModal, setShowLoadingModal] = useState(false);
-
   const [validF, setValidF] = useState(true);
+
   useMemo(() => {
     const isFormFilled =
       formData.shopName.trim() &&
@@ -157,48 +158,18 @@ const CreateStore = () => {
     setValidF(!isFormFilled);
   }, [formData, area]);
 
-  const [checkStore, setCheckStore] = useState();
-  const handleCheckStore = async () => {
-    if (!isFocused) return;
-    try {
-      setShowLoadingModal(true);
-      const user_id = await AsyncStorage.getItem('user_id');
-      console.log(user_id);
-      const res = await ApiRequest({
-        type: 'get_data',
-        table_name: 'stores',
-        user_id: user_id,
-        own: 1,
-        // last_id:""
-      });
-      const resp = res.data.data;
-      console.log(resp[0].name, 'resp/// get store data');
-      setShowLoadingModal(false);
-      setCheckStore(resp);
-      setFormData({
-        shopName: resp[0].name,
-        shopLocation: resp[0]?.location,
-      });
-
-      setArea(resp[0]?.location);
-    } catch (err) {
-      setShowLoadingModal(false);
-    } finally {
-      setShowLoadingModal(false);
-    }
-  };
   useEffect(() => {
-    handleCheckStore();
-    // handleGetCatData();
+    if (Object.keys(store?.store)?.length !== 0) {
+      setFormData({
+        ...formData,
+        shopName: store?.store?.name,
+      });
+      setArea(store?.store?.location);
+    }
   }, [isFocused]);
-  // console.log(checkStore[0]?.name, 'checkStore/////////');
+
   return (
     <Layout>
-      {/* <FocusAwareStatusBar
-        animated={true}
-        barStyle={'dark-content'}
-        backgroundColor={colors.backgroundColor}
-      /> */}
       <AuthHeader
         title={t("Let's Create Store")}
         subTitle={t('Enter Your details below to create a new store')}
@@ -232,7 +203,12 @@ const CreateStore = () => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text style={style.font16Re}>
+          <Text
+            numberOfLines={1}
+            style={[
+              style.font16Re,
+              {color: area ? colors.black : colors.gray},
+            ]}>
             {' '}
             {area ? area : t('Enter Store Location')}
           </Text>
@@ -245,7 +221,7 @@ const CreateStore = () => {
           value={formData.shopLocation}
           onChangeText={text => handleInputChange('shopLocation', text)}
         /> */}
-        {checkStore ? (
+        {Object.keys(store?.store)?.length !== 0 ? (
           <BaseButton
             title={
               loading1 ? (
@@ -310,28 +286,25 @@ const CreateStore = () => {
             enablePoweredByContainer={false}
             styles={{
               container: {
-                // height: 10,
-                //   flex: 1,
-                //   zIndex: 2,
-                // height: '70%',
+                flex: 1,
+                zIndex: 2,
+                height: '100%',
                 width: '100%',
                 alignSelf: 'center',
-                // borderWidth: 1,
-                // borderColor: '#E0E0E0',
-                // backgroundColor: '#F5F5F5',
-                // backgroundColor: 'red',
-                // marginTop: 10,
-                // borderRadius: 10,
+                marginTop: 10,
               },
               textInput: {
-                height: '110%',
-                // borderRadius: 10,
-                //   borderWidth: 1,
-                //   borderColor: '#E0E0E0',
-                backgroundColor: 'white',
-                //   borderBottomColor: '#d4d4d4',
-                //   borderBottomWidth: 0.5,
+                borderBottomColor: '#d4d4d4',
+                borderBottomWidth: 1,
                 color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+              },
+              description: {
+                color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+                lineHeight: 22,
               },
             }}
             fetchDetails={true}
@@ -357,55 +330,6 @@ const CreateStore = () => {
           />
         </View>
       </Modal>
-      {/* <Modal
-        visible={isModalVisibleCat}
-        animationType="slide"
-        transparent={true}
-        defaultStyle={{}}
-        // style={{
-        //   width: '90%',
-        //   justifyContent: 'center',
-        //   alignItems: 'center',
-        //   backgroundColor: 'red', // Add an overlay background color if desired
-        // }}
-        onRequestClose={() => setModalVisibleCat(false)}>
-        <View
-          style={{
-            flex: 1,
-            padding: 20,
-            width: '100%',
-            alignSelf: 'center',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
-          }}>
-          <View style={{backgroundColor: colors.white, width: '100%'}}>
-            <FlatList
-              data={catData}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({item}) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedItem(item);
-                    setModalVisibleCat(false);
-                  }}
-                  style={{
-                    // backgroundColor:
-                    // selectedItem === item ? 'red' : 'transparent',
-                    borderColor:
-                      selectedItem === item ? 'black' : 'transparent',
-                    borderWidth: 1,
-                    padding: 10,
-                    margin: 5,
-                    borderRadius: 5,
-                  }}>
-                  <Text>{item.name}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        </View>
-      </Modal> */}
     </Layout>
   );
 };

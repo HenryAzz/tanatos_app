@@ -88,7 +88,7 @@ const CatalogDetail = () => {
         </View>
         <View style={[style.justifySpaBtwRow, {marginBottom: 10}]}>
           <Text style={style.font16Re}>{t('catalogDetail4')}:</Text>
-          <View style={{width: 170, alignItems: 'flex-end'}}>
+          <View style={{width: 240, alignItems: 'flex-end'}}>
             <Text
               style={[style.font16Re, {fontFamily: fonts.medium}]}
               numberOfLines={1}>
@@ -102,7 +102,7 @@ const CatalogDetail = () => {
             <Text
               style={[style.font16Re, {fontFamily: fonts.medium}]}
               numberOfLines={1}>
-              {catalog?.price}$
+              {catalog?.price}€
             </Text>
           </View>
         </View>

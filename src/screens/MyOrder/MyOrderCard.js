@@ -78,7 +78,7 @@ const MyOrderCard = ({
               />
             </TouchableOpacity>
             <Text style={[style.font14Re, {fontFamily: fonts.bold}]}>
-              {totalPrice}$
+              {totalPrice}€
             </Text>
           </View>
         </View>

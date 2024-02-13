@@ -35,8 +35,8 @@ const Signup = ({route}) => {
   const [isSecureTextConfirm, setIsSecureTextConfirm] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [area, setArea] = useState('Abc city, country');
-  const [city, setCity] = useState('Faisalabad');
+  const [area, setArea] = useState('');
+  const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(false);
@@ -98,13 +98,11 @@ const Signup = ({route}) => {
 
     try {
       setIsCheckingEmail(true); // Show loader
-      const dataToCheck = {
-        type: 'check_email',
-        email: email,
-      };
-      const res = await ApiRequest(dataToCheck);
+     console.log(email)
+      const res = await ApiRequest({data:{email:email}, type:'/usuarios/by-email'});
+      console.log('res', res);
       setIsCheckingEmail(false); // Hide loader
-      if (res.data.result) {
+      if (res.data === '') {
         setEmailIcon(<Icon name="check" color={colors.green} size={25} />);
         setIsEmailAvailable(true);
       } else {
@@ -323,7 +321,15 @@ const Signup = ({route}) => {
             justifyContent: 'center',
             paddingLeft: 10,
           }}>
-          <Text style={style.font16Re}> {area ? area : t('singup4')}</Text>
+          <Text
+            numberOfLines={1}
+            style={[
+              style.font16Re,
+              {color: area ? colors.black : colors.gray},
+            ]}>
+            {' '}
+            {area ? area : t('singup4')}
+          </Text>
         </TouchableOpacity>
 
         {/* <DatePicker
@@ -502,15 +508,25 @@ const Signup = ({route}) => {
             enablePoweredByContainer={false}
             styles={{
               container: {
+                flex: 1,
+                zIndex: 2,
+                height: '100%',
                 width: '100%',
                 alignSelf: 'center',
+                marginTop: 10,
               },
               textInput: {
-                height: '110%',
-
-                backgroundColor: 'white',
-
+                borderBottomColor: '#d4d4d4',
+                borderBottomWidth: 1,
                 color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+              },
+              description: {
+                color: 'black',
+                fontFamily: fonts.regular,
+                fontSize: 16,
+                lineHeight: 22,
               },
             }}
             fetchDetails={true}

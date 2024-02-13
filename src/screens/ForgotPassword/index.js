@@ -1,17 +1,14 @@
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
-import React, {useState, useMemo} from 'react';
-import Layout from '../../components/Layout';
-import AuthHeader from '../../components/AuthHeader';
-import PhoneNumberInput from '../../components/PhoneInput';
-import {BaseButton} from '../../components/BaseButton';
 import {useNavigation} from '@react-navigation/native';
-import ApiRequest from '../../Services/ApiRequest';
-import {isValidNumber} from 'react-native-phone-number-input';
-import {colors} from '../../constraints';
+import React, {useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import Toast from 'react-native-root-toast';
-import {ToastMessage} from '../../utils/Toast';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import ApiRequest from '../../Services/ApiRequest';
+import AuthHeader from '../../components/AuthHeader';
+import {BaseButton} from '../../components/BaseButton';
 import AppTextInput from '../../components/FloatingLabelInput';
+import Layout from '../../components/Layout';
+import {colors} from '../../constraints';
+import {ToastMessage} from '../../utils/Toast';
 import {validateEmail} from '../../utils/Validations';
 
 const ForgotPassword = () => {

@@ -7,7 +7,7 @@ import style from '../../assets/css/style';
 import {colors} from '../../constraints';
 import {useTranslation} from 'react-i18next';
 import {useDispatch} from 'react-redux';
-import {userId, userType} from '../../store/reducer/usersSlice';
+import {userId, userStore, userType} from '../../store/reducer/usersSlice';
 const LogoutBottomSheet = ({bottomSheetRef}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -17,6 +17,7 @@ const LogoutBottomSheet = ({bottomSheetRef}) => {
     await AsyncStorage.clear();
     dispatch(userType({userType: ''}));
     dispatch(userId({user_id: ''}));
+    dispatch(userStore({}));
     navigation.replace('AuthStack', {screen: 'login'});
   };
   const {t} = useTranslation();

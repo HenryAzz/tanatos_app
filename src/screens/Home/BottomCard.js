@@ -4,6 +4,7 @@ import style from '../../assets/css/style';
 import {colors, fonts} from '../../constraints';
 import Edit from '../../assets/Edit.png';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import AIcon from 'react-native-vector-icons/AntDesign';
 import {useTranslation} from 'react-i18next';
 const BottomCard = ({
   title,
@@ -14,8 +15,12 @@ const BottomCard = ({
   account_Type,
   gotoDetailePage,
   funeralImg,
+  onHeartPress,
+  isLiked,
 }) => {
   const {t} = useTranslation();
+
+  // console.log(isLiked);
   return (
     <TouchableOpacity
       onPress={account_Type === 'customer' ? onPress1 : gotoDetailePage}
@@ -32,12 +37,19 @@ const BottomCard = ({
       }}>
       <View style={{alignItems: 'flex-start', flexDirection: 'row'}}>
         <View style={{alignItems: 'center', flexDirection: 'row', flex: 1}}>
-          {account_Type == 'funeral' && funeralImg && (
+          {account_Type === 'funeral' && (
             <View>
-              <Image
-                source={{uri: funeralImg}}
-                style={{width: 35, height: 35, borderRadius: 50}}
-              />
+              {funeralImg ? (
+                <Image
+                  source={{uri: funeralImg}}
+                  style={{width: 35, height: 35, borderRadius: 50}}
+                />
+              ) : (
+                <Image
+                  source={require('../../assets/logoimg.png')}
+                  style={{width: 35, height: 35, borderRadius: 50}}
+                />
+              )}
             </View>
           )}
           <View style={{marginLeft: 10}}>
@@ -72,12 +84,20 @@ const BottomCard = ({
                 }}>
                 <Icon name="trash" color={colors.white} size={10} />
               </TouchableOpacity>
-
               <TouchableOpacity onPress={onPress}>
                 <Image source={Edit} style={{height: 20, width: 20}} />
               </TouchableOpacity>
             </>
-          ) : null}
+          ) : (
+            // <TouchableOpacity onPress={onHeartPress}>
+            //   <AIcon
+            //     name={isLiked  ? 'heart' : 'hearto'}
+            //     color={colors.primaryColor}
+            //     size={20}
+            //   />
+            // </TouchableOpacity>
+            null
+          )}
         </View>
       </View>
 

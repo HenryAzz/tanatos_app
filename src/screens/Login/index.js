@@ -83,19 +83,20 @@ const Login = () => {
       setIsLoading(true);
       setDisable(true);
       const res = await ApiRequest({
-        type: 'login',
-        email: formData.email.toLowerCase(),
-        password: formData.password,
-      });
-      const resp = res?.data?.result;
-      const store_id = JSON.stringify(res?.data?.store_id);
+        type: '/usuarios/login', data:
+        { email: formData.email.toLowerCase(),
+          password: formData.password }
+        })
+      const resp = res?.data?.data?.id;
+      // const store_id = JSON.stringify(res?.data?.store_id);
+      const store_id = JSON.stringify(res?.data?.id);
 
-      console.log(res.data, 'data login get');
+      console.log(resp, 'data login get');
       if (resp) {
-        handleFcm(res?.data?.user_id);
-        const id = res?.data?.user_id;
-        const account_Type = res?.data?.user_type;
-        await AsyncStorage.setItem('user_id', id);
+        handleFcm(res?.data?.data?.id);
+        const id = res?.data?.data?.id;
+        const account_Type = res?.data?.data.user_type;
+        await AsyncStorage.setItem('user_id', JSON.stringify(id));
         dispatch(userType({user_type: account_Type})),
           dispatch(userId({user_id: id})),
           await AsyncStorage.setItem('account_Type', account_Type);
@@ -108,6 +109,7 @@ const Login = () => {
         // const storeID = await AsyncStorage.getItem('store_id');
         // console.log(storeID);
         setIsLoading(false);
+        console.log(resp, 'deberia pasar de pagina');
         navigation.navigate('MainStack');
         setFormData({email: '', password: ''});
       } else {
@@ -132,8 +134,8 @@ const Login = () => {
       <View style={{backgroundColor: colors.white, paddingHorizontal: 14}}>
         <AuthHeader title={t('login1')} subTitle={t('login2')} />
       </View>
-      <Layout>
         <ScrollView showsVerticalScrollIndicator={false}>
+      <Layout>
           <View style={{marginTop: 0}}>
             <AppTextInput
               titleText={t('Email')}
@@ -224,8 +226,8 @@ const Login = () => {
               </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
       </Layout>
+        </ScrollView>
     </>
   );
 };

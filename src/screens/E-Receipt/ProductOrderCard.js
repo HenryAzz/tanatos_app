@@ -107,7 +107,7 @@ const ProductOrderCard = ({
             <Text
               style={[style.font16Re, {fontFamily: fonts.bold}]}
               numberOfLines={2}>
-              ${item.price}
+              €{item.price}
             </Text>
           </View>
           <TouchableOpacity

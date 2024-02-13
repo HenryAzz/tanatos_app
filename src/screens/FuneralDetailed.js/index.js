@@ -12,7 +12,7 @@ import Layout from '../../components/Layout';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import HomeCard from '../Home/HomeCard';
 import FuneralCard from './FuneralCard';
-import ApiRequest from '../../Services/ApiRequest';
+import ApiRequest, { ApiRequestGet } from '../../Services/ApiRequest';
 import ModalLoadingTrans from '../../components/ModalLoadingTrans';
 import OrderNotFound from '../MyOrder/OrderNotFound';
 import {useTranslation} from 'react-i18next';
@@ -28,12 +28,12 @@ const FuneralDetailed = () => {
     try {
       setLoading(true);
       setShowLoadingModal(true);
-      const res = await ApiRequest({
-        type: 'get_data',
+      const res = await ApiRequestGet({
+        type: '/funerals',
         table_name: 'funerals',
       });
-      const resp = res.data.data;
-      // console.log(resp, 'resp////////////////////////');
+      const resp = res.data;
+      console.log(resp, 'resp555555////////////////////////');
       setFuneralData(resp);
       setRefreshing(false);
       setShowLoadingModal(false);
@@ -43,6 +43,7 @@ const FuneralDetailed = () => {
       setLoading(false);
     }
   };
+  console.log( 'resp555555////////////////////////');
 
   // last_id: catalogData[catalogData.length - 1]?.id,
   //   if (resp && resp != undefined && resp.length > 0) {
@@ -61,8 +62,8 @@ const FuneralDetailed = () => {
   const handleGetFuneralDataMore = async () => {
     try {
       setBottomLoader(true);
-      const res = await ApiRequest({
-        type: 'get_data',
+      const res = await ApiRequestGet({
+        type: '/funerals',
         table_name: 'funerals',
         last_id: funeralData[funeralData.length - 1]?.id,
       });
@@ -71,7 +72,7 @@ const FuneralDetailed = () => {
       if (resp && resp != undefined && resp.length > 0) {
         setFuneralData([...funeralData, ...resp]);
       }
-      // setFuneralData(resp);
+      setFuneralData(resp);
     } catch (err) {
     } finally {
       setBottomLoader(false);
@@ -127,7 +128,7 @@ const FuneralDetailed = () => {
               name={item.name}
               subTitle={item.description}
               image={item.image}
-              url={item.url}
+              url={"https://kffhealthnews.org/wp-content/uploads/sites/2/2020/03/GettyImages-104304892_funeral_1350.jpg"}
               time={item.time}
               onPress={() =>
                 navigation.navigate('FuneralDetailedPage', {

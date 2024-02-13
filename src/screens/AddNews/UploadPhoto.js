@@ -25,13 +25,10 @@ import {ToastMessage} from '../../utils/Toast';
 import ApiRequest from '../../Services/ApiRequest';
 import {useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
+import {useSelector} from 'react-redux';
 const UploadPhoto = () => {
   const navigation = useNavigation();
   const route = useRoute();
-
-  const id = route?.params;
-  const account_Type = route?.params?.account_Type;
-  console.log(route?.params?.id, '/////////////', account_Type);
 
   const [images, setImages] = useState([]);
   const [imagesToSend, setImagesToSend] = useState([]);
@@ -39,6 +36,8 @@ const UploadPhoto = () => {
   const [imageLoader, setImageLoader] = useState(false);
   const [loading, setLoading] = useState(false);
   const isUpdate = route.params?.update || false;
+  const store = useSelector(store => store.user);
+
   const buttonText = isUpdate ? 'Update' : 'Continue';
   useEffect(() => {
     if (route.params?.property) {
@@ -128,17 +127,18 @@ const UploadPhoto = () => {
 
     const dataToPost = {
       type: 'update_data',
-      //   table_name: 'stores',
       table_name: 'stores_gallery',
-      id: route?.params?.id,
+      id: route?.params?.id || store?.store?.id,
       images: JSON.stringify(imagesToSend),
     };
     try {
       const res = await ApiRequest(dataToPost);
-      console.log(res.data, 'image uplod');
       if (res?.data?.result) {
-        // navigation.navigate('AppStack', {screen: 'Home'});
-        navigation.navigate('MainStack', {screen: 'AddFlowers'});
+        if (route.params?.type === 'update') {
+          navigation.navigate('AppStack', {screen: 'Home'});
+        } else {
+          navigation.navigate('MainStack', {screen: 'AddFlowers'});
+        }
         setLoading(false);
         setdisabled(false);
       }
@@ -156,6 +156,7 @@ const UploadPhoto = () => {
     const isFormFilled = imagesToSend?.length > 0;
     setValid(!isFormFilled);
   }, [imagesToSend]);
+
   return (
     <Layout>
       <ScrollView style={{width: '100%'}}>
@@ -198,11 +199,9 @@ const UploadPhoto = () => {
               <View
                 style={{
                   marginTop: 10,
-                  borderWidth: 1,
                   borderRadius: 15,
                   width: 102,
                   height: 152,
-                  // width: 100,
                   marginRight: 10,
                 }}>
                 <TouchableOpacity
@@ -293,7 +292,7 @@ const styles = StyleSheet.create({
   },
   iconBox: {
     position: 'absolute',
-    right: 5,
+    right: -4,
     top: -5,
     height: 20,
     width: 20,

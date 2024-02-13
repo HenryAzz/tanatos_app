@@ -256,7 +256,7 @@ const SpecificStoreGalery = ({route}) => {
                     <Text style={styles.title} numberOfLines={1}>
                       {item?.name}
                     </Text>
-                    <Text style={styles.price}>{item?.price}$</Text>
+                    <Text style={styles.price}>{item?.price}€</Text>
                   </View>
                   <Text style={styles.title}>{item?.store?.name}</Text>
                 </TouchableOpacity>

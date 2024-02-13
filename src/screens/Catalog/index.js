@@ -1,75 +1,31 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
-import Layout from '../../components/Layout';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import OrderCardCC from '../HomeStore/OrderCardCC';
 import ApiRequest from '../../Services/ApiRequest';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ModalLoadingTrans from '../../components/ModalLoadingTrans';
-import OrderNotFound from '../MyOrder/OrderNotFound';
-import {BaseButton} from '../../components/BaseButton';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
 import style from '../../assets/css/style';
+import AppHeader from '../../components/AppHeader/AppHeader';
+import {BaseButton} from '../../components/BaseButton';
+import Layout from '../../components/Layout';
 import {colors} from '../../constraints';
-import {useTransition} from 'react';
-import {useTranslation} from 'react-i18next';
+import OrderCardCC from '../HomeStore/OrderCardCC';
+import OrderNotFound from '../MyOrder/OrderNotFound';
+import {useSelector} from 'react-redux';
+
 const Catalog = () => {
-  const dataCompleted = [
-    {
-      id: '1',
-      title: 'Pink Rose',
-      price: '$40.00',
-
-      image: require('../../assets/HomeStorepic.png'),
-    },
-
-    {
-      id: '2',
-      title: 'Pink Rose',
-      price: '$40.00',
-
-      image: require('../../assets/HomeStorepic.png'),
-    },
-    {
-      id: '3',
-      title: 'Pink Rose',
-      price: '$40.00',
-
-      image: require('../../assets/HomeStorepic.png'),
-    },
-    {
-      id: '4',
-      title: 'Pink Rose',
-      price: '$40.00',
-
-      image: require('../../assets/HomeStorepic.png'),
-    },
-    {
-      id: '5',
-      title: 'Pink Rose',
-      price: '$40.00',
-
-      image: require('../../assets/HomeStorepic.png'),
-    },
-    {
-      id: '6',
-      title: 'Pink Rose',
-      price: '$40.00',
-
-      image: require('../../assets/HomeStorepic.png'),
-    },
-  ];
+  //
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
   const [catalogData, setCatalogData] = useState([]);
+  const store = useSelector(store => store.user);
 
   const handleGetCatData = async () => {
     try {
@@ -78,26 +34,29 @@ const Catalog = () => {
       // setShowLoadingModal(true);
       const user_id = await AsyncStorage.getItem('user_id');
       const store_id = await AsyncStorage.getItem('store_id');
-      if (store_id || store_id != undefined || store_id != null) {
-        const res = await ApiRequest({
-          type: 'get_data',
-          table_name: 'stores_gallery',
-          // user_id: user_id,
-          store_id: JSON.parse(store_id),
-          // own: 1,
-          // last_id:""
-        });
-        const resp = res.data.data;
-
-        setRefreshing(false);
-        setCatalogData(resp);
+      if (
+        !store_id ||
+        store_id === null ||
+        store_id === undefined ||
+        store_id === 'null'
+      ) {
+        return setRefreshing(false);
       }
+      const res = await ApiRequest({
+        type: 'get_data',
+        table_name: 'stores_gallery',
+        user_id: user_id,
+        store_id: JSON.parse(store_id),
+        own: 1,
+      });
+      const resp = res.data?.data;
+
+      setRefreshing(false);
+      setCatalogData(resp);
       // setShowLoadingModal(false);
     } catch (err) {
-    } finally {
-      // setShowLoadingModal(false);
+      console.log(err);
       setRefreshing(false);
-      setLoading(false);
     }
   };
 
@@ -117,6 +76,7 @@ const Catalog = () => {
         table_name: 'stores_gallery',
         user_id: user_id,
         store_id: JSON.parse(store_id),
+        own: 1,
         last_id: catalogData[catalogData.length - 1]?.id,
       });
       const resp = res.data.data;
@@ -166,10 +126,12 @@ const Catalog = () => {
                   title={t('Not Found data')}
                   subtitle={t("You don't have any data at this time")}
                 />
-                <BaseButton
-                  title={t('Add Gallery')}
-                  onPress={() => navigation.navigate('AddFlowers')}
-                />
+                {Object.keys(store?.store)?.length !== 0 && (
+                  <BaseButton
+                    title={t('Add Gallery')}
+                    onPress={() => navigation.navigate('AddFlowers')}
+                  />
+                )}
               </View>
             )
           }

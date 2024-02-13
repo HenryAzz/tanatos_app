@@ -242,7 +242,7 @@ const AppTextInput = ({
           style={[
             style.font16Re,
             customStyle,
-            {fontFamily: fonts.medium, marginBottom: multiline ? 25 : 2},
+            {fontFamily: fonts.medium, marginBottom: 2},
           ]}>
           {titleText}
         </Text>

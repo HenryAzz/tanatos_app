@@ -1,58 +1,38 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
-  ImageBackground,
+  Image,
+  Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  Platform,
-  Linking,
 } from 'react-native';
-import React, {useState} from 'react';
-import Layout from '../../components/Layout';
-import {BaseButton} from '../../components/BaseButton';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {Image} from 'react-native';
-import {colors, fonts} from '../../constraints';
-import style from '../../assets/css/style';
-import FuneralCardShow from './FuneralCardShow';
-import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
 import Share from 'react-native-share';
-import {useTranslation} from 'react-i18next';
-import {useSelector} from 'react-redux';
+import {captureRef} from 'react-native-view-shot';
+import style from '../../assets/css/style';
+import {BaseButton} from '../../components/BaseButton';
 import DontHaveAccount from '../../components/DontHaveAccount';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useEffect} from 'react';
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
+import {colors, fonts} from '../../constraints';
+import FuneralCardShow from './FuneralCardShow';
+
 const FuneralDetailedPage = () => {
-  const store = useSelector(store => store.user);
-  console.log(store.user_id, 'store');
+  //
+
   const route = useRoute();
-  const item = route?.params?.item;
-  const itemFav = route?.params?.itemFav;
-  console.log(item, 'item from fave');
-
-  const pathFromBackend = item?.image;
-
-  console.log(pathFromBackend, 'data item');
-  const cleanedPath = pathFromBackend?.replace(/^"(.*)"$/, '$1');
   const navigation = useNavigation();
-  // console.log(cleanedPath, 'item.url + cleanedPath');
-  // const imageUrl = cleanedPath
-  // ? item.url + cleanedPath
-  // : '../../assets/app_icon.png';
 
-  const ShareMe = async () => {
-    const shareOptions = {
-      message:
-        'Hi wellcome to TANATOS download from PlayStore and register Now https://tanatos.com',
-    };
-    try {
-      const ShareResponse = await Share.open(shareOptions);
-      console.log(ShareResponse, 'Share res');
-    } catch (error) {
-      console.log('Error => ', error);
-    }
-  };
+  const viewRef = useRef();
+
+  const item = route?.params?.item;
+  const pathFromBackend = item?.image;
+  const cleanedPath = pathFromBackend?.replace(/^"(.*)"$/, '$1');
+
+  const [showDontHaveModal, setShowDontHaveModal] = useState(false);
 
   // const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${parseFloat(
   //   item?.funeral_lat,
@@ -87,23 +67,30 @@ const FuneralDetailedPage = () => {
       })
       .catch(err => ErrorMessage('Try again later'));
 
-  const [showDontHaveModal, setShowDontHaveModal] = useState(false);
-
   const handleDontHaveAccout = () => {
-    // Implement your delete logic here
-    // ...
     setShowDontHaveModal(false);
   };
-  const checkGuest = async () => {
-    // const user_type = await AsyncStorage.getItem('account_type');
+
+  const handlePress = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
-    if (!user_id || null) {
+    if (user_id || user_id !== null) {
+      navigation.navigate('FlowerGalery', {item: item});
+    } else {
       setShowDontHaveModal(true);
     }
   };
-  useEffect(() => {
-    checkGuest();
-  }, []);
+
+  const ShareMe = async () => {
+    try {
+      const uri = await captureRef(viewRef, {
+        format: 'jpg',
+        quality: 0.8,
+      });
+      await Share.open({url: uri});
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
   return (
     <View style={{flex: 1, width: '100%', backgroundColor: colors.white}}>
       <FocusAwareStatusBar
@@ -112,161 +99,145 @@ const FuneralDetailedPage = () => {
         backgroundColor="transparent"
         translucent={true}
       />
-      <View
-        style={{height: 300, backgroundColor: colors.primaryColor}}
-        // source={require('../../assets/Sharedbg.jpg')}
-      >
-        {/* <TouchableOpacity onPress={() => navigation.goBack()} style={{}}>
-          <Image
-            source={require('../../assets/BackButtonp.png')}
-            style={{
-              height: 44,
-              width: 44,
-              position: 'absolute',
-              marginVertical: 10,
-              left: 10,
-            }}
-          />
-        </TouchableOpacity> */}
-        <View
-          style={{
-            // flexDirection: 'row',
-            alignItems: 'center',
-            // justifyContent: 'center',
-            padding: 4,
-            // paddingLeft: 16,
-            marginTop: 20,
-            width: '96%',
-            // alignSelf: 'center',
-          }}>
-          <View
-            style={{alignSelf: 'flex-start', paddingTop: 10, paddingLeft: 10}}>
-            <Text
-              style={[
-                style.font24Re,
-                {fontFamily: fonts.bold, color: 'rgba(255, 255, 255, 0.5)'},
-              ]}>
-              TANATOS
-            </Text>
 
-            <Text
-              style={[
-                style.font12Re,
-                {
-                  fontFamily: fonts.bold,
-                  color: 'rgba(255, 255, 255, 0.5)',
-                },
-              ]}>
-              ESQUELAS ONLINE
-            </Text>
-          </View>
-          <View style={{width: '60%', left: 10, alignItems: 'center'}}>
-            {item.image ? (
-              <Image
-                source={{uri: item.url + cleanedPath}}
-                style={{
-                  height: 130,
-                  width: 130,
-                  right: 20,
-                  borderRadius: 80,
-                  // top: 40,
-                }}
-              />
-            ) : (
-              <Image
-                source={require('../../assets/app_icon.png')}
-                style={{
-                  height: 160,
-                  width: 160,
-                  right: 20,
-                  borderRadius: 80,
-                  top: 0,
-                }}
-              />
-            )}
-            <Text
-              style={[
-                style.font20Re,
-                {
-                  fontFamily: fonts.bold,
-                  color: colors.white,
-                  marginVertical: 10,
-                },
-              ]}>
-              {item?.name}
-            </Text>
-            <Text style={[{fontSize: 13, color: colors.white}]}>
-              {item?.short_message}
-            </Text>
-          </View>
-        </View>
-      </View>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-        style={{width: '100%'}}>
-        <View style={{padding: 14, marginBottom: 20}}>
-          <View style={{paddingVertical: 14}}>
-            <Text style={[style.font16Re, {color: '#858585'}]}>
-              {item?.description}
-            </Text>
-          </View>
-          <FuneralCardShow
-            heading={'tanatorio'}
-            name={item?.name}
-            description={item?.description}
-            title={item?.chruch_location}
-            chruch_lat={item?.chruch_lat}
-            chruch_lng={item?.lng}
-            date={item?.church_date}
-            // church_img={item.church_img}
-            img={item.funeral_img}
-            // hall_no={item.hall_no}
-            // subTitle={'Church prayer'}
-            img1={require('../../assets/send22.png')}
-            img2={require('../../assets/send2.png')}
-            onPress={() => OpenMap()}
-            // onPress={() => {
-            //   Linking.openURL(directionsUrl);
-            // }}
-          />
-          <FuneralCardShow
-            heading={'CEREMONIA'}
-            hall_no={item.hall_no}
-            img={item.church_img}
-            // name={item?.name}
-            // description={item?.description}
-            title={item?.funeral_location}
-            funeral_lat={item?.funeral_lat}
-            funeral_lng={item?.funeral_lng}
-            date={item?.funeral_date}
-            time={item?.funeral_time}
-            subTitle={'Home prayer'}
-            img1={require('../../assets/send11.png')}
-            img2={require('../../assets/send1.png')}
-            onPress={() => OpenMap()}
-          />
+        contentContainerStyle={{flexGrow: 1}}>
+        <View ref={viewRef} style={{flex: 1, backgroundColor: 'white'}}>
+          <View style={{height: 258, backgroundColor: colors.primaryColor}}>
+            <View
+              style={{
+                alignItems: 'center',
+                padding: 4,
+                marginTop: 20,
+                width: '100%',
+              }}>
+              <View
+                style={{
+                  alignSelf: 'flex-start',
+                  paddingTop: 10,
+                  paddingLeft: 10,
+                }}>
+                <Text
+                  style={[
+                    style.font24Re,
+                    {fontFamily: fonts.bold, color: 'rgba(255, 255, 255, 0.5)',fontSize:18},
+                  ]}>
+                  TANATOS
+                </Text>
 
+                <Text
+                  style={[
+                    style.font12Re,
+                    {
+                      fontFamily: fonts.bold,
+                      color: 'rgba(255, 255, 255, 0.5)',
+                      fontSize:9
+                    },
+                  ]}>
+                  ESQUELAS ONLINE
+                </Text>
+              </View>
+              <View style={{width: '100%', alignItems: 'center',display:'flex',justifyContent:'center',flexDirection:'column',  top:-20}}>
+                {item.image ? (
+                  <Image
+                    source={{uri:'https://static.vecteezy.com/system/resources/previews/011/675/372/original/female-avatar-images-png.png'}}
+                    style={{
+                      height: 96,
+                      width: 96,
+                   
+                      borderRadius: 80
+                    
+                    }}
+                  />
+                ) : (
+                  <Image
+                    source={require('../../assets/app_icon.png')}
+                    style={{
+                      height: 160,
+                      width: 160,
+                      borderRadius: 80,
+                      top: 0,
+                    }}
+                  />
+                )}
+                <Text
+                  style={[
+                    style.font20Re,
+                    {
+                      fontFamily: fonts.bold,
+                      color: colors.white,
+                      marginVertical: 10,
+                      maxWidth:120,
+                      textAlign: 'center',
+                    },
+                  ]}>
+                  {item?.name} holaa
+                </Text>
+                <Text style={[{fontSize: 13, color: colors.white}]}>
+               
+                  {item?.short_message}
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View style={{paddingHorizontal: 30}}>
+            <View style={{paddingVertical: 14}}>
+              <Text style={[style.font16Re, {color: '#35140A'}]}>
+                {item?.description}
+              </Text>
+            </View>
+            <FuneralCardShow
+              heading={'tanatorio'}
+              name={item?.name}
+              description={item?.description}
+              title={item?.chruch_location}
+              chruch_lat={item?.chruch_lat}
+              chruch_lng={item?.lng}
+              date={item?.church_date}
+              img={item.funeral_img}
+              img1={require('../../assets/send22.png')}
+              img2={require('../../assets/send2.png')}
+              onPress={() => OpenMap()}
+            />
+            <FuneralCardShow
+              heading={'ceremonia'}
+              hall_no={item.hall_no}
+              img={item.church_img}
+              title={item?.funeral_location}
+              funeral_lat={item?.funeral_lat}
+              funeral_lng={item?.funeral_lng}
+              date={item?.funeral_date}
+              time={item?.funeral_time}
+              subTitle={'Home prayer'}
+              img1={require('../../assets/send11.png')}
+              img2={require('../../assets/send1.png')}
+              onPress={() => OpenMap()}
+            />
+          </View>
+        </View>
+        <View style={{marginBottom: 20, paddingHorizontal: 30}}>
           <BaseButton
             title={t('Send Flowers')}
             defaultStyle={{marginVertical: 10}}
-            onPress={() => navigation.navigate('FlowerGalery', {item: item})}
-          />
-          <DontHaveAccount
-            visible={showDontHaveModal}
-            closeModal={() => {
-              setShowDontHaveModal(false);
-              navigation.replace('MainStack');
-            }}
-            handleDontHave={handleDontHaveAccout}
-            setShowDontHaveModa={setShowDontHaveModal}
-            message={t(
-              "Hey there! It looks like you're not logged in. Log in to proceed further.",
-            )}
+            onPress={handlePress}
           />
           <BaseButton title={t('Share')} onPress={ShareMe} />
         </View>
       </ScrollView>
+      <DontHaveAccount
+        visible={showDontHaveModal}
+        closeModal={() => {
+          setShowDontHaveModal(false);
+          navigation.replace('MainStack');
+        }}
+        handleDontHave={handleDontHaveAccout}
+        setShowDontHaveModa={setShowDontHaveModal}
+        message={t(
+          "Hey there! It looks like you're not logged in. Log in to proceed further.",
+        )}
+      />
     </View>
   );
 };

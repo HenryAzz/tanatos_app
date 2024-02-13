@@ -53,7 +53,7 @@ export default StyleSheet.create({
     color: colors.black,
   },
   font16Re: {
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: fonts.regular,
     color: colors.black,
   },

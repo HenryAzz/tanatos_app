@@ -304,10 +304,10 @@ const CheckoutScreen = () => {
               color={colors.primaryColor}
             />
           </View> */}
-          <TextCard title={t('Order')} price={`$${total_amount}`} />
+          <TextCard title={t('Order')} price={`€${total_amount}`} />
           <TextCard
             title={t('Delivery')}
-            price={`$${parseInt(total_amount) + 20}`}
+            price={`€${parseInt(total_amount) + 20}`}
           />
           <TextCard title={'Summay'} price={'127$'} />
         </View>

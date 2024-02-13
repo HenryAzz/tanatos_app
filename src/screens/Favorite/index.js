@@ -6,118 +6,143 @@ import {FlatList, RefreshControl, StyleSheet} from 'react-native';
 import ApiRequest from '../../Services/ApiRequest';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import Layout from '../../components/Layout';
+import BottomCard from '../Home/BottomCard';
 import OrderNotFound from '../MyOrder/OrderNotFound';
-import CardList from './CardList';
 
 const Favorite = () => {
   //
+
+  const {t} = useTranslation();
+
   const navigation = useNavigation();
 
-  const [storeData, setStoreData] = useState();
-
-  const [loading, setLoading] = useState();
-
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = () => {
-    setRefreshing(true);
-    handleGetStoreData();
-  };
+  const [favourites, setFavourites] = useState([]);
+  const [refreshing, setRefreshing] = useState(true);
   const [bottomLoader, setBottomLoader] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
   const handleScroll = () => {
     setScrolled(true);
   };
 
-  const handleGetStoreData = async () => {
+  const onRefresh = () => {
+    setRefreshing(true);
+    handleGetFavourites();
+  };
+
+  const handleGetFavourites = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
     if (user_id) {
       try {
-        setShowLoadingModal(true);
-        setLoading(true);
         const res = await ApiRequest({
           type: 'get_favourite',
           user_id: user_id,
         });
-        const resp = res.data.data;
+        const resp = res.data?.data;
 
-        setStoreData(resp);
-        setShowLoadingModal(false);
+        setFavourites(resp);
         setRefreshing(false);
-
-        console.log(resp, 'storeData');
       } catch (err) {
-      } finally {
-        setShowLoadingModal(false);
-        setLoading(false);
+        console.log(err);
         setRefreshing(false);
       }
     }
   };
 
-  const handleGetStoreDataMore = async () => {
+  const handleGetFavouritesMore = async () => {
     const user_id = await AsyncStorage.getItem('user_id');
     try {
-      setLoading(true);
+      setBottomLoader(true);
       const res = await ApiRequest({
         type: 'get_favourite',
         user_id: user_id,
-        // last_id: storeData[storeData.length - 1]?.id,
+        last_id: favourites[favourites.length - 1]?.id,
       });
-      const resp = res.data.data;
+      const resp = res.data?.data;
       if (resp && resp != undefined && resp.length > 0) {
-        setStoreData([...storeData, ...resp]);
+        setFavourites([...favourites, ...resp]);
       }
-      console.log(resp, 'storeData');
+      setBottomLoader(false);
+      setScrolled(false);
     } catch (err) {
+      setBottomLoader(false);
+      setScrolled(false);
     } finally {
-      setLoading(false);
+      setBottomLoader(false);
+      setScrolled(false);
     }
   };
+
+  const heartPress = async item => {
+    const user_id = await AsyncStorage.getItem('user_id');
+    const sendData = {
+      type: 'like_dislike',
+      user_id: user_id,
+      status: 'dislike',
+      funeral_id: item?.id,
+    };
+
+    const data = favourites.filter(x => x.id !== item?.id);
+
+    setFavourites(data);
+
+    try {
+      const res = await ApiRequest(sendData);
+      if (res.data.result === true) {
+        handleGetFavourites();
+      }
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    handleGetStoreData();
+    handleGetFavourites();
   }, []);
-  const {t, i18n} = useTranslation();
-  const [showLoadingModal, setShowLoadingModal] = useState(false);
 
   return (
     <Layout>
       <AppHeader title={t('Memories')} defaultStyle={{marginBottom: 30}} />
-
       <FlatList
-        data={storeData}
+        data={favourites}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item?.id?.toString()}
         contentContainerStyle={styles.listContainer}
         onScroll={handleScroll}
-        onEndReached={scrolled ? handleGetStoreDataMore : null}
+        onEndReached={scrolled ? handleGetFavouritesMore : null}
         ListEmptyComponent={
-          <OrderNotFound
-            title={t('Not Found data')}
-            subtitle={t("You don't have favorites at the moment")}
-          />
+          !refreshing && (
+            <OrderNotFound
+              title={t('Not Found data')}
+              subtitle={t("You don't have favorites at the moment")}
+            />
+          )
         }
         ListFooterComponent={
           bottomLoader && <ActivityIndicatot size="large" color={colors.gray} />
         }
         ListFooterComponentStyle={{
           width: '100%',
-          marginTop: 5,
+          marginHorizontal: 10,
         }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         numColumns={2}
         renderItem={({item}) => (
-          <CardList
-            item={item}
-            images={item?.images}
-            onPress={() =>
-              navigation.navigate('SpecificStoreGalery', {
+          <BottomCard
+            title={item?.name}
+            subtitle={item?.description}
+            account_Type={'customer'}
+            isLiked={'like'}
+            onPress1={() =>
+              navigation.navigate('FuneralDetailedPage', {
                 item: item,
-                store_id: item?.store_id,
               })
             }
+            onHeartPress={() => heartPress(item)}
           />
         )}
       />

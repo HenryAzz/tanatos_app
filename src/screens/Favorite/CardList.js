@@ -16,7 +16,6 @@ const windowWidth = Dimensions.get('window').width;
 
 const CardList = ({item, images, onPress}) => {
   const image = JSON.parse(images);
-  console.log(images, 'item/////////');
 
   return (
     <TouchableOpacity onPress={onPress} style={styles.cardContainer}>
@@ -29,7 +28,7 @@ const CardList = ({item, images, onPress}) => {
       <TouchableOpacity onPress={onPress}>
         <View style={styles.infoContainer}>
           <Text style={styles.title}>{item?.store?.name}</Text>
-          <Text style={styles.price}>{item.price}$</Text>
+          <Text style={styles.price}>{item.price}€</Text>
         </View>
       </TouchableOpacity>
     </TouchableOpacity>

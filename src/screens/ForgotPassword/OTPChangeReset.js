@@ -1,25 +1,17 @@
-import {
-  StyleSheet,
-  Text,
-  Image,
-  View,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
-import React, {useState, useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
+import {StyleSheet} from 'react-native';
 import Layout from '../../components/Layout';
-import AppTextInput from '../../components/FloatingLabelInput';
 
-import {BakcButton} from '../../assets/images/svg';
-import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
-import AuthHeader from '../../components/AuthHeader';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import OTPComponent from '../../components/OtpComponent';
-import {colors} from '../../constraints';
-import {BaseButton} from '../../components/BaseButton';
-import {ToastMessage} from '../../utils/Toast';
 import {useTranslation} from 'react-i18next';
+import AuthHeader from '../../components/AuthHeader';
+import {BaseButton} from '../../components/BaseButton';
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
+import OTPComponent from '../../components/OtpComponent';
 import TimerComp from '../../components/TimerComp/TimerComp';
+import {colors} from '../../constraints';
+import {ToastMessage} from '../../utils/Toast';
+
 const OTPChangeReset = () => {
   const navigation = useNavigation();
   const [value, setValue] = useState('');

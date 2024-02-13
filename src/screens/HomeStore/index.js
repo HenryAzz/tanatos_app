@@ -1,3 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   Image,
   ImageBackground,
@@ -6,104 +11,28 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
-import Layout from '../../components/Layout';
-import AppHeader from '../../components/AppHeader/AppHeader';
-import style from '../../assets/css/style';
-import {colors, fonts} from '../../constraints';
-import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
-import {devWidth} from '../../constraints/Dimentions';
-import OrderCardCC from './OrderCardCC';
-import {FlatList} from 'react-native';
-import {ScrollView} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import ApiRequest from '../../Services/ApiRequest';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import OngoingOrder from '../MyOrder/Ongoing';
+import style from '../../assets/css/style';
+import {BaseButton} from '../../components/BaseButton';
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar/FocusAwareStatusBar';
+import Greetings from '../../components/Greetings/Greeting';
+import {colors, fonts} from '../../constraints';
+import {fetchUser, userStore} from '../../store/reducer/usersSlice';
+import Cancelled from '../MyOrder/Cancelled';
 import Completed from '../MyOrder/Completed';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import NewOrder from '../MyOrder/NewOrder';
 import Processing from '../MyOrder/Processing';
-import Cancelled from '../MyOrder/Cancelled';
-import Greetings from '../../components/Greetings/Greeting';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import {BaseButton} from '../../components/BaseButton';
-import ModalLoadingTrans from '../../components/ModalLoadingTrans';
-import {useTranslation} from 'react-i18next';
-import {fetchUser} from '../../store/reducer/usersSlice';
-import {useDispatch} from 'react-redux';
 
 const HomeStore = () => {
   const Top = createMaterialTopTabNavigator();
   const isFocused = useIsFocused();
 
   const dispatch = useDispatch();
-  const dataCheck = [
-    {
-      id: '1',
-      title: 'Pink Rose',
-      price: '$40.00',
-      status: 'Check',
-      image: require('../../assets/HomeStorepic.png'),
-    },
 
-    {
-      id: '2',
-      title: 'Pink Rose',
-      price: '$40.00',
-      status: 'Check',
-      image: require('../../assets/HomeStorepic.png'),
-    },
-  ];
-  const dataCompleted = [
-    {
-      id: '1',
-      title: 'Pink Rose',
-      price: '$40.00',
-      status: 'Completed',
-      image: require('../../assets/HomeStorepic.png'),
-    },
-
-    {
-      id: '2',
-      title: 'Pink Rose',
-      price: '$40.00',
-      status: 'Completed',
-      image: require('../../assets/HomeStorepic.png'),
-    },
-    {
-      id: '3',
-      title: 'Pink Rose',
-      price: '$40.00',
-      status: 'Completed',
-      image: require('../../assets/HomeStorepic.png'),
-    },
-    {
-      id: '4',
-      title: 'Pink Rose',
-      price: '$40.00',
-      status: 'Completed',
-      image: require('../../assets/HomeStorepic.png'),
-    },
-    {
-      id: '5',
-      title: 'Pink Rose',
-      price: '$40.00',
-      status: 'Completed',
-      image: require('../../assets/HomeStorepic.png'),
-    },
-    {
-      id: '6',
-      title: 'Pink Rose',
-      price: '$40.00',
-      status: 'Completed',
-      image: require('../../assets/HomeStorepic.png'),
-    },
-  ];
-  const [loading, setLoading] = useState(false);
-  const [loading1, setLoading1] = useState(false);
   const [catalogData, setCatalogData] = useState();
-  // console.log(catalogData, 'catalogData');
   const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const store = useSelector(store => store.user);
 
   const [formData, setFormData] = useState({
     userName: '',
@@ -136,49 +65,41 @@ const HomeStore = () => {
 
   const handleGetCatData = async () => {
     try {
-      setLoading1(true);
       setShowLoadingModal(true);
       const user_id = await AsyncStorage.getItem('user_id');
-      // console.log(user_id);
+
       const res = await ApiRequest({
         type: 'get_data',
         table_name: 'stores_gallery',
         user_id: user_id,
-        // last_id:""
       });
       const resp = res.data.data;
-      // console.log(resp, 'resp///');
       setCatalogData(resp);
       setShowLoadingModal(false);
     } catch (err) {
     } finally {
       setShowLoadingModal(false);
-      setLoading(false);
     }
   };
   const navigation = useNavigation();
   const [checkStore, setCheckStore] = useState();
   const handleCheckStore = async () => {
     try {
-      setLoading(true);
-      // setShowLoadingModal(true);
       const user_id = await AsyncStorage.getItem('user_id');
-      // console.log(user_id);
+
       const res = await ApiRequest({
         type: 'get_data',
         table_name: 'stores',
         user_id: user_id,
         own: 1,
-        // last_id:""
       });
       const resp = res.data.data;
-      // console.log(resp, 'resp/// get store data');
+      console.log(resp);
+      dispatch(userStore(resp[0]));
       setCheckStore(resp);
-      // setShowLoadingModal(false);
     } catch (err) {
     } finally {
       setShowLoadingModal(false);
-      setLoading(false);
     }
   };
   useEffect(() => {
@@ -187,16 +108,8 @@ const HomeStore = () => {
     handleGetCatData();
     fetchUser(dispatch);
   }, [isFocused]);
-  // console.log(checkStore, 'checkStore');
 
-  const {t, i18n} = useTranslation();
-  const toggleLanguage = async () => {
-    if (i18n.language === 'en') {
-      i18n.changeLanguage('es'); // Switch to Spanish
-    } else {
-      i18n.changeLanguage('en'); // Switch to English
-    }
-  };
+  const {t} = useTranslation();
 
   return (
     <>
@@ -240,15 +153,11 @@ const HomeStore = () => {
                     alignItems: 'center',
                     backgroundColor: colors.primaryColor,
                     alignSelf: 'center',
-                    // marginTop: 25,
-                    // marginBottom: 5,
                   }}>
                   <Image
                     style={{
                       height: 50,
                       width: 50,
-                      // backgroundColor: 'blue',
-                      // resizeMode: 'center',
                       borderRadius: 30,
                     }}
                     source={{uri: formData.url + formData.image}}
@@ -270,14 +179,11 @@ const HomeStore = () => {
                     alignItems: 'center',
                     backgroundColor: colors.primaryColor,
                     alignSelf: 'center',
-                    // marginTop: 25,
-                    // marginBottom: 5,
                   }}>
                   <Image
                     style={{
                       height: 40,
                       width: 40,
-                      // backgroundColor: 'blue',
                       resizeMode: 'center',
                       borderRadius: 20,
                     }}
@@ -305,7 +211,7 @@ const HomeStore = () => {
           </View>
         </View>
       </ImageBackground>
-      {/* <BaseButton title={'Change'} onPress={() => toggleLanguage()} /> */}
+
       <View style={{padding: 10, backgroundColor: colors.white, flex: 1}}>
         <View
           style={{
@@ -317,17 +223,9 @@ const HomeStore = () => {
           <Text style={[style.font20Re, {fontFamily: fonts.bold}]}>
             {t('New Orders')}
           </Text>
-          {/* <Text
-            style={[
-              style.font16Re,
-              {fontFamily: fonts.bold, color: colors.primaryColor},
-            ]}>
-            View All
-          </Text> */}
         </View>
 
-        {/* {loading && <ModalLoadingTrans />} */}
-        {checkStore?.length > 0 ? (
+        {Object.keys(store?.store).length !== 0 ? (
           <View style={{flex: 1}}>
             <Top.Navigator
               screenOptions={{
@@ -342,7 +240,6 @@ const HomeStore = () => {
                     <Text
                       style={{
                         fontSize: 12,
-                        // paddingBottom: 5,
                         color: focused ? colors.primaryColor : colors.gray,
                         fontFamily: focused ? fonts.bold : fonts.bold,
                       }}>

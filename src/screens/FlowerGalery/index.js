@@ -95,7 +95,7 @@ const FlowerGalery = () => {
         // last_id:
       });
       const resp = res.data.data;
-      console.log(resp, 'get store data///////////');
+
       setStoreData(resp);
     } catch (err) {
     } finally {
@@ -110,19 +110,19 @@ const FlowerGalery = () => {
         type: 'get_data',
         table_name: 'stores_gallery',
         last_id: storeData[storeData.length - 1]?.id,
-        // last_id:
       });
       const resp = res.data.data;
       if (resp && resp != undefined && resp.length > 0) {
         setStoreData([...storeData, ...resp]);
       }
+
       setBottomLoader(false);
-      // console.log(resp, 'get store data///////////');
-      // setStoreData(resp);
+      setScrolled(false);
     } catch (err) {
     } finally {
       setBottomLoader(false);
       setLoading(false);
+      setScrolled(false);
     }
   };
   useEffect(() => {
@@ -177,51 +177,56 @@ const FlowerGalery = () => {
         <TextInput placeholder={t('Search')} style={{width: '95%'}} />
       </View> */}
       {/* <ScrollView> */}
-      <FlatList
-        data={storeData}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={item => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
-        onScroll={handleScroll}
-        onEndReached={scrolled ? handleGetStoreDataMore : null}
-        onEndReachedThreshold={0.2}
-        ListEmptyComponent={
-          <OrderNotFound
-            title={'No Found Data'}
-            subTitle={'You don"t have any data'}
-          />
-        }
-        ListFooterComponent={
-          bottomLoader && <ActivityIndicator size="large" color={colors.gray} />
-        }
-        ListFooterComponentStyle={{
-          width: '100%',
-          marginTop: 5,
-        }}
-        numColumns={2}
-        renderItem={({item}) => {
-          // console.log(item, 'item.store');
-          return (
-            <CardListFlowerGalery
-              item={item}
-              images={item.image}
-              // onPressLike={() =>
-              //   heartPress(item.store_id, item.favourite, item)
-              // }
-              // onPressLike={() => console.log(item.favourite, 'favourite')}
-              onPress={() =>
-                navigation.navigate('SpecificStoreGalery', {
-                  item: item,
-                  id: item.id,
-                  item1: FuneralItemData,
-                })
-              }
-              // onPress={() => setModalVisible(true)}
+      <View style={{flex: 1}}>
+        <FlatList
+          data={storeData}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={item => item.id.toString()}
+          contentContainerStyle={styles.listContainer}
+          onScroll={handleScroll}
+          onEndReached={scrolled ? handleGetStoreDataMore : null}
+          onEndReachedThreshold={0.2}
+          ListEmptyComponent={
+            <OrderNotFound
+              title={'No Found Data'}
+              subTitle={'You don"t have any data'}
             />
-          );
-        }}
-      />
+          }
+          ListFooterComponent={
+            bottomLoader && <ActivityIndicator size={45} color={colors.gray} />
+          }
+          ListFooterComponentStyle={{
+            width: '100%',
+            marginVertical: 15,
+            zIndex: 100,
+            height: 50,
+            justifyContent: 'center',
+          }}
+          numColumns={2}
+          renderItem={({item}) => {
+            // console.log(item, 'item.store');
+            return (
+              <CardListFlowerGalery
+                item={item}
+                images={item.image}
+                // onPressLike={() =>
+                //   heartPress(item.store_id, item.favourite, item)
+                // }
+                // onPressLike={() => console.log(item.favourite, 'favourite')}
+                onPress={() =>
+                  navigation.navigate('SpecificStoreGalery', {
+                    item: item,
+                    id: item.id,
+                    item1: FuneralItemData,
+                  })
+                }
+                // onPress={() => setModalVisible(true)}
+              />
+            );
+          }}
+        />
+      </View>
       {/* </ScrollView> */}
       <BuyNowb
         isModalVisible={isModalVisible}
